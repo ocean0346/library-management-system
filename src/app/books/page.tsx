@@ -70,7 +70,7 @@ function BookCatalog() {
         try {
             let query = supabase
                 .from('books')
-                .select('*', { count: 'exact' })
+                .select('*, categories(name), chapters(chapter_number, title, created_at)', { count: 'exact' })
                 .order('created_at', { ascending: false })
                 .range((currentPage - 1) * booksPerPage, currentPage * booksPerPage - 1)
 
@@ -190,7 +190,7 @@ function BookCatalog() {
             />
 
             {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {Array.from({ length: 12 }).map((_, index) => (
                         <div
                             key={`skeleton-${index}`}
@@ -219,7 +219,7 @@ function BookCatalog() {
                             )}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             {books.map((book) => (
                                 <BookCard key={book.book_id} book={book} />
                             ))}
@@ -266,3 +266,4 @@ function BookCatalog() {
         </div>
     )
 }
+

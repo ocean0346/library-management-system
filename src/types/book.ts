@@ -14,4 +14,5 @@ export type Book = {
     categories?: {
         name: string;
     };
+    chapters?: any[];
 }

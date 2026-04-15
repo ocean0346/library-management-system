@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut, Search, Sparkles, Users, Tags, History } from 'lucide-react'
+import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut, Search, Sparkles, Users, Tags, History, LibrarySquare } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -52,7 +52,7 @@ export default function Header() {
 
     const navItems = [
         { href: '/', label: 'Trang Chủ', icon: BookOpen },
-        { href: '/books', label: 'Tủ Sách', icon: BookOpen },
+        { href: '/books', label: 'Thư Viện', icon: BookOpen },
     ]
 
     const isActivePath = (path: string) => pathname === path
@@ -103,16 +103,28 @@ export default function Header() {
                             )
                         })}
                         {user && (
-                            <Link
-                                href="/dashboard"
-                                className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
-                            >
-                                <span className="flex items-center gap-2">
-                                    <LayoutDashboard className="h-4 w-4" />
-                                    Dashboard
-                                </span>
-                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
-                            </Link>
+                            <>
+                                <Link
+                                    href="/bookshelf"
+                                    className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <LibrarySquare className="h-4 w-4" />
+                                        Tủ Sách
+                                    </span>
+                                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
+                                </Link>
+                                <Link
+                                    href="/dashboard"
+                                    className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <LayoutDashboard className="h-4 w-4" />
+                                        Dashboard
+                                    </span>
+                                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
+                                </Link>
+                            </>
                         )}
                     </nav>
                 </div>
@@ -164,6 +176,13 @@ export default function Header() {
                                         </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() => router.push('/bookshelf')}
+                                        className="cursor-pointer"
+                                    >
+                                        <LibrarySquare className="mr-2 h-4 w-4" />
+                                        Tủ Sách Của Tôi
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={() => router.push('/dashboard')}
                                         className="cursor-pointer"

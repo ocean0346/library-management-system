@@ -28,7 +28,10 @@ import {
     Download,
     FileText,
     HardDrive,
-    BookOpen
+    BookOpen,
+    Star,
+    Heart,
+    Bookmark
 } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 import { format } from 'date-fns'
@@ -49,11 +52,18 @@ import Link from 'next/link'
 
 export default function BookDetails() {
     const [book, setBook] = useState<Book | null>(null)
+    const [relatedBooks, setRelatedBooks] = useState<Book[]>([])
     const [chapters, setChapters] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [isAccessing, setIsAccessing] = useState(false)
     const [isReading, setIsReading] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    
+    // Interactions state
+    const [isFavorited, setIsFavorited] = useState(false)
+    const [isSaved, setIsSaved] = useState(false)
+    const [isInteractionLoading, setIsInteractionLoading] = useState(false)
+
     const params = useParams()
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
@@ -101,6 +111,43 @@ export default function BookDetails() {
                 return
             }
             setBook(data)
+
+            // fetch related books
+            let related: Book[] = [];
+            if (data?.category_id) {
+                const { data: catRelated } = await supabase
+                    .from('books')
+                    .select('*')
+                    .eq('category_id', data.category_id)
+                    .neq('book_id', bookId)
+                    .limit(5)
+                
+                if (catRelated) related = catRelated;
+            }
+            
+            // Fallback if no related books in category
+            if (related.length === 0) {
+                const { data: anyRelated } = await supabase
+                    .from('books')
+                    .select('*')
+                    .neq('book_id', bookId)
+                    .order('created_at', { ascending: false })
+                    .limit(5)
+                
+                if (anyRelated) related = anyRelated;
+            }
+            
+            setRelatedBooks(related)
+
+            // fetch interactions if user is logged in
+            if (user) {
+                const [favRes, saveRes] = await Promise.all([
+                    supabase.from('user_favorites').select('book_id').eq('user_id', user.id).eq('book_id', bookId).single(),
+                    supabase.from('user_saved_books').select('book_id').eq('user_id', user.id).eq('book_id', bookId).single()
+                ])
+                if (favRes.data) setIsFavorited(true)
+                if (saveRes.data) setIsSaved(true)
+            }
 
             // Luôn fetch chapters nếu có
             const { data: chaps } = await supabase.from('chapters').select('chapter_number, title').eq('book_id', bookId).order('chapter_number', { ascending: true })
@@ -178,6 +225,54 @@ export default function BookDetails() {
             })
         } finally {
             setIsAccessing(false)
+        }
+    }
+
+    const handleToggleFavorite = async () => {
+        if (!user) {
+            toast({ title: "Yêu cầu đăng nhập", description: "Vui lòng đăng nhập để thực hiện tính năng này." })
+            router.push(`/login?redirect=/books/${bookId}`)
+            return
+        }
+        setIsInteractionLoading(true)
+        try {
+            if (isFavorited) {
+                await supabase.from('user_favorites').delete().eq('user_id', user.id).eq('book_id', bookId)
+                setIsFavorited(false)
+                toast({ title: "Đã hủy Yêu thích" })
+            } else {
+                await supabase.from('user_favorites').insert({ user_id: user.id, book_id: bookId })
+                setIsFavorited(true)
+                toast({ title: "Đã thêm vào danh sách Yêu thích!", description: "Bạn có thể xem lại trong hồ sơ cá nhân." })
+            }
+        } catch (error) {
+            toast({ title: "Lỗi", description: "Thao tác thất bại, vui lòng thử lại.", variant: "destructive" })
+        } finally {
+            setIsInteractionLoading(false)
+        }
+    }
+
+    const handleToggleSave = async () => {
+        if (!user) {
+            toast({ title: "Yêu cầu đăng nhập", description: "Vui lòng đăng nhập để thực hiện tính năng này." })
+            router.push(`/login?redirect=/books/${bookId}`)
+            return
+        }
+        setIsInteractionLoading(true)
+        try {
+            if (isSaved) {
+                await supabase.from('user_saved_books').delete().eq('user_id', user.id).eq('book_id', bookId)
+                setIsSaved(false)
+                toast({ title: "Đã xóa khỏi danh sách Lưu" })
+            } else {
+                await supabase.from('user_saved_books').insert({ user_id: user.id, book_id: bookId })
+                setIsSaved(true)
+                toast({ title: "Đã lưu truyện thành công!", description: "Bạn có thể tìm thấy trong góc Tủ Sách." })
+            }
+        } catch (error) {
+            toast({ title: "Lỗi", description: "Thao tác thất bại, vui lòng thử lại.", variant: "destructive" })
+        } finally {
+            setIsInteractionLoading(false)
         }
     }
 
@@ -289,6 +384,28 @@ export default function BookDetails() {
                                     </>
                                 )}
                             </Button>
+                            
+                            {/* Interaction Buttons */}
+                            <div className="grid grid-cols-2 gap-3 mt-4">
+                                <Button 
+                                    variant="outline" 
+                                    disabled={isInteractionLoading}
+                                    onClick={handleToggleFavorite} 
+                                    className={`w-full ${isFavorited ? "text-rose-500 hover:text-rose-600 bg-rose-50 hover:bg-rose-100 border-rose-200" : ""}`}
+                                >
+                                    <Heart className={`mr-2 h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+                                    {isFavorited ? 'Đã Thích' : 'Yêu Thích'}
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    disabled={isInteractionLoading}
+                                    onClick={handleToggleSave} 
+                                    className={`w-full ${isSaved ? "text-[#09ADAA] hover:text-[#09ADAA]/80 bg-[#09ADAA]/10 hover:bg-[#09ADAA]/20 border-[#09ADAA]/30" : ""}`}
+                                >
+                                    <Bookmark className={`mr-2 h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+                                    {isSaved ? 'Đã Lưu' : 'Lưu Lại'}
+                                </Button>
+                            </div>
 
                             {/* Admin/Librarian Actions */}
                             {isAdmin && (
@@ -471,6 +588,45 @@ export default function BookDetails() {
                             </div>
                         </CardContent>
                     </Card>
+                </div>
+            )}
+
+            {/* Có thể bạn muốn đọc thêm */}
+            {relatedBooks.length > 0 && (
+                <div className="mt-12 bg-card rounded-xl border border-border shadow-sm p-6 overflow-hidden">
+                    <div className="flex items-center gap-3 border-b border-border/50 pb-3 mb-6">
+                        <div className="bg-[#09ADAA] h-8 w-8 rounded flex items-center justify-center shrink-0">
+                            <Star className="text-white h-5 w-5 fill-current" />
+                        </div>
+                        <h3 className="text-lg font-bold text-foreground">CÓ THỂ BẠN MUỐN ĐỌC THÊM</h3>
+                    </div>
+                    
+                    <div className="flex flex-col gap-4">
+                        {relatedBooks.slice(0, 5).map((relatedBook) => (
+                            <Link 
+                                key={relatedBook.book_id} 
+                                href={`/books/${relatedBook.book_id}`}
+                                className="flex gap-4 group hover:bg-muted/30 p-2 rounded-lg transition-colors border border-transparent hover:border-border/50"
+                            >
+                                <div className="w-16 h-20 md:w-20 md:h-24 shrink-0 rounded-md overflow-hidden relative border border-border">
+                                    <Image 
+                                        src={relatedBook.cover_image_url || '/images/placeholder.jpg'} 
+                                        alt={relatedBook.title} 
+                                        fill 
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <div className="flex flex-col py-1">
+                                    <h4 className="font-semibold text-sm md:text-base group-hover:text-[#09ADAA] transition-colors line-clamp-1">{relatedBook.title} - {relatedBook.author}</h4>
+                                    {(relatedBook as any).created_at && (
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            {format(new Date((relatedBook as any).created_at), 'MMMM dd, yyyy')}
+                                        </p>
+                                    )}
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,7 @@ type Review = {
 export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdmin: boolean }) {
     const { user } = useAuth()
     const { toast } = useToast()
+    const router = useRouter()
     
     const [reviews, setReviews] = useState<Review[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -123,8 +125,21 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
             </CardHeader>
             <CardContent>
                 {/* Form Add Review */}
-                {user && !hasReviewed ? (
-                    <form onSubmit={handleSubmit} className="mb-8 bg-muted/30 p-4 sm:p-6 rounded-xl border border-border/50 shadow-sm">
+                {user && hasReviewed ? (
+                    <div className="mb-8 p-4 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground border">
+                        Bạn đã đánh giá cuốn sách này rồi. Cảm ơn bạn!
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="mb-8 bg-muted/30 p-4 sm:p-6 rounded-xl border border-border/50 shadow-sm relative">
+                        {!user && (
+                            <div 
+                                className="absolute inset-0 z-10 cursor-pointer" 
+                                onClick={() => {
+                                    toast({ title: "Yêu cầu đăng nhập", description: "Vui lòng đăng nhập để bình luận." })
+                                    router.push(`/login?redirect=/books/${bookId}`)
+                                }}
+                            />
+                        )}
                         <h4 className="font-semibold mb-3">Thêm đánh giá của bạn</h4>
                         <div className="flex gap-1 mb-4">
                             {[1, 2, 3, 4, 5].map((star) => (
@@ -151,11 +166,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                             </Button>
                         </div>
                     </form>
-                ) : user && hasReviewed ? (
-                    <div className="mb-8 p-4 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground border">
-                        Bạn đã đánh giá cuốn sách này rồi. Cảm ơn bạn!
-                    </div>
-                ) : null}
+                )}
 
                 {/* Reviews List */}
                 <div className="space-y-4">

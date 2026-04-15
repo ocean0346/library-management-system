@@ -1,0 +1,10 @@
+UPDATE categories SET name = 'Nghệ thuật & Thiết kế' WHERE name = 'Art & Design';
+UPDATE categories SET name = 'Kinh doanh' WHERE name = 'Business';
+UPDATE categories SET name = 'Thiếu nhi' WHERE name = 'Children';
+UPDATE categories SET name = 'Tiểu thuyết' WHERE name = 'Fiction';
+UPDATE categories SET name = 'Lịch sử' WHERE name = 'History';
+UPDATE categories SET name = 'Văn học' WHERE name = 'Literature';
+UPDATE categories SET name = 'Phi hư cấu' WHERE name = 'Non-Fiction';
+UPDATE categories SET name = 'Khoa học' WHERE name = 'Science';
+UPDATE categories SET name = 'Phát triển bản thân' WHERE name = 'Self-Help';
+UPDATE categories SET name = 'Công nghệ' WHERE name = 'Technology';

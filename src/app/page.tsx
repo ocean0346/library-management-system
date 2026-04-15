@@ -26,19 +26,19 @@ export default function Home() {
                 // Fetch 4 most recent books
                 const { data: recent } = await supabase
                     .from('books')
-                    .select('*')
+                    .select('*, categories(name), chapters(chapter_number, title, created_at)')
                     .order('created_at', { ascending: false })
-                    .limit(4)
-                
+                    .limit(6)
+
                 if (recent) setRecentBooks(recent as Book[])
 
                 // Fetch popular books by views (For simplicity, we'll just fetch by ID or random for now)
                 // In a full implementation, this could call an RPC
                 const { data: popular } = await supabase
                     .from('books')
-                    .select('*')
+                    .select('*, categories(name), chapters(chapter_number, title, created_at)')
                     .order('title', { ascending: true })
-                    .limit(4)
+                    .limit(6)
 
                 if (popular) setPopularBooks(popular as Book[])
 
@@ -54,6 +54,31 @@ export default function Home() {
 
     return (
         <div className="flex flex-col min-h-screen">
+            <style dangerouslySetInnerHTML={{ __html: `
+                @keyframes scrollMarquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                @keyframes scrollMarqueeReverse {
+                    0% { transform: translateX(-50%); }
+                    100% { transform: translateX(0); }
+                }
+                .marquee-row {
+                    display: flex;
+                    width: max-content;
+                    animation: scrollMarquee 50s linear infinite;
+                }
+                .marquee-row-reverse {
+                    display: flex;
+                    width: max-content;
+                    animation: scrollMarqueeReverse 50s linear infinite;
+                }
+                .group:hover .marquee-row, 
+                .group:hover .marquee-row-reverse {
+                    animation-play-state: paused;
+                }
+            `}} />
+            
             {/* Hero Section */}
             <section className="relative pt-28 pb-20 lg:pt-40 lg:pb-32 overflow-hidden w-full flex items-center justify-center min-h-[85vh]">
                 {/* Background Grid & Gradients */}
@@ -62,30 +87,30 @@ export default function Home() {
                     <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#02FF73]/20 rounded-full blur-[120px] opacity-70 animate-pulse" />
                     <div className="absolute top-40 left-1/4 w-[400px] h-[400px] bg-[#09ADAA]/20 rounded-full blur-[100px] opacity-60" />
                 </div>
-                
+
                 <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
                     <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-8 transition-all hover:bg-primary/20 cursor-default">
                         <Sparkles className="w-4 h-4 mr-2" /> Thư viện Mở 100% Miễn phí
                     </div>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.1]">
-                        Nền Tảng Đọc Sách <br className="hidden md:block"/>
+                        Nền Tảng Đọc Sách <br className="hidden md:block" />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#02FF73] via-[#09ADAA] to-blue-500 bg-300% animate-gradient">
                             Trực Tuyến Hàng Đầu
                         </span>
                     </h1>
                     <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto mb-12 leading-relaxed">
-                        Thư viện của chúng tôi cung cấp hàng nghìn tài liệu và sách điện tử công khai. 
+                        Thư viện của chúng tôi cung cấp hàng nghìn tài liệu và sách điện tử công khai.
                         Đọc trực tiếp trên trình duyệt, không giới hạn, không cần đăng nhập cầu kỳ.
                     </p>
-                    
+
                     <div className="w-full max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 mb-16 px-4">
                         <div className="relative w-full group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <div className="relative flex items-center bg-background rounded-full border shadow-xl">
                                 <Search className="absolute left-6 text-muted-foreground h-6 w-6" />
-                                <Input 
+                                <Input
                                     type="text"
-                                    placeholder="Tìm kiếm cuốn sách tiếp theo của bạn..." 
+                                    placeholder="Tìm kiếm cuốn sách tiếp theo của bạn..."
                                     className="w-full pl-16 pr-6 py-8 text-xl rounded-full border-none bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/60"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -93,7 +118,7 @@ export default function Home() {
                                 />
                             </div>
                         </div>
-                        <Button 
+                        <Button
                             className="w-full sm:w-auto bg-gradient-to-r from-[#02FF73] to-[#09ADAA] hover:brightness-110 text-black font-bold py-8 px-10 text-lg rounded-full shadow-lg shadow-[#02FF73]/20 transition-all hover:scale-105 active:scale-95 border-none"
                             onClick={() => searchQuery.trim() && router.push(`/books?q=${encodeURIComponent(searchQuery.trim())}`)}
                         >
@@ -117,7 +142,7 @@ export default function Home() {
             {/* Content Sections */}
             <div className="flex-1 w-full bg-muted/10 relative z-20 pb-24">
                 <div className="container mx-auto px-4 -mt-10 lg:-mt-20 relative z-30 space-y-24">
-                    
+
                     {/* Sách Mới Cập Nhật */}
                     <section className="bg-background/80 backdrop-blur-xl border shadow-2xl shadow-black/5 rounded-3xl p-6 lg:p-10">
                         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
@@ -138,16 +163,20 @@ export default function Home() {
                         </div>
 
                         {isLoading ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="h-[400px] bg-muted/40 animate-pulse rounded-2xl" />
+                            <div className="flex gap-6 overflow-hidden">
+                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                    <div key={i} className="h-[200px] w-[350px] shrink-0 bg-muted/40 animate-pulse rounded-2xl" />
                                 ))}
                             </div>
                         ) : recentBooks.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {recentBooks.map(book => (
-                                    <BookCard key={book.book_id} book={book} />
-                                ))}
+                             <div className="relative flex overflow-hidden w-full group py-4" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+                                <div className="gap-6 marquee-row">
+                                    {[...recentBooks, ...recentBooks].map((book, idx) => (
+                                        <div key={`recent-${book.book_id}-${idx}`} className="w-[320px] sm:w-[380px] md:w-[450px] shrink-0">
+                                            <BookCard book={book} />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         ) : (
                             <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">
@@ -165,7 +194,7 @@ export default function Home() {
                                     <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
                                         <TrendingUp className="h-5 w-5 text-blue-500" />
                                     </div>
-                                    Sách Nội Bật Nhất
+                                    Sách Nổi Bật Nhất
                                 </h2>
                                 <p className="text-muted-foreground mt-3 text-lg">Những tác phẩm được tìm kiếm và xem nhiều nhất</p>
                             </div>
@@ -177,16 +206,20 @@ export default function Home() {
                         </div>
 
                         {isLoading ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="h-[400px] bg-muted/40 animate-pulse rounded-2xl" />
+                            <div className="flex gap-6 overflow-hidden">
+                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                    <div key={i} className="h-[200px] w-[350px] shrink-0 bg-muted/40 animate-pulse rounded-2xl" />
                                 ))}
                             </div>
                         ) : popularBooks.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {popularBooks.map(book => (
-                                    <BookCard key={book.book_id} book={book} />
-                                ))}
+                            <div className="relative flex overflow-hidden w-full group py-4" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+                                <div className="gap-6 marquee-row-reverse">
+                                    {[...popularBooks, ...popularBooks].map((book, idx) => (
+                                        <div key={`popular-${book.book_id}-${idx}`} className="w-[320px] sm:w-[380px] md:w-[450px] shrink-0">
+                                            <BookCard book={book} />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         ) : (
                             <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">

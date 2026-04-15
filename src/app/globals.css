@@ -6,10 +6,12 @@
 @utility container {
   margin-inline: auto;
   padding-inline: 2rem;
-  @media (width >= --theme(--breakpoint-sm)) {
+
+  @media (width >=--theme(--breakpoint-sm)) {
     max-width: none;
   }
-  @media (width >= 1400px) {
+
+  @media (width >=1400px) {
     max-width: 1400px;
   }
 }
@@ -67,6 +69,9 @@
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 30s linear infinite;
+
   /* Font families */
   --font-display: 'Outfit', system-ui, sans-serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
@@ -81,6 +86,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -133,7 +139,7 @@
 @utility gradient-border {
   position: relative;
   background: linear-gradient(var(--color-card), var(--color-card)) padding-box,
-              linear-gradient(135deg, #02FF73, #09ADAA) border-box;
+    linear-gradient(135deg, #02FF73, #09ADAA) border-box;
   border: 2px solid transparent;
 }
 
@@ -173,11 +179,29 @@
   animation: glowPulse 2s ease-in-out infinite;
 }
 
+@layer utilities {
+  .animate-marquee {
+    animation: marquee 50s linear infinite;
+  }
+  .animate-marquee-reverse {
+    animation: marquee-reverse 50s linear infinite;
+  }
+  .group:hover .animate-marquee,
+  .group:hover .animate-marquee-reverse {
+    animation-play-state: paused;
+  }
+}
+
 /* ===== Keyframes ===== */
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInUp {
@@ -185,6 +209,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -196,6 +221,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -207,6 +233,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -214,17 +241,25 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(2, 255, 115, 0.2), 0 0 40px rgba(9, 173, 170, 0.1);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(2, 255, 115, 0.3), 0 0 60px rgba(9, 173, 170, 0.2);
   }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* ===== Base Styles ===== */
@@ -341,7 +376,12 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply tracking-tight;
   }
