@@ -7,9 +7,10 @@ export type Book = {
     publish_date: string;
     description: string;
     cover_image_url: string;
-    available_copies: number;
-    total_copies: number;
-    location: string;
+    file_url?: string;
+    file_size_bytes?: number;
+    file_type?: string;
+    category_name?: string;
     categories?: {
         name: string;
     };

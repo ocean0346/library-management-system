@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { useOrganization } from '@/contexts/OrganizationContext'
 import { supabase } from '@/lib/supabase-client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -31,7 +30,7 @@ interface Category {
 export default function AddBookPage() {
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
-    const { currentOrganization, isLoadingOrgs, canManageBooks } = useOrganization()
+    const [isAdmin, setIsAdmin] = useState(false)
     const { toast } = useToast()
 
     // Form state
@@ -43,8 +42,9 @@ export default function AddBookPage() {
     const [description, setDescription] = useState('')
     const [coverImageUrl, setCoverImageUrl] = useState('')
     const [categoryId, setCategoryId] = useState<string>('')
-    const [totalCopies, setTotalCopies] = useState(1)
-    const [location, setLocation] = useState('')
+    const [fileUrl, setFileUrl] = useState('')
+    const [fileSize, setFileSize] = useState<string>('')
+    const [fileType, setFileType] = useState('PDF')
 
     // UI state
     const [categories, setCategories] = useState<Category[]>([])
@@ -53,13 +53,10 @@ export default function AddBookPage() {
     const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
     const fetchCategories = useCallback(async () => {
-        if (!currentOrganization) return
-
         try {
             const { data, error } = await supabase
                 .from('categories')
                 .select('category_id, name')
-                .or(`organization_id.is.null,organization_id.eq.${currentOrganization.organization_id}`)
                 .order('name', { ascending: true })
 
             if (error) throw error
@@ -69,36 +66,40 @@ export default function AddBookPage() {
         } finally {
             setIsLoadingCategories(false)
         }
-    }, [currentOrganization])
+    }, [])
 
     useEffect(() => {
         if (!authLoading && !user) {
             router.push('/login')
+            return
         }
-    }, [user, authLoading, router])
 
-    useEffect(() => {
-        if (!isLoadingOrgs && user && !currentOrganization) {
-            router.push('/org/select')
+        const checkAdmin = async () => {
+            if (user) {
+                const { data } = await supabase
+                    .from('users')
+                    .select('is_admin')
+                    .eq('user_id', user.id)
+                    .single()
+                
+                if (data?.is_admin) {
+                    setIsAdmin(true)
+                    fetchCategories()
+                } else {
+                    toast({
+                        title: "Access Denied",
+                        description: "Chỉ Admin mới có quyền thêm sách",
+                        variant: "destructive",
+                    })
+                    router.push('/books')
+                }
+            }
         }
-    }, [user, isLoadingOrgs, currentOrganization, router])
-
-    useEffect(() => {
-        if (!isLoadingOrgs && currentOrganization && !canManageBooks) {
-            router.push('/books')
-            toast({
-                title: "Access Denied",
-                description: "You don't have permission to add books",
-                variant: "destructive",
-            })
+        
+        if (user) {
+            checkAdmin()
         }
-    }, [isLoadingOrgs, currentOrganization, canManageBooks, router, toast])
-
-    useEffect(() => {
-        if (currentOrganization) {
-            fetchCategories()
-        }
-    }, [currentOrganization, fetchCategories])
+    }, [user, authLoading, router, toast, fetchCategories])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -117,8 +118,8 @@ export default function AddBookPage() {
             setError('ISBN is required')
             return
         }
-        if (totalCopies < 1) {
-            setError('Total copies must be at least 1')
+        if (fileType !== 'WEBNOVEL' && !fileUrl.trim()) {
+            setError('Đường dẫn file là bắt buộc đối với định dạng Tài Liệu')
             return
         }
 
@@ -129,7 +130,7 @@ export default function AddBookPage() {
                 .from('books')
                 .insert([
                     {
-                        organization_id: currentOrganization?.organization_id,
+                        organization_id: null,
                         title: title.trim(),
                         author: author.trim(),
                         isbn: isbn.trim(),
@@ -138,9 +139,9 @@ export default function AddBookPage() {
                         description: description.trim() || null,
                         cover_image_url: coverImageUrl.trim() || null,
                         category_id: categoryId ? parseInt(categoryId) : null,
-                        total_copies: totalCopies,
-                        available_copies: totalCopies,
-                        location: location.trim() || null
+                        file_url: fileUrl.trim() || null,
+                        file_size_bytes: fileSize ? parseFloat(fileSize) * 1024 * 1024 : null,
+                        file_type: fileType
                     }
                 ])
                 .select()
@@ -161,15 +162,15 @@ export default function AddBookPage() {
             })
 
             router.push(`/books/${data.book_id}`)
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error adding book:', err)
-            setError('Failed to add book. Please try again.')
+            setError(err.message || 'Failed to add book. Please try again.')
         } finally {
             setIsSubmitting(false)
         }
     }
 
-    if (authLoading || isLoadingOrgs) {
+    if (authLoading || (!isAdmin && user)) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <Loading size="lg" />
@@ -177,7 +178,7 @@ export default function AddBookPage() {
         )
     }
 
-    if (!user || !currentOrganization || !canManageBooks) {
+    if (!user || (!isAdmin && !isLoadingCategories)) {
         return null
     }
 
@@ -199,9 +200,9 @@ export default function AddBookPage() {
                             <BookPlus className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <CardTitle>Add New Book</CardTitle>
+                            <CardTitle>Đăng Tác Phẩm Mới</CardTitle>
                             <CardDescription>
-                                Add a new book to your library catalog
+                                Thêm sách tài liệu dạng PDF hoặc Tiểu thuyết (Truyện chữ nhiều chương)
                             </CardDescription>
                         </div>
                     </div>
@@ -214,16 +215,42 @@ export default function AddBookPage() {
                             </Alert>
                         )}
 
+                        {/* Format Selection */}
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-medium">Định Dạng Tác Phẩm</h3>
+                            <div className="space-y-2">
+                                <Label htmlFor="fileType">Phân Loại *</Label>
+                                <Select
+                                    value={fileType}
+                                    onValueChange={setFileType}
+                                    disabled={isSubmitting}
+                                >
+                                    <SelectTrigger className="border-primary/50 bg-primary/5 ring-primary/20">
+                                        <SelectValue placeholder="Chọn định dạng" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="WEBNOVEL" className="font-bold text-primary">Truyện Chữ</SelectItem>
+                                        <SelectItem value="PDF">Tài liệu PDF (Upload file)</SelectItem>
+                                        <SelectItem value="EPUB">Tài liệu EPUB</SelectItem>
+                                        <SelectItem value="DOCX">Tài liệu DOCX</SelectItem>
+                                        <SelectItem value="OTHER">Định dạng Khác</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <Separator />
+
                         {/* Basic Information */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Basic Information</h3>
+                            <h3 className="text-lg font-medium">Thông Tin Chung</h3>
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title">Title *</Label>
+                                    <Label htmlFor="title">Tựa đề tác phẩm *</Label>
                                     <Input
                                         id="title"
-                                        placeholder="Enter book title"
+                                        placeholder="Nhập tên sách..."
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
                                         disabled={isSubmitting}
@@ -231,10 +258,10 @@ export default function AddBookPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="author">Author *</Label>
+                                    <Label htmlFor="author">Tác giả *</Label>
                                     <Input
                                         id="author"
-                                        placeholder="Enter author name"
+                                        placeholder="Nhập tên tác giả..."
                                         value={author}
                                         onChange={(e) => setAuthor(e.target.value)}
                                         disabled={isSubmitting}
@@ -245,26 +272,25 @@ export default function AddBookPage() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="isbn">ISBN *</Label>
+                                    <Label htmlFor="isbn">Mã Tiêu Chuẩn (Nếu có)</Label>
                                     <Input
                                         id="isbn"
-                                        placeholder="978-0-000-00000-0"
+                                        placeholder="ví dụ: 978-0-..."
                                         value={isbn}
                                         onChange={(e) => setIsbn(e.target.value)}
                                         disabled={isSubmitting}
-                                        required
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="category">Category</Label>
-                                    <Select
-                                        value={categoryId}
-                                        onValueChange={setCategoryId}
-                                        disabled={isSubmitting || isLoadingCategories}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select category" />
-                                        </SelectTrigger>
+                                <Label htmlFor="category">Thể Loại</Label>
+                                <Select
+                                    value={categoryId}
+                                    onValueChange={setCategoryId}
+                                    disabled={isSubmitting || isLoadingCategories}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Chọn thể loại" />
+                                    </SelectTrigger>
                                         <SelectContent>
                                             {categories.map((category) => (
                                                 <SelectItem
@@ -280,10 +306,10 @@ export default function AddBookPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">Mô Tả / Trích Dẫn</Label>
                                 <textarea
                                     id="description"
-                                    placeholder="Enter book description"
+                                    placeholder="Viết một đoạn ngắn giới thiệu nội dung cuốn sách..."
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     disabled={isSubmitting}
@@ -296,21 +322,21 @@ export default function AddBookPage() {
 
                         {/* Publishing Information */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Publishing Information</h3>
+                            <h3 className="text-lg font-medium">Thông Tin Xuất Bản</h3>
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="publisher">Publisher</Label>
+                                    <Label htmlFor="publisher">Nhà Xuất Bản</Label>
                                     <Input
                                         id="publisher"
-                                        placeholder="Enter publisher name"
+                                        placeholder="Nhập tên nhà xuất bản..."
                                         value={publisher}
                                         onChange={(e) => setPublisher(e.target.value)}
                                         disabled={isSubmitting}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="publishDate">Publish Date</Label>
+                                    <Label htmlFor="publishDate">Ngày Xuất Bản</Label>
                                     <Input
                                         id="publishDate"
                                         type="date"
@@ -324,46 +350,51 @@ export default function AddBookPage() {
 
                         <Separator />
 
-                        {/* Library Information */}
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Library Information</h3>
+                        {/* Document Information - HIDE FOR WEBNOVEL */}
+                        {fileType !== 'WEBNOVEL' && (
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-medium">Thông Tin Tệp (File Chi Tiết)</h3>
 
-                            <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="totalCopies">Total Copies *</Label>
+                                    <Label htmlFor="fileUrl">Đường Dẫn File PDF/EPUB *</Label>
                                     <Input
-                                        id="totalCopies"
-                                        type="number"
-                                        min={1}
-                                        max={9999}
-                                        value={totalCopies}
-                                        onChange={(e) => setTotalCopies(parseInt(e.target.value) || 1)}
+                                        id="fileUrl"
+                                        type="url"
+                                        placeholder="https://example.com/document.pdf"
+                                        value={fileUrl}
+                                        onChange={(e) => setFileUrl(e.target.value)}
                                         disabled={isSubmitting}
-                                        required
+                                        required={fileType !== 'WEBNOVEL'}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="location">Shelf Location</Label>
-                                    <Input
-                                        id="location"
-                                        placeholder="e.g., A-12, Fiction Section"
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)}
-                                        disabled={isSubmitting}
-                                    />
+
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="fileSize">Kích Thước File Yếu Lượng (MB)</Label>
+                                        <Input
+                                            id="fileSize"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="ví dụ: 2.5"
+                                            value={fileSize}
+                                            onChange={(e) => setFileSize(e.target.value)}
+                                            disabled={isSubmitting}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         <Separator />
 
                         {/* Cover Image */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Cover Image</h3>
+                            <h3 className="text-lg font-medium">Ảnh Bìa</h3>
 
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="md:col-span-2 space-y-2">
-                                    <Label htmlFor="coverImageUrl">Cover Image URL</Label>
+                                    <Label htmlFor="coverImageUrl">URL Ảnh Bìa</Label>
                                     <Input
                                         id="coverImageUrl"
                                         type="url"
@@ -373,7 +404,7 @@ export default function AddBookPage() {
                                         disabled={isSubmitting}
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Enter a URL to an image of the book cover
+                                        Dán URL ảnh để làm ảnh bìa cho truyện
                                     </p>
                                 </div>
                                 <div className="flex items-center justify-center">
@@ -409,22 +440,22 @@ export default function AddBookPage() {
                                 disabled={isSubmitting}
                                 className="flex-1"
                             >
-                                Cancel
+                                Hủy Bỏ
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="flex-1"
+                                className="flex-1 bg-gradient-to-r from-primary to-[#09ADAA]"
                             >
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Adding Book...
+                                        Đang Đăng...
                                     </>
                                 ) : (
                                     <>
                                         <Save className="mr-2 h-4 w-4" />
-                                        Add Book
+                                        Hoàn Tất Đăng Sách
                                     </>
                                 )}
                             </Button>

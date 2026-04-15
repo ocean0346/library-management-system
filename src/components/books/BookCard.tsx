@@ -14,7 +14,7 @@ type BookCardProps = {
 }
 
 export default function BookCard({ book, showQuickActions = true }: BookCardProps) {
-    const isAvailable = book.available_copies > 0
+    const isAvailable = true // Digital documents are always available
 
     return (
         <Card className="group h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -31,13 +31,13 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
                 {/* Gradient Overlay on Hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                {/* Availability Badge */}
+                {/* Format Badge */}
                 <div className="absolute top-3 right-3 z-10">
                     <Badge
-                        variant={isAvailable ? 'success' : 'secondary'}
-                        className="shadow-lg"
+                        variant="success"
+                        className="shadow-lg px-2"
                     >
-                        {isAvailable ? `${book.available_copies} Available` : 'Unavailable'}
+                        {book.file_type ? book.file_type.toUpperCase() : 'PDF'}
                     </Badge>
                 </div>
 
@@ -52,7 +52,7 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
                         >
                             <Link href={`/books/${book.book_id}`}>
                                 <BookOpen className="mr-2 h-4 w-4" />
-                                {isAvailable ? 'Borrow' : 'Reserve'}
+                                Đọc Ngay
                             </Link>
                         </Button>
                         <Button
@@ -86,7 +86,7 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
                 </div>
 
                 <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                    {book.description || 'No description available for this book.'}
+                    {book.description || 'Chưa có mô tả chung cho tài liệu này.'}
                 </p>
 
                 {/* Category Tag */}

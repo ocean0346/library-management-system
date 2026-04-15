@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { useOrganization } from '@/contexts/OrganizationContext'
 import { supabase } from '@/lib/supabase-client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -38,9 +37,9 @@ interface Book {
     description: string | null
     cover_image_url: string | null
     category_id: number | null
-    total_copies: number
-    available_copies: number
-    location: string | null
+    file_url: string | null
+    file_size_bytes: number | null
+    file_type: string | null
     organization_id: number
 }
 
@@ -49,7 +48,7 @@ export default function EditBookPage() {
     const router = useRouter()
     const bookId = params.id as string
     const { user, loading: authLoading } = useAuth()
-    const { currentOrganization, isLoadingOrgs, canManageBooks } = useOrganization()
+    const [isAdmin, setIsAdmin] = useState(false)
     const { toast } = useToast()
 
     // Form state
@@ -61,9 +60,9 @@ export default function EditBookPage() {
     const [description, setDescription] = useState('')
     const [coverImageUrl, setCoverImageUrl] = useState('')
     const [categoryId, setCategoryId] = useState<string>('')
-    const [totalCopies, setTotalCopies] = useState(1)
-    const [availableCopies, setAvailableCopies] = useState(1)
-    const [location, setLocation] = useState('')
+    const [fileUrl, setFileUrl] = useState('')
+    const [fileSize, setFileSize] = useState<string>('')
+    const [fileType, setFileType] = useState('PDF')
 
     // UI state
     const [categories, setCategories] = useState<Category[]>([])
@@ -73,14 +72,13 @@ export default function EditBookPage() {
     const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
     const fetchBook = useCallback(async () => {
-        if (!currentOrganization || !bookId) return
+        if (!bookId) return
 
         try {
             const { data, error } = await supabase
                 .from('books')
                 .select('*')
                 .eq('book_id', bookId)
-                .eq('organization_id', currentOrganization.organization_id)
                 .single()
 
             if (error) throw error
@@ -104,9 +102,9 @@ export default function EditBookPage() {
             setDescription(book.description || '')
             setCoverImageUrl(book.cover_image_url || '')
             setCategoryId(book.category_id?.toString() || '')
-            setTotalCopies(book.total_copies)
-            setAvailableCopies(book.available_copies)
-            setLocation(book.location || '')
+            setFileUrl(book.file_url || '')
+            setFileSize(book.file_size_bytes ? (book.file_size_bytes / (1024 * 1024)).toString() : '')
+            setFileType(book.file_type || 'PDF')
         } catch (err) {
             console.error('Error fetching book:', err)
             toast({
@@ -118,16 +116,13 @@ export default function EditBookPage() {
         } finally {
             setIsLoading(false)
         }
-    }, [bookId, currentOrganization, router, toast])
+    }, [bookId, router, toast])
 
     const fetchCategories = useCallback(async () => {
-        if (!currentOrganization) return
-
         try {
             const { data, error } = await supabase
                 .from('categories')
                 .select('category_id, name')
-                .or(`organization_id.is.null,organization_id.eq.${currentOrganization.organization_id}`)
                 .order('name', { ascending: true })
 
             if (error) throw error
@@ -137,37 +132,43 @@ export default function EditBookPage() {
         } finally {
             setIsLoadingCategories(false)
         }
-    }, [currentOrganization])
+    }, [])
 
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.push('/login')
+        const checkAdmin = async () => {
+            if (user) {
+                const { data } = await supabase
+                    .from('users')
+                    .select('is_admin')
+                    .eq('user_id', user.id)
+                    .single()
+                
+                if (data?.is_admin) {
+                    setIsAdmin(true)
+                } else {
+                    toast({
+                        title: "Access Denied",
+                        description: "Chỉ Admin mới có quyền sửa sách",
+                        variant: "destructive",
+                    })
+                    router.push('/books')
+                }
+            }
         }
-    }, [user, authLoading, router])
-
-    useEffect(() => {
-        if (!isLoadingOrgs && user && !currentOrganization) {
-            router.push('/org/select')
+        
+        if (user) {
+            checkAdmin()
         }
-    }, [user, isLoadingOrgs, currentOrganization, router])
+    }, [user, router, toast])
+
+
 
     useEffect(() => {
-        if (!isLoadingOrgs && currentOrganization && !canManageBooks) {
-            router.push('/books')
-            toast({
-                title: "Access Denied",
-                description: "You don't have permission to edit books",
-                variant: "destructive",
-            })
-        }
-    }, [isLoadingOrgs, currentOrganization, canManageBooks, router, toast])
-
-    useEffect(() => {
-        if (currentOrganization) {
+        if (isAdmin && bookId) {
             fetchCategories()
             fetchBook()
         }
-    }, [currentOrganization, fetchCategories, fetchBook])
+    }, [isAdmin, bookId, fetchCategories, fetchBook])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -186,14 +187,10 @@ export default function EditBookPage() {
             setError('ISBN is required')
             return
         }
-        if (totalCopies < 1) {
-            setError('Total copies must be at least 1')
+        if (!fileUrl.trim()) {
+            setError('File URL is required')
             return
         }
-
-        // Calculate the difference in total copies to adjust available copies
-        const copiesDifference = totalCopies - (totalCopies - availableCopies + availableCopies)
-        const newAvailableCopies = Math.max(0, availableCopies + (totalCopies - (totalCopies - copiesDifference)))
 
         setIsSubmitting(true)
 
@@ -209,15 +206,15 @@ export default function EditBookPage() {
                     description: description.trim() || null,
                     cover_image_url: coverImageUrl.trim() || null,
                     category_id: categoryId ? parseInt(categoryId) : null,
-                    total_copies: totalCopies,
-                    location: location.trim() || null
+                    file_url: fileUrl.trim() || null,
+                    file_size_bytes: fileSize ? parseFloat(fileSize) * 1024 * 1024 : null,
+                    file_type: fileType
                 })
                 .eq('book_id', bookId)
-                .eq('organization_id', currentOrganization?.organization_id)
 
             if (updateError) {
                 if (updateError.code === '23505') {
-                    setError('A book with this ISBN already exists in your organization')
+                    setError('A book with this ISBN already exists')
                 } else {
                     throw updateError
                 }
@@ -238,7 +235,7 @@ export default function EditBookPage() {
         }
     }
 
-    if (authLoading || isLoadingOrgs || isLoading) {
+    if (authLoading || (!isAdmin && user)) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <Loading size="lg" />
@@ -246,7 +243,7 @@ export default function EditBookPage() {
         )
     }
 
-    if (!user || !currentOrganization || !canManageBooks) {
+    if (!user || (!isAdmin && !isLoading)) {
         return null
     }
 
@@ -393,34 +390,53 @@ export default function EditBookPage() {
 
                         <Separator />
 
-                        {/* Library Information */}
+                        {/* Document Information */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Library Information</h3>
+                            <h3 className="text-lg font-medium">Document Information</h3>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="fileUrl">Document File URL *</Label>
+                                <Input
+                                    id="fileUrl"
+                                    type="url"
+                                    placeholder="https://example.com/document.pdf"
+                                    value={fileUrl}
+                                    onChange={(e) => setFileUrl(e.target.value)}
+                                    disabled={isSubmitting}
+                                    required
+                                />
+                            </div>
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="totalCopies">Total Copies *</Label>
-                                    <Input
-                                        id="totalCopies"
-                                        type="number"
-                                        min={1}
-                                        max={9999}
-                                        value={totalCopies}
-                                        onChange={(e) => setTotalCopies(parseInt(e.target.value) || 1)}
+                                    <Label htmlFor="fileType">File Type</Label>
+                                    <Select
+                                        value={fileType}
+                                        onValueChange={setFileType}
                                         disabled={isSubmitting}
-                                        required
-                                    />
-                                    <p className="text-xs text-muted-foreground">
-                                        Currently {availableCopies} copies available
-                                    </p>
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select format" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="PDF">PDF</SelectItem>
+                                            <SelectItem value="EPUB">EPUB</SelectItem>
+                                            <SelectItem value="DOCX">DOCX</SelectItem>
+                                            <SelectItem value="TXT">TXT</SelectItem>
+                                            <SelectItem value="OTHER">Other</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="location">Shelf Location</Label>
+                                    <Label htmlFor="fileSize">File Size (MB)</Label>
                                     <Input
-                                        id="location"
-                                        placeholder="e.g., A-12, Fiction Section"
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)}
+                                        id="fileSize"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="e.g., 2.5"
+                                        value={fileSize}
+                                        onChange={(e) => setFileSize(e.target.value)}
                                         disabled={isSubmitting}
                                     />
                                 </div>

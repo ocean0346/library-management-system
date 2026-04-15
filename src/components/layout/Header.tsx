@@ -3,10 +3,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
-import { useOrganization } from '@/contexts/OrganizationContext'
 import { Button } from '@/components/ui/button'
-import { OrganizationSwitcher } from '@/components/organization/OrganizationSwitcher'
-import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut, Search, Sparkles, Users, Tags, History } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,25 +15,45 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useRouter, usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
 
 export default function Header() {
     const router = useRouter()
     const pathname = usePathname()
     const { user, signOut } = useAuth()
-    const { currentOrganization, isAdmin } = useOrganization()
+    const [isAdmin, setIsAdmin] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [headerSearch, setHeaderSearch] = useState('')
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            if (user) {
+                const { data } = await supabase
+                    .from('users')
+                    .select('is_admin')
+                    .eq('user_id', user.id)
+                    .single()
+                
+                if (data?.is_admin) {
+                    setIsAdmin(true)
+                }
+            }
+        }
+        
+        checkAdmin()
+    }, [user])
 
     const handleSignOut = async () => {
         await signOut()
         router.push('/')
     }
 
-    const navItems = currentOrganization ? [
-        { href: '/books', label: 'Books', icon: BookOpen },
-        { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    ] : []
+    const navItems = [
+        { href: '/', label: 'Trang Chủ', icon: BookOpen },
+        { href: '/books', label: 'Tủ Sách', icon: BookOpen },
+    ]
 
     const isActivePath = (path: string) => pathname === path
 
@@ -44,18 +63,12 @@ export default function Header() {
                 {/* Logo & Navigation */}
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative overflow-hidden">
-                            <Image
-                                src="/libraryos-logo.svg"
-                                alt="LibraryOS"
-                                width={36}
-                                height={36}
-                                className="transition-transform duration-300 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] opacity-0 group-hover:opacity-20 transition-opacity" />
+                        <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] shadow-lg shadow-[#02FF73]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(2,255,115,0.4)]">
+                            <BookOpen className="w-5 h-5 text-black absolute" />
+                            <Sparkles className="w-3 h-3 text-black absolute -top-1 -right-1 animate-pulse" />
                         </div>
-                        <span className="font-display font-bold text-lg hidden sm:inline bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent">
-                            LibraryOS
+                        <span className="font-display font-black text-xl tracking-tight hidden sm:inline bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent group-hover:brightness-110 transition-all">
+                            ThưViện<span className="text-foreground">Online</span>
                         </span>
                     </Link>
 
@@ -89,12 +102,15 @@ export default function Header() {
                                 </Link>
                             )
                         })}
-                        {!currentOrganization && !user && (
+                        {user && (
                             <Link
-                                href="/books"
+                                href="/dashboard"
                                 className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
                             >
-                                Browse Books
+                                <span className="flex items-center gap-2">
+                                    <LayoutDashboard className="h-4 w-4" />
+                                    Dashboard
+                                </span>
                                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
                             </Link>
                         )}
@@ -103,11 +119,23 @@ export default function Header() {
 
                 {/* Right Side */}
                 <div className="flex items-center gap-3">
+                    <div className="hidden md:flex relative mr-2 items-center">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                            type="text" 
+                            placeholder="Tìm kiếm..."
+                            className="w-[200px] lg:w-[300px] pl-9 rounded-full bg-muted/50 border-transparent focus-visible:bg-transparent"
+                            value={headerSearch}
+                            onChange={(e) => setHeaderSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && headerSearch.trim()) {
+                                    router.push(`/books?q=${encodeURIComponent(headerSearch.trim())}`)
+                                }
+                            }}
+                        />
+                    </div>
                     {user ? (
                         <>
-                            {/* Organization Switcher */}
-                            <OrganizationSwitcher />
-
                             {/* User Menu */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -128,7 +156,7 @@ export default function Header() {
                                     <DropdownMenuLabel>
                                         <div className="flex flex-col">
                                             <span className="font-semibold">
-                                                {user.user_metadata?.full_name || 'User'}
+                                                {user.user_metadata?.full_name || 'Người Dùng'}
                                             </span>
                                             <span className="text-xs text-muted-foreground font-normal truncate">
                                                 {user.email}
@@ -141,31 +169,23 @@ export default function Header() {
                                         className="cursor-pointer"
                                     >
                                         <LayoutDashboard className="mr-2 h-4 w-4" />
-                                        Dashboard
+                                        Bảng Điều Khiển
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={() => router.push('/account/settings')}
                                         className="cursor-pointer"
                                     >
                                         <UserCircle className="mr-2 h-4 w-4" />
-                                        Account Settings
+                                        Cài Đặt Tài Khoản
                                     </DropdownMenuItem>
-                                    {isAdmin && currentOrganization && (
-                                        <DropdownMenuItem
-                                            onClick={() => router.push('/org/settings')}
-                                            className="cursor-pointer"
-                                        >
-                                            <Settings className="mr-2 h-4 w-4" />
-                                            Organization Settings
-                                        </DropdownMenuItem>
-                                    )}
+
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         onClick={handleSignOut}
                                         className="cursor-pointer text-destructive focus:text-destructive"
                                     >
                                         <LogOut className="mr-2 h-4 w-4" />
-                                        Sign Out
+                                        Đăng Xuất
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -174,12 +194,12 @@ export default function Header() {
                         <div className="flex items-center gap-3">
                             <Link href="/login">
                                 <Button variant="ghost" size="sm">
-                                    Sign In
+                                    Đăng Nhập
                                 </Button>
                             </Link>
                             <Link href="/register">
                                 <Button variant="gradient" size="sm">
-                                    Get Started
+                                    Đăng Ký
                                 </Button>
                             </Link>
                         </div>
@@ -225,14 +245,14 @@ export default function Header() {
                                 </Link>
                             )
                         })}
-                        {!currentOrganization && !user && (
+                        {user && (
                             <Link
-                                href="/books"
+                                href="/dashboard"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                             >
-                                <BookOpen className="h-5 w-5" />
-                                Browse Books
+                                <LayoutDashboard className="h-5 w-5" />
+                                Bảng Điều Khiển
                             </Link>
                         )}
                     </nav>

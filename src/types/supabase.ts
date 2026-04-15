@@ -12,53 +12,53 @@ export type Database = {
             books: {
                 Row: {
                     author: string
-                    available_copies: number
                     book_id: string
                     category_id: number | null
                     cover_image_url: string | null
                     created_at: string | null
                     description: string | null
+                    file_size_bytes: number | null
+                    file_type: string | null
+                    file_url: string | null
                     isbn: string
-                    location: string | null
                     organization_id: string
                     publish_date: string | null
                     publisher: string | null
                     title: string
-                    total_copies: number
                     updated_at: string | null
                 }
                 Insert: {
                     author: string
-                    available_copies?: number
                     book_id?: string
                     category_id?: number | null
                     cover_image_url?: string | null
                     created_at?: string | null
                     description?: string | null
+                    file_size_bytes?: number | null
+                    file_type?: string | null
+                    file_url?: string | null
                     isbn: string
-                    location?: string | null
                     organization_id: string
                     publish_date?: string | null
                     publisher?: string | null
                     title: string
-                    total_copies?: number
                     updated_at?: string | null
                 }
                 Update: {
                     author?: string
-                    available_copies?: number
                     book_id?: string
                     category_id?: number | null
                     cover_image_url?: string | null
                     created_at?: string | null
                     description?: string | null
+                    file_size_bytes?: number | null
+                    file_type?: string | null
+                    file_url?: string | null
                     isbn?: string
-                    location?: string | null
                     organization_id?: string
                     publish_date?: string | null
                     publisher?: string | null
                     title?: string
-                    total_copies?: number
                     updated_at?: string | null
                 }
                 Relationships: [
@@ -110,63 +110,51 @@ export type Database = {
                     },
                 ]
             }
-            loans: {
+            access_logs: {
                 Row: {
+                    access_date: string | null
                     book_id: string | null
-                    checkout_date: string | null
                     created_at: string | null
-                    due_date: string
-                    fine_amount: number | null
-                    loan_id: string
+                    log_id: string
                     organization_id: string
-                    return_date: string | null
-                    status: string | null
                     updated_at: string | null
                     user_id: string | null
                 }
                 Insert: {
+                    access_date?: string | null
                     book_id?: string | null
-                    checkout_date?: string | null
                     created_at?: string | null
-                    due_date: string
-                    fine_amount?: number | null
-                    loan_id?: string
+                    log_id?: string
                     organization_id: string
-                    return_date?: string | null
-                    status?: string | null
                     updated_at?: string | null
                     user_id?: string | null
                 }
                 Update: {
+                    access_date?: string | null
                     book_id?: string | null
-                    checkout_date?: string | null
                     created_at?: string | null
-                    due_date?: string
-                    fine_amount?: number | null
-                    loan_id?: string
+                    log_id?: string
                     organization_id?: string
-                    return_date?: string | null
-                    status?: string | null
                     updated_at?: string | null
                     user_id?: string | null
                 }
                 Relationships: [
                     {
-                        foreignKeyName: "loans_book_id_fkey"
+                        foreignKeyName: "access_logs_book_id_fkey"
                         columns: ["book_id"]
                         isOneToOne: false
                         referencedRelation: "books"
                         referencedColumns: ["book_id"]
                     },
                     {
-                        foreignKeyName: "loans_organization_id_fkey"
+                        foreignKeyName: "access_logs_organization_id_fkey"
                         columns: ["organization_id"]
                         isOneToOne: false
                         referencedRelation: "organizations"
                         referencedColumns: ["organization_id"]
                     },
                     {
-                        foreignKeyName: "loans_user_id_fkey"
+                        foreignKeyName: "access_logs_user_id_fkey"
                         columns: ["user_id"]
                         isOneToOne: false
                         referencedRelation: "users"
@@ -366,61 +354,7 @@ export type Database = {
                     },
                 ]
             }
-            reservations: {
-                Row: {
-                    book_id: string | null
-                    created_at: string | null
-                    organization_id: string
-                    reservation_date: string | null
-                    reservation_id: string
-                    status: string | null
-                    updated_at: string | null
-                    user_id: string | null
-                }
-                Insert: {
-                    book_id?: string | null
-                    created_at?: string | null
-                    organization_id: string
-                    reservation_date?: string | null
-                    reservation_id?: string
-                    status?: string | null
-                    updated_at?: string | null
-                    user_id?: string | null
-                }
-                Update: {
-                    book_id?: string | null
-                    created_at?: string | null
-                    organization_id?: string
-                    reservation_date?: string | null
-                    reservation_id?: string
-                    status?: string | null
-                    updated_at?: string | null
-                    user_id?: string | null
-                }
-                Relationships: [
-                    {
-                        foreignKeyName: "reservations_book_id_fkey"
-                        columns: ["book_id"]
-                        isOneToOne: false
-                        referencedRelation: "books"
-                        referencedColumns: ["book_id"]
-                    },
-                    {
-                        foreignKeyName: "reservations_organization_id_fkey"
-                        columns: ["organization_id"]
-                        isOneToOne: false
-                        referencedRelation: "organizations"
-                        referencedColumns: ["organization_id"]
-                    },
-                    {
-                        foreignKeyName: "reservations_user_id_fkey"
-                        columns: ["user_id"]
-                        isOneToOne: false
-                        referencedRelation: "users"
-                        referencedColumns: ["user_id"]
-                    },
-                ]
-            }
+
             reviews: {
                 Row: {
                     book_id: string | null
@@ -650,12 +584,11 @@ export type Database = {
                 }
                 Returns: Json
             }
-            borrow_book: {
+            record_document_access: {
                 Args: {
                     p_organization_id: string
                     p_book_id: string
-                    p_user_id?: string
-                    p_due_date?: string
+                    p_user_id: string
                 }
                 Returns: Json
             }
@@ -826,21 +759,7 @@ export type Database = {
                 }
                 Returns: boolean
             }
-            reserve_book: {
-                Args: {
-                    p_organization_id: string
-                    p_book_id: string
-                    p_user_id?: string
-                }
-                Returns: Json
-            }
-            return_book: {
-                Args: {
-                    p_loan_id: string
-                    p_organization_id?: string
-                }
-                Returns: Json
-            }
+
             switch_organization: {
                 Args: {
                     p_organization_id: string
@@ -986,7 +905,7 @@ export type InvitationStatus = 'pending' | 'accepted' | 'expired' | 'cancelled'
 export interface OrganizationSettings {
     allowSelfRegistration?: boolean
     requireApproval?: boolean
-    overdueFinePer Day?: number
+    overdueFinePerDay?: number
     theme?: {
         primaryColor?: string
     }

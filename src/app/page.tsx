@@ -1,210 +1,203 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { supabase } from '@/lib/supabase-client'
+import { Book } from '@/types/book'
+import BookCard from '@/components/books/BookCard'
+import { useRouter } from 'next/navigation'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { BookOpen, Users, Clock, Search, ArrowRight, Sparkles, Shield, Zap } from 'lucide-react'
-
-const features = [
-    {
-        icon: BookOpen,
-        title: "Extensive Collection",
-        description: "Access thousands of books across various genres and topics with powerful search and filtering.",
-        color: "from-[#02FF73] to-[#09ADAA]",
-    },
-    {
-        icon: Users,
-        title: "Team Management",
-        description: "Invite members, assign roles, and manage your organization's library access effortlessly.",
-        color: "from-[#09ADAA] to-[#02FF73]",
-    },
-    {
-        icon: Clock,
-        title: "Smart Tracking",
-        description: "Automated due date reminders, loan history, and overdue notifications keep everyone on track.",
-        color: "from-[#02FF73] to-[#09ADAA]",
-    },
-    {
-        icon: Search,
-        title: "Quick Discovery",
-        description: "Find your next read instantly with our advanced search by title, author, ISBN, or category.",
-        color: "from-[#09ADAA] to-[#02FF73]",
-    },
-]
-
-const stats = [
-    { value: "10K+", label: "Books Managed" },
-    { value: "500+", label: "Organizations" },
-    { value: "99.9%", label: "Uptime" },
-    { value: "24/7", label: "Support" },
-]
+import { ArrowRight, BookOpen, Sparkles, TrendingUp, Search } from 'lucide-react'
+import { Loading } from '@/components/ui/loading'
 
 export default function Home() {
+    const router = useRouter()
+    const [searchQuery, setSearchQuery] = useState('')
+    const [recentBooks, setRecentBooks] = useState<Book[]>([])
+    const [popularBooks, setPopularBooks] = useState<Book[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchHomepageData = async () => {
+            setIsLoading(true)
+            try {
+                // Fetch 4 most recent books
+                const { data: recent } = await supabase
+                    .from('books')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(4)
+                
+                if (recent) setRecentBooks(recent as Book[])
+
+                // Fetch popular books by views (For simplicity, we'll just fetch by ID or random for now)
+                // In a full implementation, this could call an RPC
+                const { data: popular } = await supabase
+                    .from('books')
+                    .select('*')
+                    .order('title', { ascending: true })
+                    .limit(4)
+
+                if (popular) setPopularBooks(popular as Book[])
+
+            } catch (error) {
+                console.error("Error fetching homepage data:", error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchHomepageData()
+    }, [])
+
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <section className="relative min-h-[90vh] flex items-center overflow-hidden w-full">
-                {/* Background Effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#02FF73]/5 via-transparent to-[#09ADAA]/5" />
-                <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-[#02FF73]/10 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-[#09ADAA]/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
-
-                {/* Grid Pattern - Full Width */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:14px_24px]" />
-
-                <div className="container mx-auto px-4 relative z-10 py-20 md:py-32">
-                    <div className="max-w-4xl mx-auto text-center">
-                        {/* Announcement Badge */}
-                        <div className="inline-flex items-center gap-2 mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                            <Badge variant="gradient" className="px-4 py-1.5 text-sm">
-                                <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                                Now with Multi-Organization Support
-                            </Badge>
+            <section className="relative pt-28 pb-20 lg:pt-40 lg:pb-32 overflow-hidden w-full flex items-center justify-center min-h-[85vh]">
+                {/* Background Grid & Gradients */}
+                <div className="absolute inset-0 bg-background">
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_70%,transparent_110%)]" />
+                    <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#02FF73]/20 rounded-full blur-[120px] opacity-70 animate-pulse" />
+                    <div className="absolute top-40 left-1/4 w-[400px] h-[400px] bg-[#09ADAA]/20 rounded-full blur-[100px] opacity-60" />
+                </div>
+                
+                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
+                    <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-8 transition-all hover:bg-primary/20 cursor-default">
+                        <Sparkles className="w-4 h-4 mr-2" /> Thư viện Mở 100% Miễn phí
+                    </div>
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.1]">
+                        Nền Tảng Đọc Sách <br className="hidden md:block"/>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#02FF73] via-[#09ADAA] to-blue-500 bg-300% animate-gradient">
+                            Trực Tuyến Hàng Đầu
+                        </span>
+                    </h1>
+                    <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto mb-12 leading-relaxed">
+                        Thư viện của chúng tôi cung cấp hàng nghìn tài liệu và sách điện tử công khai. 
+                        Đọc trực tiếp trên trình duyệt, không giới hạn, không cần đăng nhập cầu kỳ.
+                    </p>
+                    
+                    <div className="w-full max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 mb-16 px-4">
+                        <div className="relative w-full group">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                            <div className="relative flex items-center bg-background rounded-full border shadow-xl">
+                                <Search className="absolute left-6 text-muted-foreground h-6 w-6" />
+                                <Input 
+                                    type="text"
+                                    placeholder="Tìm kiếm cuốn sách tiếp theo của bạn..." 
+                                    className="w-full pl-16 pr-6 py-8 text-xl rounded-full border-none bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/60"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && searchQuery.trim() && router.push(`/books?q=${encodeURIComponent(searchQuery.trim())}`)}
+                                />
+                            </div>
                         </div>
+                        <Button 
+                            className="w-full sm:w-auto bg-gradient-to-r from-[#02FF73] to-[#09ADAA] hover:brightness-110 text-black font-bold py-8 px-10 text-lg rounded-full shadow-lg shadow-[#02FF73]/20 transition-all hover:scale-105 active:scale-95 border-none"
+                            onClick={() => searchQuery.trim() && router.push(`/books?q=${encodeURIComponent(searchQuery.trim())}`)}
+                        >
+                            Tìm Kiếm
+                        </Button>
+                    </div>
 
-                        {/* Main Heading */}
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            The Operating System
-                            <span className="block bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent">
-                                for Modern Libraries
-                            </span>
-                        </h1>
+                    <div className="flex items-center justify-center gap-4">
+                        <p className="text-sm font-medium text-muted-foreground">Phổ biến:</p>
+                        <div className="flex gap-2">
+                            {['Công nghệ', 'Kinh doanh', 'Tâm lý học'].map(tag => (
+                                <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-primary hover:text-black transition-colors" onClick={() => router.push(`/books?q=${tag}`)}>
+                                    {tag}
+                                </Badge>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                        {/* Subtitle */}
-                        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                            Discover, borrow, and manage your reading journey with LibraryOS.
-                            Built for teams who love books.
-                        </p>
-
-                        {/* CTA Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                            <Button variant="gradient" size="xl" asChild>
-                                <Link href="/register" className="group">
-                                    Get Started Free
-                                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                                </Link>
-                            </Button>
-                            <Button variant="outline" size="xl" asChild>
+            {/* Content Sections */}
+            <div className="flex-1 w-full bg-muted/10 relative z-20 pb-24">
+                <div className="container mx-auto px-4 -mt-10 lg:-mt-20 relative z-30 space-y-24">
+                    
+                    {/* Sách Mới Cập Nhật */}
+                    <section className="bg-background/80 backdrop-blur-xl border shadow-2xl shadow-black/5 rounded-3xl p-6 lg:p-10">
+                        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-[#02FF73]/20 flex items-center justify-center">
+                                        <Sparkles className="h-5 w-5 text-[#02FF73]" />
+                                    </div>
+                                    Sách Mới Cập Nhật
+                                </h2>
+                                <p className="text-muted-foreground mt-3 text-lg">Những tựa sách vừa được đưa lên thư viện tuần này</p>
+                            </div>
+                            <Button variant="outline" className="rounded-full shadow-sm hover:border-primary/50 hover:bg-primary/5" asChild>
                                 <Link href="/books">
-                                    Browse Catalog
+                                    Khám phá thêm <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
                         </div>
 
-                        {/* Trust Indicators */}
-                        <div className="mt-16 flex items-center justify-center gap-8 text-sm text-muted-foreground animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-                            <div className="flex items-center gap-2">
-                                <Shield className="h-4 w-4 text-[#02FF73]" />
-                                <span>Secure & Private</span>
+                        {isLoading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {[1, 2, 3, 4].map(i => (
+                                    <div key={i} className="h-[400px] bg-muted/40 animate-pulse rounded-2xl" />
+                                ))}
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Zap className="h-4 w-4 text-[#02FF73]" />
-                                <span>Lightning Fast</span>
+                        ) : recentBooks.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {recentBooks.map(book => (
+                                    <BookCard key={book.book_id} book={book} />
+                                ))}
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-[#02FF73]" />
-                                <span>Team Ready</span>
+                        ) : (
+                            <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">
+                                <BookOpen className="h-12 w-12 mb-4 opacity-20" />
+                                <p className="text-lg">Chưa có dữ liệu sách mới</p>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        )}
+                    </section>
 
-                {/* Scroll Indicator */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-                    <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2">
-                        <div className="w-1 h-2 bg-muted-foreground/50 rounded-full" />
-                    </div>
-                </div>
-            </section>
-
-            {/* Stats Section */}
-            <section className="py-16 border-y border-border/40 bg-muted/20 w-full">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {stats.map((stat, index) => (
-                            <div key={index} className="text-center">
-                                <div className="text-3xl md:text-4xl font-display font-bold bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent mb-2">
-                                    {stat.value}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                    {stat.label}
-                                </div>
+                    {/* Sách Nổi Bật */}
+                    <section className="px-4 lg:px-10">
+                        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                        <TrendingUp className="h-5 w-5 text-blue-500" />
+                                    </div>
+                                    Sách Nội Bật Nhất
+                                </h2>
+                                <p className="text-muted-foreground mt-3 text-lg">Những tác phẩm được tìm kiếm và xem nhiều nhất</p>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Features Section */}
-            <section id="features" className="py-24 md:py-32 w-full">
-                <div className="container mx-auto px-4">
-                    <div className="text-center max-w-2xl mx-auto mb-16">
-                        <Badge variant="outline" className="mb-4">Features</Badge>
-                        <h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-4">
-                            Everything you need to run your library
-                        </h2>
-                        <p className="text-muted-foreground text-lg">
-                            LibraryOS provides powerful features designed to make library management effortless for organizations of any size.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                        {features.map((feature, index) => {
-                            const Icon = feature.icon
-                            return (
-                                <Card
-                                    key={index}
-                                    variant="interactive"
-                                    className="group p-6 md:p-8"
-                                >
-                                    <CardContent className="p-0">
-                                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 transition-transform group-hover:scale-110`}>
-                                            <Icon className="h-7 w-7 text-black" />
-                                        </div>
-                                        <h3 className="text-xl font-display font-semibold mb-3">
-                                            {feature.title}
-                                        </h3>
-                                        <p className="text-muted-foreground leading-relaxed">
-                                            {feature.description}
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            )
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="py-24 md:py-32 relative overflow-hidden w-full">
-                {/* Background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#02FF73]/10 to-[#09ADAA]/10" />
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:24px_24px]" />
-
-                <div className="container mx-auto px-4 relative z-10">
-                    <Card variant="glass" className="max-w-4xl mx-auto p-8 md:p-12 text-center">
-                        <h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-4">
-                            Ready to power your library?
-                        </h2>
-                        <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-                            Join hundreds of organizations already using LibraryOS to manage their book collections efficiently.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button variant="gradient" size="lg" asChild>
-                                <Link href="/register">
-                                    Start Free Trial
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Link>
-                            </Button>
-                            <Button variant="outline" size="lg" asChild>
-                                <Link href="/org/join">
-                                    Join an Organization
+                            <Button variant="outline" className="rounded-full hover:border-blue-500/50 hover:bg-blue-500/5 transition-colors" asChild>
+                                <Link href="/books">
+                                    Xem bảng xếp hạng <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
                         </div>
-                    </Card>
+
+                        {isLoading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {[1, 2, 3, 4].map(i => (
+                                    <div key={i} className="h-[400px] bg-muted/40 animate-pulse rounded-2xl" />
+                                ))}
+                            </div>
+                        ) : popularBooks.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {popularBooks.map(book => (
+                                    <BookCard key={book.book_id} book={book} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">
+                                <TrendingUp className="h-12 w-12 mb-4 opacity-20" />
+                                <p className="text-lg">Chưa có đủ dữ liệu</p>
+                            </div>
+                        )}
+                    </section>
+
                 </div>
-            </section>
+            </div>
         </div>
     )
 }

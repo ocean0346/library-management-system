@@ -1,30 +1,30 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { BookOpen, Users, Building2, Mail } from 'lucide-react'
+import { BookOpen, Users, Building2, Mail, Sparkles } from 'lucide-react'
 
 const footerLinks = {
     product: {
-        title: 'Product',
+        title: 'Khám Phá',
         links: [
-            { label: 'Browse Books', href: '/books' },
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Features', href: '/#features' },
+            { label: 'Tủ Sách', href: '/books' },
+            { label: 'Bảng Điều Khiển', href: '/dashboard' },
+            { label: 'Tính Năng Nổi Bật', href: '/#features' },
         ],
     },
     organization: {
-        title: 'Organization',
+        title: 'Cộng Đồng',
         links: [
-            { label: 'Create Organization', href: '/org/create' },
-            { label: 'Join Organization', href: '/org/join' },
-            { label: 'Manage Members', href: '/org/members' },
+            { label: 'Diễn Đàn', href: '#' },
+            { label: 'Nhà Xuất Bản', href: '#' },
+            { label: 'Tác Giả Nổi Bật', href: '#' },
         ],
     },
     resources: {
-        title: 'Resources',
+        title: 'Hỗ Trợ',
         links: [
-            { label: 'Documentation', href: '#' },
-            { label: 'API Reference', href: '#' },
-            { label: 'Support', href: '#' },
+            { label: 'Hướng Dẫn Sử Dụng', href: '#' },
+            { label: 'Câu Hỏi Thường Gặp', href: '#' },
+            { label: 'Liên Hệ', href: '#' },
         ],
     },
 }
@@ -37,20 +37,16 @@ export default function Footer() {
                     {/* Brand Section */}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center gap-3 mb-4 group">
-                            <div className="relative">
-                                <Image
-                                    src="/libraryos-logo.svg"
-                                    alt="LibraryOS"
-                                    width={40}
-                                    height={40}
-                                />
+                            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] shadow-lg shadow-[#02FF73]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(2,255,115,0.4)]">
+                                <BookOpen className="w-5 h-5 text-black absolute" />
+                                <Sparkles className="w-3 h-3 text-black absolute -top-1 -right-1 animate-pulse" />
                             </div>
-                            <span className="font-display font-bold text-xl bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent">
-                                LibraryOS
+                            <span className="font-display font-black text-xl tracking-tight bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent group-hover:brightness-110 transition-all">
+                                ThưViện<span className="text-foreground">Online</span>
                             </span>
                         </Link>
                         <p className="text-muted-foreground text-sm max-w-xs mb-6">
-                            LibraryOS: The operating system for modern libraries. Organize, track, and share your book collections effortlessly.
+                            Thư Viện Online: Nền tảng tri thức mở, nơi lưu trữ, chia sẻ và lan tỏa cảm hứng đọc sách tới mọi người.
                         </p>
                         <div className="flex items-center gap-4">
                             <a
@@ -113,20 +109,20 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="border-t border-border/40 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-muted-foreground">
-                        &copy; {new Date().getFullYear()} LibraryOS. All rights reserved.
+                        &copy; {new Date().getFullYear()} Thư Viện Online. Đã đăng ký bản quyền.
                     </p>
                     <div className="flex items-center gap-6 text-sm text-muted-foreground">
                         <Link href="/privacy" className="hover:text-foreground transition-colors">
-                            Privacy Policy
+                            Chính sách bảo mật
                         </Link>
                         <Link href="/terms" className="hover:text-foreground transition-colors">
-                            Terms of Service
+                            Điều khoản dịch vụ
                         </Link>
                         <Link href="/cookies" className="hover:text-foreground transition-colors">
-                            Cookie Policy
+                            Chính sách Cookie
                         </Link>
                         <span className="hidden md:inline">
-                            Built with care by Chan Meng
+                            Xây dựng và phát triển bởi Dương
                         </span>
                     </div>
                 </div>

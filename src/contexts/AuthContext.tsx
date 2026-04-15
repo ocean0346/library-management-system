@@ -12,6 +12,7 @@ type AuthContextType = {
     signOut: () => Promise<void>
     resetPassword: (email: string) => Promise<void>
     signInWithMagicLink: (email: string) => Promise<void>
+    signInWithGoogle: () => Promise<void>
     updatePassword: (newPassword: string) => Promise<void>
 }
 
@@ -184,6 +185,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error) throw error
     }
 
+    const signInWithGoogle = async () => {
+        const redirectUrl = typeof window !== 'undefined'
+            ? `${window.location.origin}/dashboard`
+            : undefined
+            
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: redirectUrl,
+            }
+        })
+        if (error) throw error
+    }
+
     const updatePassword = async (newPassword: string) => {
         const { error } = await supabase.auth.updateUser({
             password: newPassword
@@ -200,6 +215,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             signOut,
             resetPassword,
             signInWithMagicLink,
+            signInWithGoogle,
             updatePassword
         }}>
             {children}
