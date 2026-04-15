@@ -1,0 +1,17 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["error", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_",
+      "caughtErrorsIgnorePattern": "^_"
+    }],
+    "@typescript-eslint/no-empty-interface": "off",
+    "no-unused-vars": "off"
+  },
+  "ignorePatterns": ["src/types/supabase.ts"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}
