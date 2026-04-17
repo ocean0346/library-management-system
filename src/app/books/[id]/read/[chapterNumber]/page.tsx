@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, use } from 'react'
+import { useState, useEffect, useCallback, use, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
@@ -25,19 +25,35 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
     const [fontSize, setFontSize] = useState(18)
     const [theme, setTheme] = useState<'light' | 'dark' | 'sepia'>('light')
 
+    const hasLoggedRef = useRef(false)
+
     const fetchReadingData = useCallback(async () => {
         setIsLoading(true)
         try {
-            // Log Access
-            if (user) {
+            // Log Access & Progress once per mount
+            if (!hasLoggedRef.current) {
+                hasLoggedRef.current = true
                 try {
-                    await supabase.rpc('record_document_access', {
-                        p_organization_id: "00000000-0000-0000-0000-000000000000",
-                        p_book_id: id,
-                        p_user_id: user.id
-                    })
+                    // Tăng view cho quyển sách (Ai vào xem cũng tăng)
+                    await supabase.rpc('increment_book_views', { p_book_id: id })
+
+                    if (user) {
+                        await supabase.rpc('record_document_access', {
+                            p_organization_id: "00000000-0000-0000-0000-000000000000",
+                            p_book_id: id,
+                            p_user_id: user.id
+                        })
+
+                        // Lưu tiến độ đọc trang của người dùng
+                        await supabase.from('user_reading_progress').upsert({
+                            user_id: user.id,
+                            book_id: id,
+                            chapter_number: parseInt(chapterNumber),
+                            last_read_at: new Date().toISOString()
+                        }, { onConflict: 'user_id, book_id' })
+                    }
                 } catch (e) {
-                    console.error("Access log error:", e)
+                    console.error("Access/Progress log error:", e)
                 }
             }
 
@@ -145,12 +161,20 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                     <div className="h-1 w-20 mx-auto bg-primary/40 rounded-full"></div>
                 </div>
 
-                <div 
-                    className="font-serif leading-relaxed whitespace-pre-wrap chapter-content"
-                    style={{ fontSize: `${fontSize}px` }}
-                >
-                    {chapter.content_text}
-                </div>
+                {chapter.content_text.includes('<p') || chapter.content_text.includes('<h') ? (
+                    <div 
+                        className="prose dark:prose-invert max-w-none chapter-content font-serif prose-p:mb-[1.5em] prose-headings:font-sans prose-img:block prose-img:mx-auto prose-img:max-w-full prose-img:rounded-md break-words"
+                        style={{ fontSize: `${fontSize}px` }}
+                        dangerouslySetInnerHTML={{ __html: chapter.content_text }}
+                    />
+                ) : (
+                    <div 
+                        className="font-serif leading-[1.8] whitespace-pre-wrap chapter-content break-words"
+                        style={{ fontSize: `${fontSize}px` }}
+                    >
+                        {chapter.content_text}
+                    </div>
+                )}
 
                 {/* Bottom Navigation */}
                 <div className="mt-20 pt-8 border-t flex flex-col sm:flex-row gap-4 items-center justify-between">

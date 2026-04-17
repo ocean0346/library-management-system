@@ -32,13 +32,12 @@ export default function Home() {
 
                 if (recent) setRecentBooks(recent as Book[])
 
-                // Fetch popular books by views (For simplicity, we'll just fetch by ID or random for now)
-                // In a full implementation, this could call an RPC
+                // Fetch popular books by views (Leaderboards)
                 const { data: popular } = await supabase
                     .from('books')
                     .select('*, categories(name), chapters(chapter_number, title, created_at)')
-                    .order('title', { ascending: true })
-                    .limit(6)
+                    .order('views_count', { ascending: false, nullsFirst: false })
+                    .limit(8)
 
                 if (popular) setPopularBooks(popular as Book[])
 
@@ -199,7 +198,7 @@ export default function Home() {
                                 <p className="text-muted-foreground mt-3 text-lg">Những tác phẩm được tìm kiếm và xem nhiều nhất</p>
                             </div>
                             <Button variant="outline" className="rounded-full hover:border-blue-500/50 hover:bg-blue-500/5 transition-colors" asChild>
-                                <Link href="/books">
+                                <Link href="/books?sort=views_count">
                                     Xem bảng xếp hạng <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>

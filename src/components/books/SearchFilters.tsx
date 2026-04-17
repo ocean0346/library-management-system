@@ -23,7 +23,9 @@ export default function SearchFilters({
                                           selectedCategory,
                                           onCategoryChange,
                                           categories,
-                                      }: SearchFiltersProps) {
+                                          sortBy,
+                                          onSortChange,
+                                      }: SearchFiltersProps & { sortBy: string, onSortChange: (value: string) => void }) {
     return (
         <div className="bg-background/60 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-primary/10 mb-8 mt-2 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-[#02FF73]/5 to-[#09ADAA]/5 opacity-50" />
@@ -65,6 +67,21 @@ export default function SearchFilters({
                                     {category}
                                 </SelectItem>
                             ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="w-full md:w-56">
+                    <Label htmlFor="sortBy" className="mb-3 block text-muted-foreground font-medium">
+                        Sắp Xếp Theo
+                    </Label>
+                    <Select value={sortBy} onValueChange={onSortChange}>
+                        <SelectTrigger id="sortBy" className="h-14 rounded-xl border bg-background">
+                            <SelectValue placeholder="Mới cập nhật" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-primary/20 backdrop-blur-xl bg-background/95">
+                            <SelectItem value="created_at" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Mới cập nhật</SelectItem>
+                            <SelectItem value="views_count" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Nhiều lượt xem nhất</SelectItem>
+                            <SelectItem value="title" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Tên A-Z</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

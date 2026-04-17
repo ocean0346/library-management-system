@@ -21,6 +21,7 @@ import { Pencil, ArrowLeft, Loader2, Save, ImageIcon } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
+import { uploadFileToSupabase } from '@/lib/storage'
 
 interface Category {
     category_id: number
@@ -63,6 +64,9 @@ export default function EditBookPage() {
     const [fileUrl, setFileUrl] = useState('')
     const [fileSize, setFileSize] = useState<string>('')
     const [fileType, setFileType] = useState('PDF')
+
+    const [isUploadingCover, setIsUploadingCover] = useState(false)
+    const [isUploadingDoc, setIsUploadingDoc] = useState(false)
 
     // UI state
     const [categories, setCategories] = useState<Category[]>([])
@@ -156,19 +160,54 @@ export default function EditBookPage() {
             }
         }
         
-        if (user) {
+        if (!authLoading) {
             checkAdmin()
         }
-    }, [user, router, toast])
-
-
+    }, [user, authLoading, router, toast])
 
     useEffect(() => {
         if (isAdmin && bookId) {
-            fetchCategories()
             fetchBook()
+            fetchCategories()
         }
-    }, [isAdmin, bookId, fetchCategories, fetchBook])
+    }, [isAdmin, bookId, fetchBook, fetchCategories])
+
+    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        if (!file.type.startsWith('image/')) {
+            toast({ title: 'Lỗi', description: 'Vui lòng chọn file hình ảnh hợp lệ', variant: 'destructive' })
+            return
+        }
+        try {
+            setIsUploadingCover(true)
+            const url = await uploadFileToSupabase(file, { folder: 'book_covers', maxSizeMB: 5 })
+            setCoverImageUrl(url)
+            toast({ title: 'Thành công', description: 'Đã tải ảnh bìa lên hệ thống.' })
+        } catch (error: any) {
+            toast({ title: 'Lỗi tải ảnh', description: error.message, variant: 'destructive' })
+        } finally {
+            setIsUploadingCover(false)
+            e.target.value = ''
+        }
+    }
+
+    const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        try {
+            setIsUploadingDoc(true)
+            const url = await uploadFileToSupabase(file, { folder: 'book_documents', maxSizeMB: 50 })
+            setFileUrl(url)
+            setFileSize((file.size / (1024 * 1024)).toFixed(2)) // Auto fill size
+            toast({ title: 'Thành công', description: 'Đã tải tài liệu lên hệ thống.' })
+        } catch (error: any) {
+            toast({ title: 'Lỗi tải tệp', description: error.message, variant: 'destructive' })
+        } finally {
+            setIsUploadingDoc(false)
+            e.target.value = ''
+        }
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -207,7 +246,7 @@ export default function EditBookPage() {
                     cover_image_url: coverImageUrl.trim() || null,
                     category_id: categoryId ? parseInt(categoryId) : null,
                     file_url: fileUrl.trim() || null,
-                    file_size_bytes: fileSize ? parseFloat(fileSize) * 1024 * 1024 : null,
+                    file_size_bytes: fileSize ? Math.round(parseFloat(fileSize) * 1024 * 1024) : null,
                     file_type: fileType
                 })
                 .eq('book_id', bookId)
@@ -395,7 +434,18 @@ export default function EditBookPage() {
                             <h3 className="text-lg font-medium">Document Information</h3>
 
                             <div className="space-y-2">
-                                <Label htmlFor="fileUrl">Document File URL *</Label>
+                                <Label htmlFor="fileUpload">Upload Document File (PDF/EPUB/DOC)</Label>
+                                <div className="flex gap-2 items-center">
+                                    <Input
+                                        id="fileUpload"
+                                        type="file"
+                                        accept=".pdf,.epub,.docx,.doc"
+                                        onChange={handleDocUpload}
+                                        disabled={isSubmitting || isUploadingDoc}
+                                    />
+                                    {isUploadingDoc && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
+                                </div>
+                                <Label htmlFor="fileUrl" className="text-xs text-muted-foreground mt-4 block">Or provide an external URL:</Label>
                                 <Input
                                     id="fileUrl"
                                     type="url"
@@ -403,7 +453,7 @@ export default function EditBookPage() {
                                     value={fileUrl}
                                     onChange={(e) => setFileUrl(e.target.value)}
                                     disabled={isSubmitting}
-                                    required
+                                    required={fileType !== 'WEBNOVEL'}
                                 />
                             </div>
 
@@ -448,10 +498,20 @@ export default function EditBookPage() {
                         {/* Cover Image */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Cover Image</h3>
-
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="md:col-span-2 space-y-2">
-                                    <Label htmlFor="coverImageUrl">Cover Image URL</Label>
+                                    <Label htmlFor="coverUpload">Upload Cover Image (Max 5MB)</Label>
+                                    <div className="flex gap-2 items-center">
+                                        <Input
+                                            id="coverUpload"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleCoverUpload}
+                                            disabled={isSubmitting || isUploadingCover}
+                                        />
+                                        {isUploadingCover && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
+                                    </div>
+                                    <Label htmlFor="coverImageUrl" className="text-xs text-muted-foreground mt-4 block">Or provide an external URL:</Label>
                                     <Input
                                         id="coverImageUrl"
                                         type="url"
@@ -460,9 +520,6 @@ export default function EditBookPage() {
                                         onChange={(e) => setCoverImageUrl(e.target.value)}
                                         disabled={isSubmitting}
                                     />
-                                    <p className="text-xs text-muted-foreground">
-                                        Enter a URL to an image of the book cover
-                                    </p>
                                 </div>
                                 <div className="flex items-center justify-center">
                                     {coverImageUrl ? (

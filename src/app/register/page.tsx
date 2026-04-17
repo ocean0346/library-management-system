@@ -11,13 +11,13 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PasswordInput } from '@/components/ui/password-input'
-import { AlertCircle, Loader2, User, Mail, UserPlus, Check } from 'lucide-react'
+import { AlertCircle, Loader2, User, Mail, UserPlus, Check, BookOpen, Sparkles } from 'lucide-react'
 
 const features = [
-    "Access to thousands of books",
-    "Create or join organizations",
-    "Track your reading history",
-    "Get due date reminders",
+    "Tiếp cận kho tàng tiểu thuyết khổng lồ",
+    "Tham gia cộng đồng đọc truyện sôi động",
+    "Đánh dấu và theo dõi quá trình đọc",
+    "Nhận thông báo khi có chương mới",
 ]
 
 export default function Register() {
@@ -91,19 +91,16 @@ export default function Register() {
 
                 <div className="relative z-10 max-w-md text-black">
                     <div className="mb-8">
-                        <Image
-                            src="/libraryos-logo.svg"
-                            alt="LibraryOS"
-                            width={64}
-                            height={64}
-                            className="rounded-xl shadow-lg"
-                        />
+                        <div className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md shadow-xl border border-white/20">
+                            <BookOpen className="w-10 h-10 text-black absolute" />
+                            <Sparkles className="w-5 h-5 text-black absolute top-2 right-2 animate-pulse" />
+                        </div>
                     </div>
                     <h2 className="text-4xl font-display font-bold mb-4">
-                        Start Your Journey with LibraryOS
+                        Khởi Đầu Hành Trình Cùng ThưViệnOnline
                     </h2>
                     <p className="text-lg opacity-80 mb-8">
-                        Create your free account and get access to the complete LibraryOS platform.
+                        Tạo tài khoản miễn phí để mở khóa toàn bộ tính năng tuyệt vời của chúng tôi.
                     </p>
 
                     {/* Features List */}
@@ -131,10 +128,10 @@ export default function Register() {
                             </div>
                             <div>
                                 <CardTitle className="text-2xl font-display font-bold">
-                                    Create your account
+                                    Tạo Tài Khoản
                                 </CardTitle>
                                 <CardDescription className="mt-2">
-                                    Join our library and start exploring
+                                    Gia nhập ThưViệnOnline ngay hôm nay
                                 </CardDescription>
                             </div>
                         </CardHeader>
@@ -248,22 +245,22 @@ export default function Register() {
                                     {isLoading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Creating account...
+                                            Đang tạo tài khoản...
                                         </>
                                     ) : (
-                                        'Create Account'
+                                        'Đăng Ký'
                                     )}
                                 </Button>
 
                                 <p className="text-xs text-center text-muted-foreground">
-                                    By creating an account, you agree to our{' '}
+                                    Bằng việc đăng ký, bạn xác nhận đồng ý với{' '}
                                     <Link href="#" className="text-foreground hover:underline">
-                                        Terms of Service
+                                        Điều Khoản Dịch Vụ
                                     </Link>{' '}
-                                    and{' '}
+                                    và{' '}
                                     <Link href="#" className="text-foreground hover:underline">
-                                        Privacy Policy
-                                    </Link>
+                                        Chính Sách Bảo Mật
+                                    </Link>{' '}của chúng tôi.
                                 </p>
                             </form>
                         </CardContent>
@@ -275,13 +272,13 @@ export default function Register() {
                                 </div>
                                 <div className="relative flex justify-center text-xs uppercase">
                                     <span className="bg-card px-2 text-muted-foreground">
-                                        Already have an account?
+                                        Đã có tài khoản?
                                     </span>
                                 </div>
                             </div>
                             <Button variant="outline" className="w-full" asChild>
                                 <Link href="/login">
-                                    Sign in instead
+                                    Quay lại Đăng nhập
                                 </Link>
                             </Button>
                         </CardFooter>

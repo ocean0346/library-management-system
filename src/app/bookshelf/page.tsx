@@ -14,6 +14,7 @@ export default function BookshelfPage() {
     const router = useRouter()
     const [savedBooks, setSavedBooks] = useState<Book[]>([])
     const [favoritedBooks, setFavoritedBooks] = useState<Book[]>([])
+    const [historyBooks, setHistoryBooks] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -49,6 +50,24 @@ export default function BookshelfPage() {
                 if (favData) {
                     setFavoritedBooks(favData.map(item => item.books).filter(Boolean) as any)
                 }
+
+                // Fetch history
+                const { data: historyData } = await supabase
+                    .from('user_reading_progress')
+                    .select('*, books(*, categories(name))')
+                    .eq('user_id', user.id)
+                    .order('last_read_at', { ascending: false })
+                    .limit(20)
+                
+                if (historyData) {
+                    // For history we map the book and inject the chapter
+                    const formattedHistory = historyData.map(item => ({
+                        ...(item.books as any),
+                        _progress_chapter: item.chapter_number,
+                        _progress_date: item.last_read_at
+                    })).filter(Boolean)
+                    setHistoryBooks(formattedHistory)
+                }
             } catch (error) {
                 console.error("Error fetching bookshelf:", error)
             } finally {
@@ -77,8 +96,12 @@ export default function BookshelfPage() {
                 </div>
             </div>
 
-            <Tabs defaultValue="saved" className="w-full">
-                <TabsList className="grid w-full sm:w-[400px] grid-cols-2 mb-8 h-12">
+            <Tabs defaultValue="history" className="w-full">
+                <TabsList className="grid w-full sm:w-[500px] grid-cols-3 mb-8 h-12">
+                    <TabsTrigger value="history" className="text-base gap-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
+                        <LibrarySquare className="h-4 w-4" />
+                        Lịch Sử Đọc
+                    </TabsTrigger>
                     <TabsTrigger value="saved" className="text-base gap-2 data-[state=active]:bg-[#09ADAA] data-[state=active]:text-white">
                         <Bookmark className="h-4 w-4" />
                         Đã Lưu
@@ -88,6 +111,30 @@ export default function BookshelfPage() {
                         Yêu Thích
                     </TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="history" className="mt-0 outline-none min-h-[400px]">
+                    {historyBooks.length === 0 ? (
+                        <div className="text-center py-20 bg-muted/20 border-2 border-dashed rounded-2xl mx-auto w-full max-w-2xl">
+                            <LibrarySquare className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                            <h3 className="text-xl font-semibold mb-2">Chưa Có Lịch Sử Đọc</h3>
+                            <p className="text-muted-foreground mb-6">Bạn chưa đọc cuốn truyện nào gần đây.</p>
+                            <button onClick={() => router.push('/books')} className="text-sm font-medium text-primary hover:underline">
+                                Khám phá kho truyện ngay &rarr;
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            {historyBooks.map((book, idx) => (
+                                <div key={book.book_id} className="animate-fade-in-up flex flex-col relative" style={{ animationDelay: `${idx * 50}ms` }}>
+                                    <BookCard book={book} />
+                                    <div className="absolute bottom-3 right-3 text-[11px] font-medium bg-background/90 px-2 py-1 rounded shadow-sm border text-muted-foreground z-20 pointer-events-none">
+                                        Đang đọc: Chương {book._progress_chapter}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </TabsContent>
 
                 <TabsContent value="saved" className="mt-0 outline-none min-h-[400px]">
                     {savedBooks.length === 0 ? (

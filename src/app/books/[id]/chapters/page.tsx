@@ -10,7 +10,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft, Plus, Save, Loader2, Trash2, Edit } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
+import dynamic from 'next/dynamic'
 import { useToast } from '@/hooks/use-toast'
+
+// Use dynamic import for Tiptap to avoid SSR hydration issues
+const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor').then(mod => mod.RichTextEditor), { ssr: false })
 
 export default function ManageChaptersPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params)
@@ -172,13 +176,11 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label>Nội Dung Text Của Chương</Label>
-                                <textarea
-                                    className="w-full min-h-[400px] p-4 rounded-md border border-input bg-background focus:ring-1 focus:ring-primary text-base font-serif"
-                                    placeholder="Dán nội dung chữ vào đây..."
-                                    value={chapterContent}
-                                    onChange={(e) => setChapterContent(e.target.value)}
-                                    required
+                                <Label>Cỗ máy Biên soạn Nội dung Chương (Rich Text)</Label>
+                                <RichTextEditor
+                                    content={chapterContent}
+                                    onChange={setChapterContent}
+                                    placeholder="Soạn thảo nội dung chương ở đây... hỗ trợ in đậm, nghiêng, căn lề, chèn URL ảnh."
                                 />
                             </div>
                             <div className="flex justify-end gap-3">

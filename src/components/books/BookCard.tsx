@@ -6,7 +6,7 @@ import { Book } from '@/types/book'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { BookOpen, Eye, User } from 'lucide-react'
+import { BookOpen, Eye, User, Star } from 'lucide-react'
 import { format } from 'date-fns'
 
 type BookCardProps = {
@@ -26,18 +26,40 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
         <Card className="group h-full flex flex-row overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-background border border-border/50">
             {/* Image Container */}
             <div className="relative w-[110px] md:w-[130px] h-[165px] md:h-[190px] shrink-0 overflow-hidden bg-muted">
-                <Image
-                    src={book.cover_image_url || '/images/placeholder.jpg'}
-                    alt={book.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    sizes="(max-width: 768px) 110px, 130px"
-                />
+                <Link href={`/books/${book.book_id}`} className="absolute inset-0 z-0 block">
+                    <Image
+                        src={book.cover_image_url || '/images/placeholder.jpg'}
+                        alt={book.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 110px, 130px"
+                    />
+                </Link>
+
+                {/* Rating Overlay */}
+                {(book as any).average_rating > 0 && (
+                    <div className="absolute top-1.5 right-1.5 z-10 bg-black/50 backdrop-blur-md rounded shadow-sm px-1.5 py-0.5 flex items-center gap-1 border border-white/10 pointer-events-none">
+                        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                        <span className="text-[10px] font-bold text-white">{(book as any).average_rating}</span>
+                    </div>
+                )}
+                
+                {/* Views Badge Overlay */}
+                {(book as any).views_count > 0 && (
+                    <div className="absolute top-1.5 left-1.5 z-10 bg-black/50 backdrop-blur-md rounded shadow-sm px-1.5 py-0.5 flex items-center gap-1 border border-white/10 pointer-events-none">
+                        <Eye className="w-3 h-3 text-white/80" />
+                        <span className="text-[10px] font-medium text-white/90">
+                            {(book as any).views_count >= 1000 
+                                ? `${((book as any).views_count / 1000).toFixed(1)}k` 
+                                : (book as any).views_count}
+                        </span>
+                    </div>
+                )}
 
                 {/* Gradient Overlay on Hover for Actions */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2 gap-2">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2 gap-2 pointer-events-none">
                     {showQuickActions && (
-                        <div className="flex gap-1 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                        <div className="flex gap-1 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 pointer-events-auto">
                             <Button variant="gradient" size="icon" className="w-8 h-8 rounded-full" asChild>
                                 <Link href={`/books/${book.book_id}`}>
                                     <BookOpen className="h-4 w-4" />

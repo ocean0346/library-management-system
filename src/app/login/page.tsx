@@ -51,10 +51,10 @@ export default function Login() {
                             </div>
                             <div>
                                 <CardTitle className="text-2xl font-display font-bold">
-                                    Welcome back
+                                    Chào mừng trở lại
                                 </CardTitle>
                                 <CardDescription className="mt-2">
-                                    Sign in to continue to LibraryOS
+                                    Đăng nhập để vào ThưViệnOnline
                                 </CardDescription>
                             </div>
                         </CardHeader>
@@ -125,10 +125,10 @@ export default function Login() {
                                     {isLoading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Signing in...
+                                            Đang đăng nhập...
                                         </>
                                     ) : (
-                                        'Sign In'
+                                        'Đăng Nhập'
                                     )}
                                 </Button>
 
@@ -138,7 +138,7 @@ export default function Login() {
                                     </div>
                                     <div className="relative flex justify-center text-xs uppercase">
                                         <span className="bg-card px-2 text-muted-foreground">
-                                            Or
+                                            Hoặc
                                         </span>
                                     </div>
                                 </div>
@@ -194,13 +194,13 @@ export default function Login() {
                                 </div>
                                 <div className="relative flex justify-center text-xs uppercase">
                                     <span className="bg-card px-2 text-muted-foreground">
-                                        New to LibraryOS?
+                                        Chưa có tài khoản ThưViệnOnline?
                                     </span>
                                 </div>
                             </div>
                             <Button variant="outline" className="w-full" asChild>
                                 <Link href="/register">
-                                    Create an account
+                                    Tạo tài khoản mới
                                 </Link>
                             </Button>
                         </CardFooter>
@@ -219,19 +219,16 @@ export default function Login() {
 
                 <div className="relative z-10 max-w-md text-black">
                     <div className="mb-8">
-                        <Image
-                            src="/libraryos-logo.svg"
-                            alt="LibraryOS"
-                            width={64}
-                            height={64}
-                            className="rounded-xl shadow-lg"
-                        />
+                        <div className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md shadow-xl border border-white/20">
+                            <BookOpen className="w-10 h-10 text-black absolute" />
+                            <Sparkles className="w-5 h-5 text-black absolute top-2 right-2 animate-pulse" />
+                        </div>
                     </div>
                     <h2 className="text-4xl font-display font-bold mb-4">
-                        Power Your Library with LibraryOS
+                        Thiên Đường Của Các Độc Giả
                     </h2>
                     <p className="text-lg opacity-80 mb-8">
-                        Join thousands of organizations using LibraryOS to organize, track, and share their book collections.
+                        Cùng tham gia với hàng vạn độc giả khác bằng cách lưu giữ, theo dõi và trải nghiệm những cuốn tiểu thuyết hay nhất trên ThưViệnOnline.
                     </p>
                     <div className="flex items-center gap-4">
                         <div className="flex -space-x-2">
@@ -245,7 +242,7 @@ export default function Login() {
                             ))}
                         </div>
                         <span className="text-sm font-medium opacity-80">
-                            500+ organizations trust us
+                            Hơn 5 vạn tác phẩm có sẵn
                         </span>
                     </div>
                 </div>

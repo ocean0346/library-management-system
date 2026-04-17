@@ -19,7 +19,6 @@ export default function Dashboard() {
         totalBooks: 0,
         totalDownloads: 0,
     })
-    const [recentLogs, setRecentLogs] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     const fetchDashboardData = useCallback(async () => {
@@ -37,33 +36,19 @@ export default function Dashboard() {
             const adminMode = !!userData?.is_admin
             setIsAdmin(adminMode)
 
-            if (adminMode) {
-                // Admin stats
-                const { count: booksCount } = await supabase.from('books').select('*', { count: 'exact', head: true })
-                const { count: logsCount } = await supabase.from('access_logs').select('*', { count: 'exact', head: true })
-                
-                setStats({
-                    totalBooks: booksCount || 0,
-                    totalDownloads: logsCount || 0
-                })
-
-                // Recent access logs across system
-                const { data: logsData } = await supabase
-                    .from('access_logs')
-                    .select('log_id, book_id, access_date, books(title)')
-                    .order('access_date', { ascending: false })
-                    .limit(10)
-                setRecentLogs(logsData || [])
-            } else {
-                // Regular user mode: just their own access logs
-                const { data: logsData } = await supabase
-                    .from('access_logs')
-                    .select('log_id, book_id, access_date, books(title)')
-                    .eq('user_id', user.id)
-                    .order('access_date', { ascending: false })
-                    .limit(10)
-                setRecentLogs(logsData || [])
+            if (!adminMode) {
+                router.push('/bookshelf')
+                return
             }
+
+            // Admin stats
+            const { count: booksCount } = await supabase.from('books').select('*', { count: 'exact', head: true })
+            const { count: logsCount } = await supabase.from('access_logs').select('*', { count: 'exact', head: true })
+            
+            setStats({
+                totalBooks: booksCount || 0,
+                totalDownloads: logsCount || 0
+            })
         } catch (error) {
             console.error('Error fetching dashboard:', error)
         } finally {
@@ -97,23 +82,20 @@ export default function Dashboard() {
         <div className="container max-w-7xl mx-auto py-8">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Dashboard Quản Trị</h1>
                     <p className="text-muted-foreground mt-1">
-                        {isAdmin ? 'Quản trị hệ thống Thư Viện' : 'Lịch sử đọc của bạn'}
+                        Hệ thống Thư Viện Online
                     </p>
                 </div>
-                {isAdmin && (
-                    <Button asChild>
-                        <Link href="/books/add">
-                            <BookOpen className="mr-2 h-4 w-4" />
-                            Thêm Sách Mới
-                        </Link>
-                    </Button>
-                )}
+                <Button asChild>
+                    <Link href="/books/add">
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        Thêm Sách Mới
+                    </Link>
+                </Button>
             </div>
 
-                {isAdmin && (
-                <div className="space-y-10">
+            <div className="space-y-10">
                     {/* Thống kê nhanh */}
                     <section>
                         <div className="flex items-center gap-2 mb-4">
@@ -224,39 +206,6 @@ export default function Dashboard() {
                         </div>
                     </section>
                 </div>
-            )}
-
-            <div className="grid gap-6" id="recent-logs">
-                <Card className="col-span-1">
-                    <CardHeader>
-                        <CardTitle>
-                            {isAdmin ? 'Lịch sử truy cập gần đây' : 'Sách bạn vừa đọc'}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {recentLogs.length === 0 ? (
-                            <p className="text-muted-foreground text-center py-8">Chưa có dữ liệu đọc sách.</p>
-                        ) : (
-                            <div className="space-y-4">
-                                {recentLogs.map((log) => (
-                                    <Link key={log.log_id} href={`/books/${log.book_id}`} className="flex justify-between items-center border-b pb-4 last:border-0 last:pb-0 hover:bg-muted/50 p-2 rounded-lg transition-colors cursor-pointer group">
-                                        <div>
-                                            <p className="font-medium group-hover:text-primary transition-colors">
-                                                {(log.books as any)?.title || 'Sách không còn tồn tại'}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center text-sm text-muted-foreground">
-                                            <Clock className="mr-1 h-3 w-3" />
-                                            {new Date(log.access_date).toLocaleString()}
-                                            <ArrowRight className="ml-3 h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary"/>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
         </div>
     )
 }

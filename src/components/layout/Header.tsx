@@ -114,16 +114,18 @@ export default function Header() {
                                     </span>
                                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
                                 </Link>
-                                <Link
-                                    href="/dashboard"
-                                    className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
-                                >
-                                    <span className="flex items-center gap-2">
-                                        <LayoutDashboard className="h-4 w-4" />
-                                        Dashboard
-                                    </span>
-                                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
-                                </Link>
+                                {isAdmin && (
+                                    <Link
+                                        href="/dashboard"
+                                        className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <LayoutDashboard className="h-4 w-4" />
+                                            Dashboard Admin
+                                        </span>
+                                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
+                                    </Link>
+                                )}
                             </>
                         )}
                     </nav>
@@ -183,13 +185,15 @@ export default function Header() {
                                         <LibrarySquare className="mr-2 h-4 w-4" />
                                         Tủ Sách Của Tôi
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() => router.push('/dashboard')}
-                                        className="cursor-pointer"
-                                    >
-                                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                                        Bảng Điều Khiển
-                                    </DropdownMenuItem>
+                                    {isAdmin && (
+                                        <DropdownMenuItem
+                                            onClick={() => router.push('/dashboard')}
+                                            className="cursor-pointer"
+                                        >
+                                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                                            Bảng Quản Trị
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem
                                         onClick={() => router.push('/account/settings')}
                                         className="cursor-pointer"
@@ -264,14 +268,14 @@ export default function Header() {
                                 </Link>
                             )
                         })}
-                        {user && (
+                        {user && isAdmin && (
                             <Link
                                 href="/dashboard"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                             >
                                 <LayoutDashboard className="h-5 w-5" />
-                                Bảng Điều Khiển
+                                Bảng Quản Trị
                             </Link>
                         )}
                     </nav>

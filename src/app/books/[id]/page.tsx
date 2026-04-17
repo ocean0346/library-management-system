@@ -58,6 +58,7 @@ export default function BookDetails() {
     const [isAccessing, setIsAccessing] = useState(false)
     const [isReading, setIsReading] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [lastReadChapter, setLastReadChapter] = useState<number | null>(null)
     
     // Interactions state
     const [isFavorited, setIsFavorited] = useState(false)
@@ -141,12 +142,14 @@ export default function BookDetails() {
 
             // fetch interactions if user is logged in
             if (user) {
-                const [favRes, saveRes] = await Promise.all([
+                const [favRes, saveRes, progressRes] = await Promise.all([
                     supabase.from('user_favorites').select('book_id').eq('user_id', user.id).eq('book_id', bookId).single(),
-                    supabase.from('user_saved_books').select('book_id').eq('user_id', user.id).eq('book_id', bookId).single()
+                    supabase.from('user_saved_books').select('book_id').eq('user_id', user.id).eq('book_id', bookId).single(),
+                    supabase.from('user_reading_progress').select('chapter_number').eq('user_id', user.id).eq('book_id', bookId).single()
                 ])
                 if (favRes.data) setIsFavorited(true)
                 if (saveRes.data) setIsSaved(true)
+                if (progressRes.data) setLastReadChapter(progressRes.data.chapter_number)
             }
 
             // Luôn fetch chapters nếu có
@@ -193,7 +196,7 @@ export default function BookDetails() {
             }
 
             if (chapters.length > 0) {
-                router.push(`/books/${bookId}/read/1`)
+                router.push(`/books/${bookId}/read/${lastReadChapter || 1}`)
                 return
             }
 
@@ -201,6 +204,12 @@ export default function BookDetails() {
                 toast({ title: "Thông Báo", description: "Truyện / Sách này chưa có nội dung được đăng.", variant: "default" })
                 setIsAccessing(false)
                 return
+            }
+
+            // Increment view count for non-chapter books
+            const { error: viewError } = await supabase.rpc('increment_book_views', { p_book_id: bookId })
+            if (viewError) {
+                console.error('Failed to increment views:', viewError)
             }
 
             // Show embedded reader instead of opening new tab
@@ -380,7 +389,7 @@ export default function BookDetails() {
                                 ) : (
                                     <>
                                         <BookOpen className="mr-2 h-4 w-4" />
-                                        Đọc Ngay
+                                        {lastReadChapter ? `Đọc Tiếp Chương ${lastReadChapter}` : 'Đọc Ngay'}
                                     </>
                                 )}
                             </Button>
@@ -512,8 +521,8 @@ export default function BookDetails() {
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <HardDrive className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-muted-foreground">Kích Thước:</span>
-                                    <span>{book.file_size_bytes ? `${(book.file_size_bytes).toFixed(2)} MB` : 'Không xác định'}</span>
+                                    <span className="text-muted-foreground">Dung lượng Tệp:</span>
+                                    <span>{book.file_size_bytes ? `${(book.file_size_bytes / (1024 * 1024)).toFixed(2)} MB` : 'Không xác định'}</span>
                                 </div>
                             </div>
                         </div>
@@ -572,14 +581,26 @@ export default function BookDetails() {
             {isReading && book.file_url && (
                 <div id="embedded-reader" className="mt-12 mb-20 animate-fade-in-up scroll-mt-24">
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Đang Đọc: {book.title}</CardTitle>
-                            <Button variant="outline" onClick={() => setIsReading(false)}>
-                                Đóng (Close)
-                            </Button>
+                        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
+                            <CardTitle>Đang Mở: {book.title}</CardTitle>
+                            <div className="flex gap-2">
+                                <Button 
+                                    variant="default"
+                                    className="bg-primary"
+                                    onClick={() => window.open(book.file_url, '_blank')}
+                                >
+                                    Tải Về / Mở Rộng
+                                </Button>
+                                <Button variant="outline" onClick={() => setIsReading(false)}>
+                                    Đóng Lại
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="w-full h-[80vh] border rounded bg-muted/20">
+                            <p className="text-sm text-muted-foreground mb-3 italic">
+                                * Lưu ý: Các tệp định dạng Word (.docx) hoặc EPUB thường không thể được xem trực tiếp trong khung này tùy vào trình duyệt của bạn. Hệ thống sẽ tự động tải tệp đó về máy hoặc bạn có thể nhấp vào nút "Tải Về / Mở Rộng" ở trên. 
+                            </p>
+                            <div className="w-full h-[80vh] border rounded bg-muted/20 relative">
                                 <iframe 
                                     src={book.file_url} 
                                     className="w-full h-full rounded"

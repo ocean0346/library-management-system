@@ -34,6 +34,7 @@ function BookCatalog() {
     const [categories, setCategories] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState(searchParams.get('q') ? decodeURIComponent(searchParams.get('q')!) : '')
+    const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'created_at')
     
     useEffect(() => {
         const q = searchParams.get('q')
@@ -42,6 +43,10 @@ function BookCatalog() {
             if (decoded !== searchTerm) {
                 setSearchTerm(decoded)
             }
+        }
+        const sort = searchParams.get('sort')
+        if (sort !== null && sort !== sortBy) {
+            setSortBy(sort)
         }
     }, [searchParams])
     const [selectedCategory, setSelectedCategory] = useState('all')
@@ -71,8 +76,16 @@ function BookCatalog() {
             let query = supabase
                 .from('books')
                 .select('*, categories(name), chapters(chapter_number, title, created_at)', { count: 'exact' })
-                .order('created_at', { ascending: false })
                 .range((currentPage - 1) * booksPerPage, currentPage * booksPerPage - 1)
+
+            // Dynamic sorting
+            if (sortBy === 'views_count') {
+                query = query.order('views_count', { ascending: false, nullsFirst: false })
+            } else if (sortBy === 'title') {
+                query = query.order('title', { ascending: true })
+            } else {
+                query = query.order('created_at', { ascending: false })
+            }
 
             if (searchTerm) {
                 const termToSearch = searchTerm.trim().toLowerCase()
@@ -103,7 +116,7 @@ function BookCatalog() {
         } finally {
             setIsLoading(false)
         }
-    }, [currentPage, searchTerm, selectedCategory, booksPerPage])
+    }, [currentPage, searchTerm, selectedCategory, sortBy, booksPerPage])
     useEffect(() => {
         fetchCategories()
     }, [fetchCategories])
@@ -139,6 +152,11 @@ function BookCatalog() {
 
     const handleCategoryChange = (value: string) => {
         setSelectedCategory(value)
+        setCurrentPage(1)
+    }
+
+    const handleSortChange = (value: string) => {
+        setSortBy(value)
         setCurrentPage(1)
     }
 
@@ -187,6 +205,8 @@ function BookCatalog() {
                 selectedCategory={selectedCategory}
                 onCategoryChange={handleCategoryChange}
                 categories={categories}
+                sortBy={sortBy}
+                onSortChange={handleSortChange}
             />
 
             {isLoading ? (
