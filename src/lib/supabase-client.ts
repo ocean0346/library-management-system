@@ -12,7 +12,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        storageKey: 'libraryos-auth',
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        storage: typeof window !== 'undefined' ? window.sessionStorage : undefined,
     }
 })
