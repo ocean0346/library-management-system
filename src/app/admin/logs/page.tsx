@@ -99,7 +99,12 @@ export default function AccessLogs() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto relative min-h-[200px]">
+                        {isLoading && (
+                            <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 backdrop-blur-[1px] rounded-lg">
+                                <Loading />
+                            </div>
+                        )}
                         <table className="w-full text-sm text-left">
                             <thead className="text-xs text-muted-foreground uppercase bg-muted/50 rounded-t-lg">
                                 <tr>
@@ -109,12 +114,7 @@ export default function AccessLogs() {
                                     <th className="px-4 py-3 font-medium rounded-tr-lg">Sách Đã Đọc</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y relative">
-                                {isLoading && (
-                                    <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 backdrop-blur-[1px]">
-                                        <Loading />
-                                    </div>
-                                )}
+                            <tbody className="divide-y">
                                 {logs.map((log) => (
                                     <tr key={log.log_id} className="hover:bg-muted/20 transition-colors">
                                         <td className="px-4 py-4 whitespace-nowrap text-muted-foreground flex items-center gap-2">

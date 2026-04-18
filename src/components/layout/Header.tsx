@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import HeaderSearch from '@/components/layout/HeaderSearch'
 import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut, Search, Sparkles, Users, Tags, History, LibrarySquare } from 'lucide-react'
 import {
     DropdownMenu,
@@ -25,7 +26,6 @@ export default function Header() {
     const { user, signOut } = useAuth()
     const [isAdmin, setIsAdmin] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const [headerSearch, setHeaderSearch] = useState('')
 
     useEffect(() => {
         const checkAdmin = async () => {
@@ -133,21 +133,7 @@ export default function Header() {
 
                 {/* Right Side */}
                 <div className="flex items-center gap-3">
-                    <div className="hidden md:flex relative mr-2 items-center">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                            type="text" 
-                            placeholder="Tìm kiếm..."
-                            className="w-[200px] lg:w-[300px] pl-9 rounded-full bg-muted/50 border-transparent focus-visible:bg-transparent"
-                            value={headerSearch}
-                            onChange={(e) => setHeaderSearch(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && headerSearch.trim()) {
-                                    router.push(`/books?q=${encodeURIComponent(headerSearch.trim())}`)
-                                }
-                            }}
-                        />
-                    </div>
+                    <HeaderSearch />
                     {user ? (
                         <>
                             {/* User Menu */}
