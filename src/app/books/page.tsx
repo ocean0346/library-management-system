@@ -48,8 +48,19 @@ function BookCatalog() {
         if (sort !== null && sort !== sortBy) {
             setSortBy(sort)
         }
+        const cat = searchParams.get('category')
+        if (cat !== null && cat !== selectedCategory) {
+            setSelectedCategory(decodeURIComponent(cat))
+        }
+        const tag = searchParams.get('tag')
+        if (tag !== null && tag !== selectedTag) {
+            setSelectedTag(decodeURIComponent(tag))
+        } else if (tag === null && selectedTag !== null) {
+            setSelectedTag(null)
+        }
     }, [searchParams])
-    const [selectedCategory, setSelectedCategory] = useState('all')
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') ? decodeURIComponent(searchParams.get('category')!) : 'all')
+    const [selectedTag, setSelectedTag] = useState<string | null>(searchParams.get('tag') ? decodeURIComponent(searchParams.get('tag')!) : null)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const booksPerPage = 12
@@ -103,6 +114,10 @@ function BookCatalog() {
                 if (categoryData) {
                     query = query.eq('category_id', categoryData.category_id)
                 }
+            }
+
+            if (selectedTag) {
+                query = query.contains('tags', [selectedTag])
             }
 
             const { data, error, count } = await query
@@ -208,6 +223,20 @@ function BookCatalog() {
                 sortBy={sortBy}
                 onSortChange={handleSortChange}
             />
+
+            {selectedTag && (
+                <div className="mb-6 flex items-center justify-between bg-primary/5 p-4 rounded-xl border border-primary/20">
+                    <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground font-medium">Đang lọc theo Thẻ (Tag):</span>
+                        <Badge variant="secondary" className="text-sm py-1 px-3 bg-primary/20 hover:bg-primary/30 text-primary">
+                            {selectedTag}
+                        </Badge>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => router.push('/books')}>
+                        Xóa Lọc Thẻ
+                    </Button>
+                </div>
+            )}
 
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

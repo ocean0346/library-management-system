@@ -212,6 +212,16 @@ export default function BookDetails() {
                 console.error('Failed to increment views:', viewError)
             }
 
+            // Save reading history for user
+            if (user) {
+                await supabase.from('user_reading_progress').upsert({
+                    user_id: user.id,
+                    book_id: bookId,
+                    chapter_number: 1, // Default to 1 for standalone documents like PDF
+                    last_read_at: new Date().toISOString()
+                }, { onConflict: 'user_id, book_id' })
+            }
+
             // Show embedded reader instead of opening new tab
             setIsReading(true)
             setTimeout(() => {
@@ -509,10 +519,21 @@ export default function BookDetails() {
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="flex items-center space-x-2">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-muted-foreground">Thể Loại:</span>
-                                    <span>{(book.categories as any)?.name || 'Chưa Phân Loại'}</span>
+                                <div className="flex items-start space-x-2">
+                                    <User className="h-4 w-4 mt-1 text-muted-foreground" />
+                                    <span className="text-muted-foreground mt-0.5">Thể Loại:</span>
+                                    <div className="flex flex-wrap gap-2">
+                                        <Badge variant="outline">
+                                            {(book.categories as any)?.name || 'Chưa Phân Loại'}
+                                        </Badge>
+                                        {book.tags && book.tags.map((tag, idx) => (
+                                            <Link key={idx} href={`/books?tag=${encodeURIComponent(tag)}`}>
+                                                <Badge variant="secondary" className="hover:bg-primary/20 cursor-pointer">
+                                                    {tag}
+                                                </Badge>
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <FileText className="h-4 w-4 text-muted-foreground" />

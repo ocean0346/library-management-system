@@ -95,9 +95,33 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
 
                 {/* Badge Category / Type */}
                 <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="outline" className="text-[10px] sm:text-xs">
-                        {book.category_name || (book.categories as any)?.name || 'Chưa Phân Loại'}
-                    </Badge>
+                    {(() => {
+                        const catName = book.category_name || (book.categories as any)?.name || 'Chưa Phân Loại';
+                        if (catName !== 'Chưa Phân Loại') {
+                            return (
+                                <Link href={`/books?category=${encodeURIComponent(catName)}`}>
+                                    <Badge variant="outline" className="text-[10px] sm:text-xs hover:bg-primary/10 transition-colors cursor-pointer">
+                                        {catName}
+                                    </Badge>
+                                </Link>
+                            )
+                        }
+                        return (
+                            <Badge variant="outline" className="text-[10px] sm:text-xs">
+                                {catName}
+                            </Badge>
+                        )
+                    })()}
+                    
+                    {/* Tags (Secondary Categories) */}
+                    {book.tags && book.tags.slice(0, 2).map((tag, index) => (
+                        <Link key={index} href={`/books?tag=${encodeURIComponent(tag)}`}>
+                            <Badge variant="secondary" className="text-[10px] sm:text-xs bg-muted/50 hover:bg-muted cursor-pointer">
+                                {tag}
+                            </Badge>
+                        </Link>
+                    ))}
+
                     <Badge variant="secondary" className="text-[10px] sm:text-xs bg-primary/10 text-primary hover:bg-primary/20">
                         {book.file_type ? book.file_type.toUpperCase() : 'PDF'}
                     </Badge>

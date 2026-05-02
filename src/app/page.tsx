@@ -8,9 +8,11 @@ import BookCard from '@/components/books/BookCard'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ArrowRight, BookOpen, Sparkles, TrendingUp, Search } from 'lucide-react'
-import { Loading } from '@/components/ui/loading'
+import { Search, BookOpen, Sparkles, TrendingUp, ChevronRight, User, Star, ArrowRight } from 'lucide-react'
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+
+import { format } from 'date-fns'
 
 export default function Home() {
     const router = useRouter()
@@ -28,7 +30,7 @@ export default function Home() {
                     .from('books')
                     .select('*, categories(name), chapters(chapter_number, title, created_at)')
                     .order('created_at', { ascending: false })
-                    .limit(6)
+                    .limit(9)
 
                 if (recent) setRecentBooks(recent as Book[])
 
@@ -37,7 +39,7 @@ export default function Home() {
                     .from('books')
                     .select('*, categories(name), chapters(chapter_number, title, created_at)')
                     .order('views_count', { ascending: false, nullsFirst: false })
-                    .limit(8)
+                    .limit(12)
 
                 if (popular) setPopularBooks(popular as Book[])
 
@@ -53,31 +55,6 @@ export default function Home() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <style dangerouslySetInnerHTML={{ __html: `
-                @keyframes scrollMarquee {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-                @keyframes scrollMarqueeReverse {
-                    0% { transform: translateX(-50%); }
-                    100% { transform: translateX(0); }
-                }
-                .marquee-row {
-                    display: flex;
-                    width: max-content;
-                    animation: scrollMarquee 50s linear infinite;
-                }
-                .marquee-row-reverse {
-                    display: flex;
-                    width: max-content;
-                    animation: scrollMarqueeReverse 50s linear infinite;
-                }
-                .group:hover .marquee-row, 
-                .group:hover .marquee-row-reverse {
-                    animation-play-state: paused;
-                }
-            `}} />
-            
             {/* Hero Section */}
             <section className="relative pt-28 pb-20 lg:pt-40 lg:pb-32 overflow-hidden w-full flex items-center justify-center min-h-[85vh]">
                 {/* Background Grid & Gradients */}
@@ -162,20 +139,18 @@ export default function Home() {
                         </div>
 
                         {isLoading ? (
-                            <div className="flex gap-6 overflow-hidden">
+                            <div className="flex flex-wrap gap-6">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
-                                    <div key={i} className="h-[200px] w-[350px] shrink-0 bg-muted/40 animate-pulse rounded-2xl" />
+                                    <div key={i} className="h-[200px] flex-auto w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 bg-muted/40 animate-pulse rounded-2xl" />
                                 ))}
                             </div>
                         ) : recentBooks.length > 0 ? (
-                             <div className="relative flex overflow-hidden w-full group py-4" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
-                                <div className="gap-6 marquee-row">
-                                    {[...recentBooks, ...recentBooks].map((book, idx) => (
-                                        <div key={`recent-${book.book_id}-${idx}`} className="w-[320px] sm:w-[380px] md:w-[450px] shrink-0">
-                                            <BookCard book={book} />
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="flex flex-wrap gap-6">
+                                {recentBooks.slice(0, 9).map((book) => (
+                                    <div key={book.book_id} className="flex-auto w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                                        <BookCard book={book} />
+                                    </div>
+                                ))}
                             </div>
                         ) : (
                             <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">
@@ -205,20 +180,18 @@ export default function Home() {
                         </div>
 
                         {isLoading ? (
-                            <div className="flex gap-6 overflow-hidden">
+                            <div className="flex flex-wrap gap-6">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
-                                    <div key={i} className="h-[200px] w-[350px] shrink-0 bg-muted/40 animate-pulse rounded-2xl" />
+                                    <div key={i} className="h-[200px] flex-auto w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 bg-muted/40 animate-pulse rounded-2xl" />
                                 ))}
                             </div>
                         ) : popularBooks.length > 0 ? (
-                            <div className="relative flex overflow-hidden w-full group py-4" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
-                                <div className="gap-6 marquee-row-reverse">
-                                    {[...popularBooks, ...popularBooks].map((book, idx) => (
-                                        <div key={`popular-${book.book_id}-${idx}`} className="w-[320px] sm:w-[380px] md:w-[450px] shrink-0">
-                                            <BookCard book={book} />
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="flex flex-wrap gap-6">
+                                {popularBooks.map((book) => (
+                                    <div key={book.book_id} className="flex-auto w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                                        <BookCard book={book} />
+                                    </div>
+                                ))}
                             </div>
                         ) : (
                             <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">

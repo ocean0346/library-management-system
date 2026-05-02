@@ -43,6 +43,7 @@ export default function AddBookPage() {
     const [description, setDescription] = useState('')
     const [coverImageUrl, setCoverImageUrl] = useState('')
     const [categoryId, setCategoryId] = useState<string>('')
+    const [tagsInput, setTagsInput] = useState('')
     const [fileUrl, setFileUrl] = useState('')
     const [fileSize, setFileSize] = useState<string>('')
     const [fileType, setFileType] = useState('WEBNOVEL')
@@ -163,26 +164,30 @@ export default function AddBookPage() {
         }
 
         setIsSubmitting(true)
+        setError(null)
 
         try {
+            const tagsArray = tagsInput.split(',').map(t => t.trim()).filter(t => t.length > 0)
+            
+            const bookData = {
+                organization_id: null,
+                title: title.trim(),
+                author: author.trim(),
+                isbn: isbn.trim(),
+                publisher: publisher.trim() || null,
+                publish_date: publishDate || null,
+                description: description.trim() || null,
+                cover_image_url: coverImageUrl || null,
+                category_id: categoryId ? parseInt(categoryId) : null,
+                file_url: fileUrl || null,
+                file_size_bytes: fileSize ? Math.round(parseFloat(fileSize) * 1024 * 1024) : null,
+                file_type: fileType,
+                tags: tagsArray
+            }
+
             const { data, error: insertError } = await supabase
                 .from('books')
-                .insert([
-                    {
-                        organization_id: null,
-                        title: title.trim(),
-                        author: author.trim(),
-                        isbn: isbn.trim(),
-                        publisher: publisher.trim() || null,
-                        publish_date: publishDate || null,
-                        description: description.trim() || null,
-                        cover_image_url: coverImageUrl.trim() || null,
-                        category_id: categoryId ? parseInt(categoryId) : null,
-                        file_url: fileUrl.trim() || null,
-                        file_size_bytes: fileSize ? Math.round(parseFloat(fileSize) * 1024 * 1024) : null,
-                        file_type: fileType
-                    }
-                ])
+                .insert([bookData])
                 .select()
                 .single()
 
@@ -342,6 +347,20 @@ export default function AddBookPage() {
                                         </SelectContent>
                                     </Select>
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="tags">Các Thể Loại Phụ / Tags</Label>
+                                <Input
+                                    id="tags"
+                                    placeholder="Ví dụ: Hài hước, Trinh thám, Xuyên không (ngăn cách bằng dấu phẩy)"
+                                    value={tagsInput}
+                                    onChange={(e) => setTagsInput(e.target.value)}
+                                    disabled={isSubmitting}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Thêm bao nhiêu thẻ tùy thích, mỗi thẻ ngăn cách nhau bằng dấu phẩy.
+                                </p>
                             </div>
 
                             <div className="space-y-2">

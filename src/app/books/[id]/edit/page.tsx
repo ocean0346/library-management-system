@@ -42,6 +42,7 @@ interface Book {
     file_size_bytes: number | null
     file_type: string | null
     organization_id: number
+    tags?: string[]
 }
 
 export default function EditBookPage() {
@@ -61,6 +62,7 @@ export default function EditBookPage() {
     const [description, setDescription] = useState('')
     const [coverImageUrl, setCoverImageUrl] = useState('')
     const [categoryId, setCategoryId] = useState<string>('')
+    const [tagsInput, setTagsInput] = useState('')
     const [fileUrl, setFileUrl] = useState('')
     const [fileSize, setFileSize] = useState<string>('')
     const [fileType, setFileType] = useState('PDF')
@@ -106,6 +108,7 @@ export default function EditBookPage() {
             setDescription(book.description || '')
             setCoverImageUrl(book.cover_image_url || '')
             setCategoryId(book.category_id?.toString() || '')
+            setTagsInput((book.tags || []).join(', '))
             setFileUrl(book.file_url || '')
             setFileSize(book.file_size_bytes ? (book.file_size_bytes / (1024 * 1024)).toString() : '')
             setFileType(book.file_type || 'PDF')
@@ -234,6 +237,8 @@ export default function EditBookPage() {
         setIsSubmitting(true)
 
         try {
+            const tagsArray = tagsInput.split(',').map(t => t.trim()).filter(t => t.length > 0)
+            
             const { error: updateError } = await supabase
                 .from('books')
                 .update({
@@ -243,11 +248,12 @@ export default function EditBookPage() {
                     publisher: publisher.trim() || null,
                     publish_date: publishDate || null,
                     description: description.trim() || null,
-                    cover_image_url: coverImageUrl.trim() || null,
+                    cover_image_url: coverImageUrl || null,
                     category_id: categoryId ? parseInt(categoryId) : null,
-                    file_url: fileUrl.trim() || null,
+                    file_url: fileUrl || null,
                     file_size_bytes: fileSize ? Math.round(parseFloat(fileSize) * 1024 * 1024) : null,
-                    file_type: fileType
+                    file_type: fileType,
+                    tags: tagsArray
                 })
                 .eq('book_id', bookId)
 
@@ -382,6 +388,20 @@ export default function EditBookPage() {
                                         </SelectContent>
                                     </Select>
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="tags">Các Thể Loại Phụ / Tags</Label>
+                                <Input
+                                    id="tags"
+                                    placeholder="Ví dụ: Hài hước, Trinh thám, Xuyên không (ngăn cách bằng dấu phẩy)"
+                                    value={tagsInput}
+                                    onChange={(e) => setTagsInput(e.target.value)}
+                                    disabled={isSubmitting}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Thêm bao nhiêu thẻ tùy thích, mỗi thẻ ngăn cách nhau bằng dấu phẩy.
+                                </p>
                             </div>
 
                             <div className="space-y-2">
