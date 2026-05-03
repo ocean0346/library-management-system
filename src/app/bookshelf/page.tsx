@@ -125,11 +125,8 @@ export default function BookshelfPage() {
                     ) : (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {historyBooks.map((book, idx) => (
-                                <div key={book.book_id} className="animate-fade-in-up flex flex-col relative" style={{ animationDelay: `${idx * 50}ms` }}>
+                                <div key={book.book_id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
                                     <BookCard book={book} />
-                                    <div className="absolute bottom-3 right-3 text-[11px] font-medium bg-background/90 px-2 py-1 rounded shadow-sm border text-muted-foreground z-20 pointer-events-none">
-                                        Đang đọc: Chương {book._progress_chapter}
-                                    </div>
                                 </div>
                             ))}
                         </div>

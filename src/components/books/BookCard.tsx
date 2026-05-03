@@ -1,13 +1,16 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Book } from '@/types/book'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { BookOpen, Eye, User, Star } from 'lucide-react'
 import { format } from 'date-fns'
+import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase-client'
 
 type BookCardProps = {
     book: Book
@@ -16,6 +19,27 @@ type BookCardProps = {
 
 export default function BookCard({ book, showQuickActions = true }: BookCardProps) {
     const isAvailable = true // Digital documents are always available
+    const { user } = useAuth()
+    const [progressChapter, setProgressChapter] = useState<number | null>((book as any)._progress_chapter || null)
+
+    // Lấy tiến độ đọc nếu chưa được truyền từ component cha (VD: Tủ Sách)
+    useEffect(() => {
+        if ((book as any)._progress_chapter || !user) return
+
+        const fetchProgress = async () => {
+            const { data } = await supabase
+                .from('user_reading_progress')
+                .select('chapter_number')
+                .eq('user_id', user.id)
+                .eq('book_id', book.book_id)
+                .single()
+            
+            if (data) {
+                setProgressChapter(data.chapter_number)
+            }
+        }
+        fetchProgress()
+    }, [user, book.book_id, (book as any)._progress_chapter])
 
     // Sắp xếp và lấy 2 chương mới nhất (nếu có)
     const latestChapters = (book.chapters || [])
@@ -23,7 +47,7 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
         .slice(0, 2)
 
     return (
-        <Card className="group h-full flex flex-row overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-background border border-border/50">
+        <Card className="group h-full flex flex-row overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-background border border-border/50 relative">
             {/* Image Container */}
             <div className="relative w-[110px] md:w-[130px] h-[165px] md:h-[190px] shrink-0 overflow-hidden bg-muted">
                 <Link href={`/books/${book.book_id}`} className="absolute inset-0 z-0 block">
@@ -154,6 +178,16 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
                     )}
                 </div>
             </div>
+
+            {/* Reading Progress Overlay */}
+            {progressChapter && (
+                <Link 
+                    href={book.file_url ? `/books/${book.book_id}/read` : `/books/${book.book_id}/read/${progressChapter}`}
+                    className="absolute bottom-3 right-3 text-[11px] font-medium bg-background/90 px-2 py-1 rounded shadow-sm border text-muted-foreground z-20 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors cursor-pointer"
+                >
+                    Đang đọc: {book.file_url ? 'Trang' : 'Chương'} {progressChapter}
+                </Link>
+            )}
         </Card>
     )
 } 

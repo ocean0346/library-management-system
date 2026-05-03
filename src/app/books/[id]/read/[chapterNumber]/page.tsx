@@ -30,36 +30,35 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
     const fetchReadingData = useCallback(async () => {
         setIsLoading(true)
         try {
+            // Fetch Book Details
+            const { data: bookData } = await supabase.from('books').select('title, author, organization_id').eq('book_id', id).single()
+            setBook(bookData)
+
             // Log Access & Progress once per mount
             if (!hasLoggedRef.current) {
                 hasLoggedRef.current = true
-                try {
-                    // Tăng view cho quyển sách (Ai vào xem cũng tăng)
-                    await supabase.rpc('increment_book_views', { p_book_id: id })
+                
+                // Tăng view cho quyển sách (Ai vào xem cũng tăng)
+                supabase.rpc('increment_book_views', { p_book_id: id })
+                    .then(({ error }) => { if (error) console.error("Increment views error:", error) })
 
-                    if (user) {
-                        await supabase.rpc('record_document_access', {
-                            p_organization_id: "00000000-0000-0000-0000-000000000000",
-                            p_book_id: id,
-                            p_user_id: user.id
-                        })
+                if (user) {
+                    supabase.rpc('record_document_access', {
+                        p_organization_id: bookData?.organization_id || null,
+                        p_book_id: id,
+                        p_user_id: user.id
+                    }).then(({ error }) => { if (error) console.error("Record access error:", error) })
 
-                        // Lưu tiến độ đọc trang của người dùng
-                        await supabase.from('user_reading_progress').upsert({
-                            user_id: user.id,
-                            book_id: id,
-                            chapter_number: parseInt(chapterNumber),
-                            last_read_at: new Date().toISOString()
-                        }, { onConflict: 'user_id, book_id' })
-                    }
-                } catch (e) {
-                    console.error("Access/Progress log error:", e)
+                    // Lưu tiến độ đọc trang của người dùng
+                    supabase.from('user_reading_progress').upsert({
+                        user_id: user.id,
+                        book_id: id,
+                        chapter_number: parseInt(chapterNumber),
+                        last_read_at: new Date().toISOString()
+                    }, { onConflict: 'user_id, book_id' })
+                    .then(({ error }) => { if (error) console.error("Reading progress error:", error) })
                 }
             }
-
-            // Fetch Book Details
-            const { data: bookData } = await supabase.from('books').select('title, author').eq('book_id', id).single()
-            setBook(bookData)
 
             // Fetch Current Chapter
             const { data: chapterData, error: chapterError } = await supabase.from('chapters')
