@@ -57,6 +57,8 @@ export default function Header() {
 
     const isActivePath = (path: string) => pathname === path
 
+    if (pathname.includes('/read')) return null
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
             <div className="container h-16 flex items-center justify-between">

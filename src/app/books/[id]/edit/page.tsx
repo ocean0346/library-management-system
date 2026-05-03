@@ -454,12 +454,12 @@ export default function EditBookPage() {
                             <h3 className="text-lg font-medium">Document Information</h3>
 
                             <div className="space-y-2">
-                                <Label htmlFor="fileUpload">Upload Document File (PDF/EPUB/DOC)</Label>
+                                <Label htmlFor="fileUpload">Upload Document File (PDF)</Label>
                                 <div className="flex gap-2 items-center">
                                     <Input
                                         id="fileUpload"
                                         type="file"
-                                        accept=".pdf,.epub,.docx,.doc"
+                                        accept=".pdf"
                                         onChange={handleDocUpload}
                                         disabled={isSubmitting || isUploadingDoc}
                                     />
@@ -490,10 +490,7 @@ export default function EditBookPage() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="PDF">PDF</SelectItem>
-                                            <SelectItem value="EPUB">EPUB</SelectItem>
-                                            <SelectItem value="DOCX">DOCX</SelectItem>
-                                            <SelectItem value="TXT">TXT</SelectItem>
-                                            <SelectItem value="OTHER">Other</SelectItem>
+                                            <SelectItem value="WEBNOVEL">Webnovel (Truyện chữ)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

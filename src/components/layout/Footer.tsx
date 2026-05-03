@@ -1,6 +1,9 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { BookOpen, Users, Building2, Mail, Sparkles } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 const footerLinks = {
     product: {
@@ -30,6 +33,9 @@ const footerLinks = {
 }
 
 export default function Footer() {
+    const pathname = usePathname()
+    if (pathname && pathname.includes('/read')) return null
+
     return (
         <footer className="border-t border-border/40 bg-muted/30">
             <div className="container py-12 md:py-16">

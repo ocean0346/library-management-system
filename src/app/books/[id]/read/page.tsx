@@ -138,7 +138,7 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
     if (!book) return null
 
     return (
-        <div className="flex flex-col h-[calc(100vh-64px)] bg-background" ref={containerRef}>
+        <div className="flex flex-col h-screen bg-background" ref={containerRef}>
             {/* Header Toolbar */}
             <header className={`flex items-center justify-between p-4 border-b bg-card shrink-0 transition-all ${isFullscreen ? 'opacity-0 hover:opacity-100 absolute top-0 left-0 right-0 z-50 shadow-md' : ''}`}>
                 <div className="flex items-center gap-4">

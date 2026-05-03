@@ -275,9 +275,6 @@ export default function AddBookPage() {
                                     <SelectContent>
                                         <SelectItem value="WEBNOVEL" className="font-bold text-primary">Truyện Chữ</SelectItem>
                                         <SelectItem value="PDF">Tài liệu PDF (Upload file)</SelectItem>
-                                        <SelectItem value="EPUB">Tài liệu EPUB</SelectItem>
-                                        <SelectItem value="DOCX">Tài liệu DOCX</SelectItem>
-                                        <SelectItem value="OTHER">Định dạng Khác</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -414,12 +411,12 @@ export default function AddBookPage() {
                                 <h3 className="text-lg font-medium">Thông Tin Tệp (File Chi Tiết)</h3>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="fileUpload">Tải lên File PDF/EPUB/DOC Trực Tiếp *</Label>
+                                    <Label htmlFor="fileUpload">Tải lên File PDF Trực Tiếp *</Label>
                                     <div className="flex gap-2 items-center">
                                         <Input
                                             id="fileUpload"
                                             type="file"
-                                            accept=".pdf,.epub,.docx,.doc"
+                                            accept=".pdf"
                                             onChange={handleDocUpload}
                                             disabled={isSubmitting || isUploadingDoc}
                                         />
