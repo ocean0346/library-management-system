@@ -225,10 +225,6 @@ export default function EditBookPage() {
             setError('Author is required')
             return
         }
-        if (!isbn.trim()) {
-            setError('ISBN is required')
-            return
-        }
         if (!fileUrl.trim()) {
             setError('File URL is required')
             return
@@ -356,14 +352,13 @@ export default function EditBookPage() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="isbn">ISBN *</Label>
+                                    <Label htmlFor="isbn">ISBN</Label>
                                     <Input
                                         id="isbn"
                                         placeholder="978-0-000-00000-0"
                                         value={isbn}
                                         onChange={(e) => setIsbn(e.target.value)}
                                         disabled={isSubmitting}
-                                        required
                                     />
                                 </div>
                                 <div className="space-y-2">

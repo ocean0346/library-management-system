@@ -154,10 +154,6 @@ export default function AddBookPage() {
             setError('Author is required')
             return
         }
-        if (!isbn.trim()) {
-            setError('ISBN is required')
-            return
-        }
         if (fileType !== 'WEBNOVEL' && !fileUrl.trim()) {
             setError('Đường dẫn file là bắt buộc đối với định dạng Tài Liệu')
             return
