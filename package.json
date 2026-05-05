@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup:stripe": "tsx scripts/setup-stripe.ts",
-    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe/webhook",
     "build:worker": "opennextjs-cloudflare build",
     "preview:worker": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"

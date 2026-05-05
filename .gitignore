@@ -53,3 +53,6 @@ next-env.d.ts
 # Windows system files
 nul
 NUL
+
+# JetBrains IDE
+.idea/
