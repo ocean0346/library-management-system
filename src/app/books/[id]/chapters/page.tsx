@@ -39,8 +39,8 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
         setIsLoading(true)
         try {
             // Check Admin
-            const { data: userData } = await supabase.from('users').select('is_admin').eq('user_id', user?.id).single()
-            if (!userData?.is_admin) {
+            const { data: userData } = await supabase.from('users').select('role').eq('user_id', user?.id).single()
+            if (!userData?.role || (userData.role !== 'ADMIN' && userData.role !== 'SUPER_ADMIN')) {
                 toast({ title: "Từ chối truy cập", description: "Bạn không có quyền quản lý chương", variant: "destructive" })
                 router.push(`/books/${id}`)
                 return

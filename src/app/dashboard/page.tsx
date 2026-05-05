@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { BookOpen, Users, Clock, Loader2, ArrowRight, Tags, History, PlusCircle } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import Link from 'next/link'
+import { ViewsChart } from '@/components/dashboard/ViewsChart'
 
 export default function Dashboard() {
     const { user, loading: authLoading } = useAuth()
@@ -29,11 +30,11 @@ export default function Dashboard() {
             // Check Admin
             const { data: userData } = await supabase
                 .from('users')
-                .select('is_admin')
+                .select('role')
                 .eq('user_id', user.id)
                 .single()
             
-            const adminMode = !!userData?.is_admin
+            const adminMode = userData?.role === 'ADMIN' || userData?.role === 'SUPER_ADMIN'
             setIsAdmin(adminMode)
 
             if (!adminMode) {
@@ -49,6 +50,7 @@ export default function Dashboard() {
                 totalBooks: booksCount || 0,
                 totalDownloads: logsCount || 0
             })
+
         } catch (error) {
             console.error('Error fetching dashboard:', error)
         } finally {
@@ -141,27 +143,18 @@ export default function Dashboard() {
                         </div>
                     </section>
 
+                    {/* Chart Section */}
+                    <section>
+                        <ViewsChart />
+                    </section>
+
                     {/* Công cụ quản trị */}
                     <section>
                         <div className="flex items-center gap-2 mb-4">
                             <div className="h-6 w-2 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500"></div>
                             <h2 className="text-xl font-semibold tracking-tight">Công Cụ Quản Trị</h2>
                         </div>
-                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                            <Link href="/books/add">
-                                <Card className="hover:border-primary/50 hover:shadow-sm transition-all group cursor-pointer h-full bg-muted/20">
-                                    <CardContent className="p-5 flex items-center gap-4">
-                                        <div className="h-10 w-10 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <PlusCircle className="h-5 w-5 text-primary" />
-                                        </div>
-                                        <div>
-                                            <CardTitle className="text-sm">Thêm Sách Mới</CardTitle>
-                                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">Khai báo tài liệu mới</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                            
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
                             <Link href="/admin/users">
                                 <Card className="hover:border-blue-500/50 hover:shadow-sm transition-all group cursor-pointer h-full bg-muted/20">
                                     <CardContent className="p-5 flex items-center gap-4">
@@ -185,20 +178,6 @@ export default function Dashboard() {
                                         <div>
                                             <CardTitle className="text-sm">Quản Lý Danh Mục</CardTitle>
                                             <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">Chỉnh sửa thể loại</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-
-                            <Link href="/admin/logs">
-                                <Card className="hover:border-indigo-500/50 hover:shadow-sm transition-all group cursor-pointer h-full bg-muted/20">
-                                    <CardContent className="p-5 flex items-center gap-4">
-                                        <div className="h-10 w-10 shrink-0 rounded-lg bg-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <History className="h-5 w-5 text-indigo-500" />
-                                        </div>
-                                        <div>
-                                            <CardTitle className="text-sm">Lịch Sử Truy Cập</CardTitle>
-                                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">Kiểm tra Logs hệ thống</p>
                                         </div>
                                     </CardContent>
                                 </Card>

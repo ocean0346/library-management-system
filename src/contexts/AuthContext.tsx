@@ -36,6 +36,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return
             }
 
+            if (existingUser?.is_banned) {
+                console.warn('User is banned. Logging out...')
+                await supabase.auth.signOut()
+                setUser(null)
+                // You can also emit an event or toast here if needed
+                return
+            }
+
             if (!existingUser) {
                 // 如果用户不存在，创建新用户记录
                 const { error: insertError } = await supabase

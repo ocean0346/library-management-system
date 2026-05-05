@@ -75,11 +75,11 @@ export default function BookDetails() {
             if (user) {
                 const { data } = await supabase
                     .from('users')
-                    .select('is_admin')
+                    .select('role')
                     .eq('user_id', user.id)
                     .single()
                 
-                if (data?.is_admin) {
+                if (data?.role === 'ADMIN' || data?.role === 'SUPER_ADMIN') {
                     setIsAdmin(true)
                 }
             }

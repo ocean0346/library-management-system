@@ -62,11 +62,11 @@ export default function AccessLogs() {
             }
             const { data: userData } = await supabase
                 .from('users')
-                .select('is_admin')
+                .select('role')
                 .eq('user_id', user.id)
                 .single()
             
-            if (!userData?.is_admin) {
+            if (!userData?.role || (userData.role !== 'ADMIN' && userData.role !== 'SUPER_ADMIN')) {
                 router.push('/dashboard')
                 return
             }
