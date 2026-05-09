@@ -4,8 +4,8 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
-    title: 'Cookie Policy - LibraryOS',
-    description: 'Cookie Policy for LibraryOS',
+    title: 'Chính Sách Cookie - ThưViệnOnline',
+    description: 'Chính sách Cookie của ThưViệnOnline',
 }
 
 export default function CookiePolicyPage() {
@@ -15,118 +15,115 @@ export default function CookiePolicyPage() {
                 <Button variant="ghost" size="sm" asChild>
                     <Link href="/" className="gap-2">
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Home
+                        Về Trang Chủ
                     </Link>
                 </Button>
             </div>
 
             <article className="prose prose-neutral dark:prose-invert max-w-none">
-                <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Cookie Policy</h1>
-                <p className="text-muted-foreground text-lg mb-8">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Chính Sách Cookie</h1>
+                <p className="text-muted-foreground text-lg mb-8">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">1. What Are Cookies</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">1. Cookie Là Gì?</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        Cookies are small text files that are placed on your computer or mobile device when you visit a website.
-                        They are widely used to make websites work more efficiently and to provide information to website owners.
-                        Cookies help us improve your experience by remembering your preferences and understanding how you use our service.
+                        Cookie là các tệp văn bản nhỏ được lưu trên máy tính hoặc thiết bị di động của bạn khi bạn truy cập một trang web.
+                        Cookie được sử dụng rộng rãi để giúp trang web hoạt động hiệu quả hơn và cung cấp thông tin cho chủ sở hữu trang web.
+                        Cookie giúp chúng tôi cải thiện trải nghiệm của bạn bằng cách ghi nhớ tùy chọn và hiểu cách bạn sử dụng dịch vụ.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">2. How We Use Cookies</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">2. Cách Chúng Tôi Sử Dụng Cookie</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
-                        We use cookies for the following purposes:
+                        Chúng tôi sử dụng cookie cho các mục đích sau:
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li><strong>Authentication:</strong> To keep you signed in and maintain your session</li>
-                        <li><strong>Preferences:</strong> To remember your settings like theme preference (light/dark mode)</li>
-                        <li><strong>Security:</strong> To protect your account and prevent fraud</li>
-                        <li><strong>Analytics:</strong> To understand how visitors interact with our website</li>
-                        <li><strong>Performance:</strong> To ensure the website loads quickly and functions properly</li>
+                        <li><strong>Xác thực:</strong> Để duy trì trạng thái đăng nhập và phiên làm việc của bạn</li>
+                        <li><strong>Tùy chọn:</strong> Để ghi nhớ cài đặt như chế độ giao diện (sáng/tối)</li>
+                        <li><strong>Bảo mật:</strong> Để bảo vệ tài khoản và ngăn chặn gian lận</li>
+                        <li><strong>Phân tích:</strong> Để hiểu cách người dùng tương tác với trang web</li>
+                        <li><strong>Hiệu suất:</strong> Để đảm bảo trang web tải nhanh và hoạt động ổn định</li>
                     </ul>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">3. Types of Cookies We Use</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">3. Các Loại Cookie Chúng Tôi Sử Dụng</h2>
 
                     <div className="mb-6">
-                        <h3 className="text-xl font-display font-medium mb-3">Essential Cookies</h3>
+                        <h3 className="text-xl font-display font-medium mb-3">Cookie Thiết Yếu</h3>
                         <p className="text-muted-foreground leading-relaxed">
-                            These cookies are necessary for the website to function properly. They enable core functionality
-                            such as security, account access, and session management. You cannot opt out of these cookies
-                            as the service would not work without them.
+                            Các cookie này cần thiết để trang web hoạt động bình thường. Chúng bao gồm các chức năng cốt lõi
+                            như bảo mật, truy cập tài khoản và quản lý phiên làm việc. Bạn không thể tắt các cookie này
+                            vì dịch vụ sẽ không thể hoạt động nếu thiếu chúng.
                         </p>
                     </div>
 
                     <div className="mb-6">
-                        <h3 className="text-xl font-display font-medium mb-3">Functional Cookies</h3>
+                        <h3 className="text-xl font-display font-medium mb-3">Cookie Chức Năng</h3>
                         <p className="text-muted-foreground leading-relaxed">
-                            These cookies allow us to remember choices you make (such as your preferred language or theme)
-                            and provide enhanced, personalized features. They may also be used to provide services you have
-                            requested, such as remembering your organization selection.
+                            Các cookie này cho phép chúng tôi ghi nhớ các lựa chọn của bạn (như ngôn ngữ hoặc giao diện ưa thích)
+                            và cung cấp các tính năng cá nhân hóa.
                         </p>
                     </div>
 
                     <div className="mb-6">
-                        <h3 className="text-xl font-display font-medium mb-3">Analytics Cookies</h3>
+                        <h3 className="text-xl font-display font-medium mb-3">Cookie Phân Tích</h3>
                         <p className="text-muted-foreground leading-relaxed">
-                            These cookies help us understand how visitors interact with our website by collecting and
-                            reporting information anonymously. This helps us improve our service and user experience.
-                            We may use third-party analytics services that set their own cookies.
+                            Các cookie này giúp chúng tôi hiểu cách khách truy cập tương tác với trang web bằng cách thu thập
+                            và báo cáo thông tin ẩn danh. Điều này giúp chúng tôi cải thiện dịch vụ và trải nghiệm người dùng.
                         </p>
                     </div>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">4. Third-Party Cookies</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">4. Cookie Bên Thứ Ba</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
-                        We may use third-party services that set their own cookies:
+                        Chúng tôi có thể sử dụng các dịch vụ bên thứ ba có cookie riêng:
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li><strong>Supabase:</strong> For authentication and session management</li>
-                        <li><strong>Stripe:</strong> For payment processing (if you use paid features)</li>
-                        <li><strong>Vercel Analytics:</strong> For understanding website performance and usage</li>
+                        <li><strong>Supabase:</strong> Cho xác thực và quản lý phiên đăng nhập</li>
+                        <li><strong>Vercel:</strong> Cho phân tích hiệu suất trang web</li>
                     </ul>
                     <p className="text-muted-foreground leading-relaxed mt-4">
-                        These third-party services have their own privacy and cookie policies. We encourage you to review them.
+                        Các dịch vụ bên thứ ba này có chính sách cookie riêng. Chúng tôi khuyến khích bạn xem xét chúng.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">5. Cookie Duration</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">5. Thời Hạn Cookie</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
-                        Cookies can be either session cookies or persistent cookies:
+                        Cookie có thể là cookie phiên hoặc cookie lâu dài:
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li><strong>Session cookies:</strong> These are temporary and are deleted when you close your browser</li>
-                        <li><strong>Persistent cookies:</strong> These remain on your device for a set period or until you delete them</li>
+                        <li><strong>Cookie phiên:</strong> Là cookie tạm thời, sẽ bị xóa khi bạn đóng trình duyệt</li>
+                        <li><strong>Cookie lâu dài:</strong> Được lưu trên thiết bị trong một khoảng thời gian nhất định hoặc cho đến khi bạn xóa chúng</li>
                     </ul>
                     <p className="text-muted-foreground leading-relaxed mt-4">
-                        Our authentication cookies typically last for 7-30 days depending on your session preferences.
+                        Cookie xác thực của chúng tôi thường tồn tại từ 7-30 ngày tùy theo tùy chọn phiên đăng nhập của bạn.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">6. Managing Cookies</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">6. Quản Lý Cookie</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
-                        You can control and manage cookies in several ways:
+                        Bạn có thể kiểm soát và quản lý cookie theo nhiều cách:
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li><strong>Browser settings:</strong> Most browsers allow you to refuse or accept cookies and delete existing cookies</li>
-                        <li><strong>Private browsing:</strong> Use incognito or private browsing mode to prevent cookies from being stored</li>
-                        <li><strong>Cookie management tools:</strong> Use browser extensions to manage cookies more granularly</li>
+                        <li><strong>Cài đặt trình duyệt:</strong> Hầu hết các trình duyệt cho phép bạn từ chối hoặc chấp nhận cookie và xóa cookie hiện có</li>
+                        <li><strong>Duyệt web riêng tư:</strong> Sử dụng chế độ ẩn danh để ngăn cookie được lưu trữ</li>
+                        <li><strong>Công cụ quản lý cookie:</strong> Sử dụng tiện ích mở rộng trình duyệt để quản lý cookie chi tiết hơn</li>
                     </ul>
                     <p className="text-muted-foreground leading-relaxed mt-4">
-                        Please note that blocking or deleting cookies may impact your ability to use our service,
-                        as some features require cookies to function properly.
+                        Xin lưu ý rằng việc chặn hoặc xóa cookie có thể ảnh hưởng đến khả năng sử dụng dịch vụ của bạn,
+                        vì một số tính năng yêu cầu cookie để hoạt động.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">7. Browser-Specific Instructions</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">7. Hướng Dẫn Theo Trình Duyệt</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
-                        Here are links to manage cookies in popular browsers:
+                        Dưới đây là liên kết quản lý cookie trên các trình duyệt phổ biến:
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
                         <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Chrome</a></li>
@@ -137,20 +134,19 @@ export default function CookiePolicyPage() {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">8. Updates to This Policy</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">8. Cập Nhật Chính Sách</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        We may update this Cookie Policy from time to time to reflect changes in our practices or for
-                        legal or regulatory reasons. We will post any changes on this page and update the &quot;Last updated&quot;
-                        date. We encourage you to review this policy periodically.
+                        Chúng tôi có thể cập nhật Chính Sách Cookie này theo thời gian để phản ánh các thay đổi trong hoạt động
+                        hoặc vì lý do pháp lý. Chúng tôi sẽ đăng bất kỳ thay đổi nào trên trang này và cập nhật ngày &quot;Cập nhật lần cuối&quot;.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">9. Contact Us</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">9. Liên Hệ</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        If you have any questions about our use of cookies, please contact us at{' '}
-                        <a href="mailto:privacy@library-system.com" className="text-primary hover:underline">
-                            privacy@library-system.com
+                        Nếu bạn có bất kỳ câu hỏi nào về việc sử dụng cookie của chúng tôi, vui lòng liên hệ qua email{' '}
+                        <a href="mailto:pengu0163@gmail.com" className="text-primary hover:underline">
+                            pengu0163@gmail.com
                         </a>
                     </p>
                 </section>

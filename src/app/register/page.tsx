@@ -35,15 +35,15 @@ export default function Register() {
 
     const validateForm = () => {
         if (!formData.username || !formData.email || !formData.fullName || !formData.password) {
-            setError('All fields are required')
+            setError('Vui lòng điền đầy đủ tất cả các trường')
             return false
         }
         if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters')
+            setError('Mật khẩu phải có ít nhất 6 ký tự')
             return false
         }
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match')
+            setError('Mật khẩu xác nhận không khớp')
             return false
         }
         return true
@@ -72,7 +72,7 @@ export default function Register() {
             )
             router.push('/dashboard')
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to create account')
+            setError(error instanceof Error ? error.message : 'Không thể tạo tài khoản')
         } finally {
             setIsLoading(false)
         }
@@ -120,7 +120,7 @@ export default function Register() {
             {/* Form Side */}
             <div className="flex-1 flex items-center justify-center p-6 md:p-12">
                 <div className="w-full max-w-lg">
-                    <Card variant="glass" className="border-0 shadow-2xl">
+                    <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                         <CardHeader className="space-y-4 text-center pb-2">
                             {/* Logo Icon */}
                             <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
@@ -148,14 +148,14 @@ export default function Register() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="username" className="text-sm font-medium">
-                                            Username
+                                            Tên Đăng Nhập
                                         </Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
                                                 id="username"
                                                 name="username"
-                                                placeholder="johndoe"
+                                                placeholder="nguyenvana"
                                                 className="pl-10"
                                                 value={formData.username}
                                                 onChange={handleChange}
@@ -166,14 +166,14 @@ export default function Register() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="fullName" className="text-sm font-medium">
-                                            Full Name
+                                            Họ và Tên
                                         </Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
                                                 id="fullName"
                                                 name="fullName"
-                                                placeholder="John Doe"
+                                                placeholder="Nguyễn Văn A"
                                                 className="pl-10"
                                                 value={formData.fullName}
                                                 onChange={handleChange}
@@ -207,12 +207,12 @@ export default function Register() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="password" className="text-sm font-medium">
-                                            Password
+                                            Mật Khẩu
                                         </Label>
                                         <PasswordInput
                                             id="password"
                                             name="password"
-                                            placeholder="Min 6 characters"
+                                            placeholder="Tối thiểu 6 ký tự"
                                             value={formData.password}
                                             onChange={handleChange}
                                             disabled={isLoading}
@@ -221,12 +221,12 @@ export default function Register() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                                            Confirm Password
+                                            Xác Nhận Mật Khẩu
                                         </Label>
                                         <PasswordInput
                                             id="confirmPassword"
                                             name="confirmPassword"
-                                            placeholder="Confirm password"
+                                            placeholder="Nhập lại mật khẩu"
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
                                             disabled={isLoading}
@@ -254,11 +254,11 @@ export default function Register() {
 
                                 <p className="text-xs text-center text-muted-foreground">
                                     Bằng việc đăng ký, bạn xác nhận đồng ý với{' '}
-                                    <Link href="#" className="text-foreground hover:underline">
-                                        Điều Khoản Dịch Vụ
+                                    <Link href="/terms" className="text-foreground hover:underline">
+                                        Điều Khoản Sử Dụng
                                     </Link>{' '}
                                     và{' '}
-                                    <Link href="#" className="text-foreground hover:underline">
+                                    <Link href="/privacy" className="text-foreground hover:underline">
                                         Chính Sách Bảo Mật
                                     </Link>{' '}của chúng tôi.
                                 </p>

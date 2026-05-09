@@ -4,8 +4,8 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
-    title: 'Privacy Policy - LibraryOS',
-    description: 'Privacy Policy for LibraryOS',
+    title: 'Chính Sách Bảo Mật - ThưViệnOnline',
+    description: 'Chính sách bảo mật của ThưViệnOnline',
 }
 
 export default function PrivacyPolicyPage() {
@@ -15,104 +15,101 @@ export default function PrivacyPolicyPage() {
                 <Button variant="ghost" size="sm" asChild>
                     <Link href="/" className="gap-2">
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Home
+                        Về Trang Chủ
                     </Link>
                 </Button>
             </div>
 
             <article className="prose prose-neutral dark:prose-invert max-w-none">
-                <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Privacy Policy</h1>
-                <p className="text-muted-foreground text-lg mb-8">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Chính Sách Bảo Mật</h1>
+                <p className="text-muted-foreground text-lg mb-8">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">1. Introduction</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">1. Giới Thiệu</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        Welcome to LibraryOS. We respect your privacy and are committed to protecting your personal data.
-                        This privacy policy will inform you about how we look after your personal data when you visit our website and
-                        tell you about your privacy rights and how the law protects you.
+                        Chào mừng bạn đến với ThưViệnOnline. Chúng tôi tôn trọng quyền riêng tư và cam kết bảo vệ dữ liệu cá nhân của bạn.
+                        Chính sách bảo mật này sẽ thông báo cho bạn về cách chúng tôi bảo vệ dữ liệu cá nhân khi bạn truy cập trang web
+                        và cho bạn biết về quyền riêng tư cũng như cách pháp luật bảo vệ bạn.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">2. Information We Collect</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-4">We may collect, use, store and transfer different kinds of personal data about you:</p>
+                    <h2 className="text-2xl font-display font-semibold mb-4">2. Thông Tin Chúng Tôi Thu Thập</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-4">Chúng tôi có thể thu thập, sử dụng, lưu trữ và chuyển giao các loại dữ liệu cá nhân khác nhau về bạn:</p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li><strong>Identity Data:</strong> includes first name, last name, username or similar identifier</li>
-                        <li><strong>Contact Data:</strong> includes email address</li>
-                        <li><strong>Technical Data:</strong> includes internet protocol (IP) address, browser type and version, time zone setting and location</li>
-                        <li><strong>Usage Data:</strong> includes information about how you use our website and services</li>
-                        <li><strong>Library Data:</strong> includes information about books borrowed, reading history, and reservations</li>
+                        <li><strong>Dữ liệu nhận dạng:</strong> bao gồm họ tên, tên đăng nhập hoặc thông tin định danh tương tự</li>
+                        <li><strong>Dữ liệu liên hệ:</strong> bao gồm địa chỉ email</li>
+                        <li><strong>Dữ liệu kỹ thuật:</strong> bao gồm địa chỉ IP, loại trình duyệt, cài đặt múi giờ và vị trí</li>
+                        <li><strong>Dữ liệu sử dụng:</strong> bao gồm thông tin về cách bạn sử dụng trang web và dịch vụ của chúng tôi</li>
+                        <li><strong>Dữ liệu thư viện:</strong> bao gồm thông tin về sách đã đọc, lịch sử đọc và danh sách yêu thích</li>
                     </ul>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">3. How We Use Your Information</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-4">We use your personal data for the following purposes:</p>
+                    <h2 className="text-2xl font-display font-semibold mb-4">3. Cách Chúng Tôi Sử Dụng Thông Tin</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-4">Chúng tôi sử dụng dữ liệu cá nhân của bạn cho các mục đích sau:</p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li>To provide and maintain our library management services</li>
-                        <li>To manage your account and organization membership</li>
-                        <li>To process book loans, returns, and reservations</li>
-                        <li>To send you important notifications about due dates and overdue items</li>
-                        <li>To improve our services and user experience</li>
-                        <li>To comply with legal obligations</li>
+                        <li>Cung cấp và duy trì dịch vụ thư viện trực tuyến</li>
+                        <li>Quản lý tài khoản của bạn</li>
+                        <li>Lưu trữ tiến độ đọc sách và danh sách yêu thích</li>
+                        <li>Gửi thông báo quan trọng về cập nhật sách mới</li>
+                        <li>Cải thiện dịch vụ và trải nghiệm người dùng</li>
+                        <li>Tuân thủ các nghĩa vụ pháp lý</li>
                     </ul>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">4. Data Security</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">4. Bảo Mật Dữ Liệu</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        We have implemented appropriate security measures to prevent your personal data from being accidentally lost,
-                        used or accessed in an unauthorized way, altered or disclosed. We use industry-standard encryption and secure
-                        servers to protect your data. Access to your personal data is limited to employees and contractors who need
-                        it to perform their duties.
+                        Chúng tôi đã triển khai các biện pháp bảo mật phù hợp để ngăn chặn dữ liệu cá nhân của bạn bị mất,
+                        sử dụng hoặc truy cập trái phép. Chúng tôi sử dụng mã hóa tiêu chuẩn công nghiệp và máy chủ bảo mật
+                        để bảo vệ dữ liệu của bạn.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">5. Data Retention</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">5. Lưu Trữ Dữ Liệu</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        We will only retain your personal data for as long as necessary to fulfill the purposes we collected it for,
-                        including for the purposes of satisfying any legal, accounting, or reporting requirements. When you delete
-                        your account, we will delete or anonymize your personal data within 30 days.
+                        Chúng tôi chỉ lưu giữ dữ liệu cá nhân của bạn trong thời gian cần thiết để thực hiện các mục đích đã thu thập.
+                        Khi bạn xóa tài khoản, chúng tôi sẽ xóa hoặc ẩn danh dữ liệu cá nhân của bạn trong vòng 30 ngày.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">6. Your Rights</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-4">Under data protection laws, you have rights including:</p>
+                    <h2 className="text-2xl font-display font-semibold mb-4">6. Quyền Của Bạn</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-4">Theo luật bảo vệ dữ liệu, bạn có các quyền bao gồm:</p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li><strong>Access:</strong> You can request copies of your personal data</li>
-                        <li><strong>Correction:</strong> You can request that we correct inaccurate or incomplete data</li>
-                        <li><strong>Erasure:</strong> You can request that we delete your personal data</li>
-                        <li><strong>Portability:</strong> You can request that we transfer your data to another organization</li>
-                        <li><strong>Objection:</strong> You can object to certain types of processing</li>
+                        <li><strong>Truy cập:</strong> Bạn có thể yêu cầu bản sao dữ liệu cá nhân của mình</li>
+                        <li><strong>Chỉnh sửa:</strong> Bạn có thể yêu cầu chúng tôi sửa dữ liệu không chính xác hoặc không đầy đủ</li>
+                        <li><strong>Xóa:</strong> Bạn có thể yêu cầu chúng tôi xóa dữ liệu cá nhân của mình</li>
+                        <li><strong>Di chuyển:</strong> Bạn có thể yêu cầu chuyển dữ liệu sang tổ chức khác</li>
+                        <li><strong>Phản đối:</strong> Bạn có thể phản đối một số hình thức xử lý dữ liệu</li>
                     </ul>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">7. Third-Party Services</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">7. Dịch Vụ Bên Thứ Ba</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        Our service may use third-party services for authentication, payment processing, and analytics.
-                        These services have their own privacy policies, and we encourage you to review them. We use Supabase
-                        for authentication and database services, and Stripe for payment processing.
+                        Dịch vụ của chúng tôi có thể sử dụng các dịch vụ bên thứ ba cho xác thực và phân tích.
+                        Các dịch vụ này có chính sách bảo mật riêng và chúng tôi khuyến khích bạn xem xét chúng.
+                        Chúng tôi sử dụng Supabase cho dịch vụ xác thực và cơ sở dữ liệu.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">8. Changes to This Policy</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">8. Thay Đổi Chính Sách</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        We may update this privacy policy from time to time. We will notify you of any changes by posting the
-                        new privacy policy on this page and updating the &quot;Last updated&quot; date. We encourage you to review this
-                        policy periodically.
+                        Chúng tôi có thể cập nhật chính sách bảo mật này theo thời gian. Chúng tôi sẽ thông báo cho bạn về bất kỳ thay đổi nào
+                        bằng cách đăng chính sách mới trên trang này và cập nhật ngày &quot;Cập nhật lần cuối&quot;.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">9. Contact Us</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">9. Liên Hệ</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        If you have any questions about this privacy policy or our privacy practices, please contact us at{' '}
-                        <a href="mailto:privacy@library-system.com" className="text-primary hover:underline">
-                            privacy@library-system.com
+                        Nếu bạn có bất kỳ câu hỏi nào về chính sách bảo mật này, vui lòng liên hệ với chúng tôi qua email{' '}
+                        <a href="mailto:pengu0163@gmail.com" className="text-primary hover:underline">
+                            pengu0163@gmail.com
                         </a>
                     </p>
                 </section>

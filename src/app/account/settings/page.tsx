@@ -236,9 +236,9 @@ export default function AccountSettings() {
     return (
         <div className="container max-w-4xl py-8">
             <div className="mb-8">
-                <h1 className="text-3xl font-display font-bold">Account Settings</h1>
+                <h1 className="text-3xl font-display font-bold">Cài Đặt Tài Khoản</h1>
                 <p className="text-muted-foreground mt-2">
-                    Manage your account settings and preferences
+                    Quản lý thông tin cá nhân và bảo mật tài khoản của bạn
                 </p>
             </div>
 
@@ -246,7 +246,7 @@ export default function AccountSettings() {
                 <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
                     <TabsTrigger value="profile" className="gap-2">
                         <User className="h-4 w-4" />
-                        <span className="hidden sm:inline">Profile</span>
+                        <span className="hidden sm:inline">Hồ Sơ</span>
                     </TabsTrigger>
                     <TabsTrigger value="email" className="gap-2">
                         <Mail className="h-4 w-4" />
@@ -254,7 +254,7 @@ export default function AccountSettings() {
                     </TabsTrigger>
                     <TabsTrigger value="password" className="gap-2">
                         <Lock className="h-4 w-4" />
-                        <span className="hidden sm:inline">Password</span>
+                        <span className="hidden sm:inline">Mật Khẩu</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -262,9 +262,9 @@ export default function AccountSettings() {
                 <TabsContent value="profile">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Profile Information</CardTitle>
+                            <CardTitle>Thông Tin Cá Nhân</CardTitle>
                             <CardDescription>
-                                Update your personal information
+                                Cập nhật thông tin cá nhân của bạn
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -279,14 +279,14 @@ export default function AccountSettings() {
                                     <Alert className="border-[#02FF73]/50 bg-[#02FF73]/10">
                                         <CheckCircle2 className="h-4 w-4 text-[#02FF73]" />
                                         <AlertDescription className="text-[#02FF73]">
-                                            Profile updated successfully
+                                            Cập nhật hồ sơ thành công
                                         </AlertDescription>
                                     </Alert>
                                 )}
 
                                 <div className="grid gap-6 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="username">Username</Label>
+                                        <Label htmlFor="username">Tên Đăng Nhập</Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
@@ -300,7 +300,7 @@ export default function AccountSettings() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="fullName">Full Name</Label>
+                                        <Label htmlFor="fullName">Họ và Tên</Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
@@ -314,7 +314,7 @@ export default function AccountSettings() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="phone">Phone Number</Label>
+                                        <Label htmlFor="phone">Số Điện Thoại</Label>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
@@ -323,7 +323,7 @@ export default function AccountSettings() {
                                                 value={profile.phone || ''}
                                                 onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                                                 className="pl-10"
-                                                placeholder="Optional"
+                                                placeholder="Không bắt buộc"
                                             />
                                         </div>
                                     </div>
@@ -340,13 +340,13 @@ export default function AccountSettings() {
                                             />
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                            To change your email, use the Email tab
+                                            Để thay đổi email, vui lòng chuyển sang tab Email
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="address">Address</Label>
+                                    <Label htmlFor="address">Địa Chỉ</Label>
                                     <div className="relative">
                                         <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                         <Textarea
@@ -354,7 +354,7 @@ export default function AccountSettings() {
                                             value={profile.address || ''}
                                             onChange={(e) => setProfile({ ...profile, address: e.target.value })}
                                             className="pl-10 min-h-[100px]"
-                                            placeholder="Optional"
+                                            placeholder="Không bắt buộc"
                                         />
                                     </div>
                                 </div>
@@ -367,12 +367,12 @@ export default function AccountSettings() {
                                     {profileSaving ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Saving...
+                                            Đang lưu...
                                         </>
                                     ) : (
                                         <>
                                             <Save className="mr-2 h-4 w-4" />
-                                            Save Changes
+                                            Lưu Thay Đổi
                                         </>
                                     )}
                                 </Button>
@@ -385,9 +385,9 @@ export default function AccountSettings() {
                 <TabsContent value="email">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Change Email Address</CardTitle>
+                            <CardTitle>Thay Đổi Email</CardTitle>
                             <CardDescription>
-                                Update your email address. A confirmation link will be sent to the new email.
+                                Cập nhật địa chỉ email. Một liên kết xác nhận sẽ được gửi đến email mới.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -402,13 +402,13 @@ export default function AccountSettings() {
                                     <Alert className="border-[#02FF73]/50 bg-[#02FF73]/10">
                                         <CheckCircle2 className="h-4 w-4 text-[#02FF73]" />
                                         <AlertDescription className="text-[#02FF73]">
-                                            Confirmation email sent! Check your inbox to verify the new email address.
+                                            Đã gửi email xác nhận! Kiểm tra hộp thư để xác minh địa chỉ email mới.
                                         </AlertDescription>
                                     </Alert>
                                 )}
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="currentEmail">Current Email</Label>
+                                    <Label htmlFor="currentEmail">Email Hiện Tại</Label>
                                     <div className="relative">
                                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -421,7 +421,7 @@ export default function AccountSettings() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="newEmail">New Email Address</Label>
+                                    <Label htmlFor="newEmail">Email Mới</Label>
                                     <div className="relative">
                                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -447,10 +447,10 @@ export default function AccountSettings() {
                                     {emailLoading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Sending...
+                                            Đang gửi...
                                         </>
                                     ) : (
-                                        'Send Confirmation'
+                                        'Gửi Xác Nhận'
                                     )}
                                 </Button>
                             </form>
@@ -462,9 +462,9 @@ export default function AccountSettings() {
                 <TabsContent value="password">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Change Password</CardTitle>
+                            <CardTitle>Đổi Mật Khẩu</CardTitle>
                             <CardDescription>
-                                Update your password to keep your account secure
+                                Cập nhật mật khẩu để bảo vệ tài khoản của bạn
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -479,13 +479,13 @@ export default function AccountSettings() {
                                     <Alert className="border-[#02FF73]/50 bg-[#02FF73]/10">
                                         <CheckCircle2 className="h-4 w-4 text-[#02FF73]" />
                                         <AlertDescription className="text-[#02FF73]">
-                                            Password updated successfully
+                                            Cập nhật mật khẩu thành công
                                         </AlertDescription>
                                     </Alert>
                                 )}
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="currentPassword">Current Password</Label>
+                                    <Label htmlFor="currentPassword">Mật Khẩu Hiện Tại</Label>
                                     <PasswordInput
                                         id="currentPassword"
                                         value={currentPassword}
@@ -493,13 +493,13 @@ export default function AccountSettings() {
                                             setCurrentPassword(e.target.value)
                                             setPasswordError(null)
                                         }}
-                                        placeholder="Enter current password"
+                                        placeholder="Nhập mật khẩu hiện tại"
                                         required
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="newPassword">New Password</Label>
+                                    <Label htmlFor="newPassword">Mật Khẩu Mới</Label>
                                     <PasswordInput
                                         id="newPassword"
                                         value={newPassword}
@@ -507,17 +507,17 @@ export default function AccountSettings() {
                                             setNewPassword(e.target.value)
                                             setPasswordError(null)
                                         }}
-                                        placeholder="Enter new password"
+                                        placeholder="Nhập mật khẩu mới"
                                         required
                                         minLength={6}
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Must be at least 6 characters
+                                        Tối thiểu 6 ký tự
                                     </p>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                                    <Label htmlFor="confirmPassword">Xác Nhận Mật Khẩu Mới</Label>
                                     <PasswordInput
                                         id="confirmPassword"
                                         value={confirmPassword}
@@ -525,7 +525,7 @@ export default function AccountSettings() {
                                             setConfirmPassword(e.target.value)
                                             setPasswordError(null)
                                         }}
-                                        placeholder="Confirm new password"
+                                        placeholder="Nhập lại mật khẩu mới"
                                         required
                                     />
                                 </div>
@@ -538,10 +538,10 @@ export default function AccountSettings() {
                                     {passwordLoading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Updating...
+                                            Đang cập nhật...
                                         </>
                                     ) : (
-                                        'Update Password'
+                                        'Đổi Mật Khẩu'
                                     )}
                                 </Button>
                             </form>

@@ -4,8 +4,8 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
-    title: 'Terms of Service - LibraryOS',
-    description: 'Terms of Service for LibraryOS',
+    title: 'Điều Khoản Sử Dụng - ThưViệnOnline',
+    description: 'Điều khoản sử dụng của ThưViệnOnline',
 }
 
 export default function TermsOfServicePage() {
@@ -15,130 +15,96 @@ export default function TermsOfServicePage() {
                 <Button variant="ghost" size="sm" asChild>
                     <Link href="/" className="gap-2">
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Home
+                        Về Trang Chủ
                     </Link>
                 </Button>
             </div>
 
             <article className="prose prose-neutral dark:prose-invert max-w-none">
-                <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Terms of Service</h1>
-                <p className="text-muted-foreground text-lg mb-8">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Điều Khoản Sử Dụng</h1>
+                <p className="text-muted-foreground text-lg mb-8">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">1. Acceptance of Terms</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">1. Chấp Nhận Điều Khoản</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        By accessing and using LibraryOS, you accept and agree to be bound by the terms
-                        and provisions of this agreement. If you do not agree to these terms, please do not use our service.
+                        Bằng việc truy cập và sử dụng ThưViệnOnline, bạn chấp nhận và đồng ý tuân theo các điều khoản
+                        và điều kiện của thỏa thuận này. Nếu bạn không đồng ý với các điều khoản này, vui lòng không sử dụng dịch vụ của chúng tôi.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">2. Description of Service</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">2. Mô Tả Dịch Vụ</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        LibraryOS provides a digital platform for organizations to manage their book collections,
-                        track loans and reservations, and facilitate member access to library resources. Our service includes
-                        book cataloging, member management, loan tracking, and organizational administration features.
+                        ThưViệnOnline cung cấp nền tảng đọc sách và truyện trực tuyến miễn phí. Dịch vụ của chúng tôi bao gồm
+                        kho sách đa dạng, tính năng lưu trữ và theo dõi tiến độ đọc, cùng với hệ thống đánh giá và nhận xét.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">3. User Accounts</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-4">To use our service, you must:</p>
+                    <h2 className="text-2xl font-display font-semibold mb-4">3. Tài Khoản Người Dùng</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-4">Để sử dụng dịch vụ, bạn cần:</p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li>Create an account with accurate and complete information</li>
-                        <li>Maintain the security of your account credentials</li>
-                        <li>Notify us immediately of any unauthorized use of your account</li>
-                        <li>Be responsible for all activities that occur under your account</li>
+                        <li>Tạo tài khoản với thông tin chính xác và đầy đủ</li>
+                        <li>Duy trì bảo mật thông tin đăng nhập của bạn</li>
+                        <li>Thông báo cho chúng tôi ngay lập tức nếu phát hiện sử dụng trái phép</li>
+                        <li>Chịu trách nhiệm cho mọi hoạt động diễn ra trên tài khoản của bạn</li>
                     </ul>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">4. Organization Membership</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-4">
-                        Users may create or join organizations within the platform. Organization administrators are responsible for:
-                    </p>
+                    <h2 className="text-2xl font-display font-semibold mb-4">4. Quy Tắc Sử Dụng</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-4">Bạn đồng ý không:</p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li>Managing member access and permissions</li>
-                        <li>Ensuring compliance with these terms by all organization members</li>
-                        <li>Maintaining accurate book inventory and loan records</li>
-                        <li>Handling subscription payments and billing (for paid plans)</li>
+                        <li>Sử dụng dịch vụ cho bất kỳ mục đích bất hợp pháp nào</li>
+                        <li>Tải lên hoặc chia sẻ nội dung vi phạm quyền sở hữu trí tuệ</li>
+                        <li>Cố gắng truy cập trái phép vào tài khoản hoặc hệ thống khác</li>
+                        <li>Can thiệp hoặc làm gián đoạn dịch vụ hoặc máy chủ</li>
+                        <li>Sử dụng hệ thống tự động để truy cập dịch vụ mà không có sự cho phép</li>
+                        <li>Chia sẻ thông tin đăng nhập tài khoản của bạn cho người khác</li>
                     </ul>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">5. Acceptable Use</h2>
-                    <p className="text-muted-foreground leading-relaxed mb-4">You agree not to:</p>
-                    <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                        <li>Use the service for any unlawful purpose or in violation of any regulations</li>
-                        <li>Upload or share content that infringes on intellectual property rights</li>
-                        <li>Attempt to gain unauthorized access to other accounts or systems</li>
-                        <li>Interfere with or disrupt the service or servers</li>
-                        <li>Use automated systems to access the service without permission</li>
-                        <li>Share your account credentials with others</li>
-                    </ul>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">6. Subscription and Payments</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">5. Sở Hữu Trí Tuệ</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        Some features require a paid subscription. Subscription fees are billed in advance on a monthly or annual basis.
-                        Refunds are provided according to our refund policy. We reserve the right to change pricing with 30 days notice.
-                        Failure to pay may result in service suspension or termination.
+                        ThưViệnOnline, bao gồm nội dung gốc, tính năng và chức năng, thuộc sở hữu của chúng tôi
+                        và được bảo vệ bởi luật bản quyền và sở hữu trí tuệ. Bạn giữ quyền sở hữu đối với nội dung
+                        bạn tải lên nhưng cấp cho chúng tôi giấy phép sử dụng để cung cấp dịch vụ.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">7. Intellectual Property</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">6. Giới Hạn Trách Nhiệm</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        LibraryOS, including its original content, features, and functionality, is owned by us
-                        and is protected by international copyright, trademark, and other intellectual property laws. You retain
-                        ownership of any content you upload but grant us a license to use it for providing our services.
+                        Trong phạm vi tối đa được pháp luật cho phép, chúng tôi sẽ không chịu trách nhiệm cho bất kỳ
+                        thiệt hại gián tiếp, ngẫu nhiên, đặc biệt hoặc hậu quả nào, hoặc bất kỳ tổn thất lợi nhuận hay
+                        doanh thu nào phát sinh từ việc bạn sử dụng dịch vụ.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">8. Limitation of Liability</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">7. Chấm Dứt</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special,
-                        consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or
-                        indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use
-                        of the service.
+                        Chúng tôi có thể chấm dứt hoặc tạm ngưng tài khoản và quyền truy cập dịch vụ của bạn ngay lập tức,
+                        không cần thông báo trước, vì bất kỳ lý do nào, bao gồm vi phạm các điều khoản này.
+                        Bạn cũng có thể xóa tài khoản bất cứ lúc nào thông qua cài đặt tài khoản.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">9. Termination</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">8. Thay Đổi Điều Khoản</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        We may terminate or suspend your account and access to the service immediately, without prior notice or
-                        liability, for any reason, including breach of these terms. Upon termination, your right to use the
-                        service will cease immediately. You may also terminate your account at any time through your account settings.
+                        Chúng tôi bảo lưu quyền sửa đổi hoặc thay thế các điều khoản này bất cứ lúc nào. 
+                        Việc bạn tiếp tục sử dụng dịch vụ sau khi các thay đổi có hiệu lực đồng nghĩa với việc bạn chấp nhận các điều khoản mới.
                     </p>
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">10. Changes to Terms</h2>
+                    <h2 className="text-2xl font-display font-semibold mb-4">9. Liên Hệ</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        We reserve the right to modify or replace these terms at any time. If a revision is material, we will
-                        provide at least 30 days notice prior to any new terms taking effect. Your continued use of the service
-                        after changes become effective constitutes acceptance of the new terms.
-                    </p>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">11. Governing Law</h2>
-                    <p className="text-muted-foreground leading-relaxed">
-                        These terms shall be governed by and construed in accordance with applicable laws, without regard to
-                        conflict of law principles. Any disputes arising from these terms will be resolved through binding
-                        arbitration or in the courts of competent jurisdiction.
-                    </p>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="text-2xl font-display font-semibold mb-4">12. Contact Us</h2>
-                    <p className="text-muted-foreground leading-relaxed">
-                        If you have any questions about these Terms of Service, please contact us at{' '}
-                        <a href="mailto:legal@library-system.com" className="text-primary hover:underline">
-                            legal@library-system.com
+                        Nếu bạn có bất kỳ câu hỏi nào về Điều Khoản Sử Dụng này, vui lòng liên hệ với chúng tôi qua email{' '}
+                        <a href="mailto:pengu0163@gmail.com" className="text-primary hover:underline">
+                            pengu0163@gmail.com
                         </a>
                     </p>
                 </section>

@@ -75,17 +75,20 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (typeof chapterNumber !== 'number' || !chapterTitle.trim() || !chapterContent.trim()) {
-            toast({ title: "Lỗi", description: "Vui lòng nhập đầy đủ thông tin", variant: "destructive" })
+        if (typeof chapterNumber !== 'number' || !chapterContent.trim()) {
+            toast({ title: "Lỗi", description: "Vui lòng nhập số chương và nội dung chương", variant: "destructive" })
             return
         }
+
+        // Tựa đề có thể để trống
+        const finalTitle = chapterTitle.trim() || null
 
         setIsSubmitting(true)
         try {
             if (isEditing && currentChapterId) {
                 const { error } = await supabase.from('chapters').update({
                     chapter_number: chapterNumber,
-                    title: chapterTitle,
+                    title: finalTitle,
                     content_text: chapterContent
                 }).eq('chapter_id', currentChapterId)
                 if (error) throw error
@@ -94,7 +97,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                 const { error } = await supabase.from('chapters').insert({
                     book_id: id,
                     chapter_number: chapterNumber,
-                    title: chapterTitle,
+                    title: finalTitle,
                     content_text: chapterContent
                 })
                 if (error) throw error
@@ -118,7 +121,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
         setIsEditing(true)
         setCurrentChapterId(chapter.chapter_id)
         setChapterNumber(chapter.chapter_number)
-        setChapterTitle(chapter.title)
+        setChapterTitle(chapter.title || '')
         setChapterContent(chapter.content_text)
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
@@ -168,10 +171,9 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                                 <div className="space-y-2 col-span-3">
                                     <Label>Tựa đề Chương</Label>
                                     <Input
-                                        placeholder="Ví dụ: Chương 1: Bắt đầu..."
+                                        placeholder="Nhập tựa đề chương (không bắt buộc)"
                                         value={chapterTitle}
                                         onChange={(e) => setChapterTitle(e.target.value)}
-                                        required
                                     />
                                 </div>
                             </div>

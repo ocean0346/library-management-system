@@ -156,7 +156,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
             {/* Reading Content */}
             <div className="max-w-3xl mx-auto px-6 py-12">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold mb-4 font-serif">Chương {chapter.chapter_number}: {chapter.title}</h2>
+                    <h2 className="text-3xl font-bold mb-4 font-serif">Chương {chapter.chapter_number}{chapter.title ? `: ${chapter.title}` : ''}</h2>
                     <div className="h-1 w-20 mx-auto bg-primary/40 rounded-full"></div>
                 </div>
 

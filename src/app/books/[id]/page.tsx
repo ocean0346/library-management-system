@@ -517,7 +517,7 @@ export default function BookDetails() {
                                                 onClick={() => router.push(`/books/${bookId}/read/${chap.chapter_number}`)}
                                             >
                                                 <div>
-                                                    <span className="font-medium mr-2">Chương {chap.chapter_number}:</span>
+                                                    <span className="font-medium mr-2">Chương {chap.chapter_number}{chap.title ? ':' : ''}</span>
                                                     <span className="text-muted-foreground group-hover:text-foreground transition-colors">{chap.title}</span>
                                                 </div>
                                                 <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">

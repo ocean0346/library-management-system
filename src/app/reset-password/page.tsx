@@ -59,12 +59,12 @@ export default function ResetPassword() {
         setError(null)
 
         if (password.length < 6) {
-            setError('Password must be at least 6 characters')
+            setError('Mật khẩu phải có ít nhất 6 ký tự')
             return
         }
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match')
+            setError('Mật khẩu xác nhận không khớp')
             return
         }
 
@@ -93,7 +93,7 @@ export default function ResetPassword() {
             if (error instanceof Error) {
                 setError(error.message)
             } else {
-                setError('Failed to update password. Please try again.')
+                setError('Không thể cập nhật mật khẩu. Vui lòng thử lại.')
             }
         } finally {
             setIsLoading(false)
@@ -104,10 +104,10 @@ export default function ResetPassword() {
     if (isValidSession === null) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
-                <Card variant="glass" className="w-full max-w-md border-0 shadow-2xl">
+                <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                     <CardContent className="pt-12 pb-12 text-center">
                         <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#02FF73]" />
-                        <p className="mt-4 text-muted-foreground">Verifying reset link...</p>
+                        <p className="mt-4 text-muted-foreground">Đang xác minh liên kết...</p>
                     </CardContent>
                 </Card>
             </div>
@@ -118,25 +118,25 @@ export default function ResetPassword() {
     if (isValidSession === false) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
-                <Card variant="glass" className="w-full max-w-md border-0 shadow-2xl">
+                <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                     <CardHeader className="space-y-4 text-center pb-2">
                         <div className="mx-auto w-16 h-16 rounded-2xl bg-destructive/10 flex items-center justify-center">
                             <AlertCircle className="h-8 w-8 text-destructive" />
                         </div>
                         <div>
                             <CardTitle className="text-2xl font-display font-bold">
-                                Invalid or expired link
+                                Liên kết không hợp lệ hoặc hết hạn
                             </CardTitle>
                             <CardDescription className="mt-2">
-                                This password reset link is invalid or has expired.
-                                Please request a new one.
+                                Liên kết đặt lại mật khẩu này không hợp lệ hoặc đã hết hạn.
+                                Vui lòng yêu cầu liên kết mới.
                             </CardDescription>
                         </div>
                     </CardHeader>
                     <CardContent className="pt-6 text-center">
                         <Button variant="gradient" className="w-full" asChild>
                             <Link href="/forgot-password">
-                                Request new reset link
+                                Yêu cầu liên kết mới
                             </Link>
                         </Button>
                         <Link
@@ -144,7 +144,7 @@ export default function ResetPassword() {
                             className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center mt-4"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to login
+                            Quay lại đăng nhập
                         </Link>
                     </CardContent>
                 </Card>
@@ -156,18 +156,18 @@ export default function ResetPassword() {
     if (isSuccess) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
-                <Card variant="glass" className="w-full max-w-md border-0 shadow-2xl">
+                <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                     <CardHeader className="space-y-4 text-center pb-2">
                         <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
                             <CheckCircle2 className="h-8 w-8 text-black" />
                         </div>
                         <div>
                             <CardTitle className="text-2xl font-display font-bold">
-                                Password updated!
+                                Mật khẩu đã được cập nhật!
                             </CardTitle>
                             <CardDescription className="mt-2">
-                                Your password has been successfully reset.
-                                Redirecting to login...
+                                Mật khẩu của bạn đã được đặt lại thành công.
+                                Đang chuyển hướng đến trang đăng nhập...
                             </CardDescription>
                         </div>
                     </CardHeader>
@@ -182,17 +182,17 @@ export default function ResetPassword() {
     // Reset password form
     return (
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
-            <Card variant="glass" className="w-full max-w-md border-0 shadow-2xl">
+            <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                 <CardHeader className="space-y-4 text-center pb-2">
                     <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
                         <BookOpen className="h-8 w-8 text-black" />
                     </div>
                     <div>
                         <CardTitle className="text-2xl font-display font-bold">
-                            Set new password
+                            Đặt mật khẩu mới
                         </CardTitle>
                         <CardDescription className="mt-2">
-                            Enter your new password below
+                            Nhập mật khẩu mới của bạn bên dưới
                         </CardDescription>
                     </div>
                 </CardHeader>
@@ -208,11 +208,11 @@ export default function ResetPassword() {
 
                         <div className="space-y-2">
                             <Label htmlFor="password" className="text-sm font-medium">
-                                New Password
+                                Mật Khẩu Mới
                             </Label>
                             <PasswordInput
                                 id="password"
-                                placeholder="Enter new password"
+                                placeholder="Nhập mật khẩu mới"
                                 value={password}
                                 onChange={(e) => {
                                     setPassword(e.target.value)
@@ -223,17 +223,17 @@ export default function ResetPassword() {
                                 minLength={6}
                             />
                             <p className="text-xs text-muted-foreground">
-                                Must be at least 6 characters
+                                Tối thiểu 6 ký tự
                             </p>
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                                Confirm New Password
+                                Xác Nhận Mật Khẩu Mới
                             </Label>
                             <PasswordInput
                                 id="confirmPassword"
-                                placeholder="Confirm new password"
+                                placeholder="Nhập lại mật khẩu mới"
                                 value={confirmPassword}
                                 onChange={(e) => {
                                     setConfirmPassword(e.target.value)
@@ -254,10 +254,10 @@ export default function ResetPassword() {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Updating...
+                                    Đang cập nhật...
                                 </>
                             ) : (
-                                'Reset password'
+                                'Đặt lại mật khẩu'
                             )}
                         </Button>
                     </form>

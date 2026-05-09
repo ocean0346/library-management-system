@@ -38,7 +38,7 @@ export default function ForgotPassword() {
             if (error instanceof Error) {
                 setError(error.message)
             } else {
-                setError('Failed to send reset email. Please try again.')
+                setError('Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại.')
             }
         } finally {
             setIsLoading(false)
@@ -48,29 +48,29 @@ export default function ForgotPassword() {
     if (isSuccess) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
-                <Card variant="glass" className="w-full max-w-md border-0 shadow-2xl">
+                <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                     <CardHeader className="space-y-4 text-center pb-2">
                         <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
                             <CheckCircle2 className="h-8 w-8 text-black" />
                         </div>
                         <div>
                             <CardTitle className="text-2xl font-display font-bold">
-                                Check your email
+                                Kiểm tra email của bạn
                             </CardTitle>
                             <CardDescription className="mt-2">
-                                We&apos;ve sent a password reset link to <strong>{email}</strong>
+                                Chúng tôi đã gửi liên kết đặt lại mật khẩu đến <strong>{email}</strong>
                             </CardDescription>
                         </div>
                     </CardHeader>
                     <CardContent className="pt-6 text-center">
                         <p className="text-sm text-muted-foreground mb-6">
-                            Click the link in the email to reset your password.
-                            If you don&apos;t see it, check your spam folder.
+                            Nhấp vào liên kết trong email để đặt lại mật khẩu.
+                            Nếu không thấy, vui lòng kiểm tra thư mục spam.
                         </p>
                         <Button variant="outline" className="w-full" asChild>
                             <Link href="/login">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to login
+                                Quay lại đăng nhập
                             </Link>
                         </Button>
                     </CardContent>
@@ -81,17 +81,17 @@ export default function ForgotPassword() {
 
     return (
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
-            <Card variant="glass" className="w-full max-w-md border-0 shadow-2xl">
+            <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                 <CardHeader className="space-y-4 text-center pb-2">
                     <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
                         <BookOpen className="h-8 w-8 text-black" />
                     </div>
                     <div>
                         <CardTitle className="text-2xl font-display font-bold">
-                            Forgot password?
+                            Quên mật khẩu?
                         </CardTitle>
                         <CardDescription className="mt-2">
-                            No worries, we&apos;ll send you reset instructions
+                            Đừng lo, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu cho bạn
                         </CardDescription>
                     </div>
                 </CardHeader>
@@ -137,10 +137,10 @@ export default function ForgotPassword() {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Sending...
+                                    Đang gửi...
                                 </>
                             ) : (
-                                'Send reset link'
+                                'Gửi liên kết đặt lại'
                             )}
                         </Button>
                     </form>
@@ -152,7 +152,7 @@ export default function ForgotPassword() {
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to login
+                        Quay lại đăng nhập
                     </Link>
                 </CardFooter>
             </Card>

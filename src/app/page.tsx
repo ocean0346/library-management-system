@@ -8,7 +8,7 @@ import BookCard from '@/components/books/BookCard'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, BookOpen, Sparkles, TrendingUp, ChevronRight, User, Star, ArrowRight } from 'lucide-react'
+import { Search, BookOpen, Sparkles, TrendingUp, ChevronRight, User, Star, ArrowRight, Award } from 'lucide-react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -19,6 +19,7 @@ export default function Home() {
     const [searchQuery, setSearchQuery] = useState('')
     const [recentBooks, setRecentBooks] = useState<Book[]>([])
     const [popularBooks, setPopularBooks] = useState<Book[]>([])
+    const [topRatedBooks, setTopRatedBooks] = useState<Book[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -39,9 +40,50 @@ export default function Home() {
                     .from('books')
                     .select('*, categories(name), chapters(chapter_number, title, created_at)')
                     .order('views_count', { ascending: false, nullsFirst: false })
-                    .limit(12)
+                    .limit(9)
 
                 if (popular) setPopularBooks(popular as Book[])
+
+                // Fetch top rated books: rated first sorted by avg stars, unrated last
+                const { data: allBooksForRating } = await supabase
+                    .from('books')
+                    .select('*, categories(name), chapters(chapter_number, title, created_at)')
+
+                const { data: reviewStats } = await supabase
+                    .from('reviews')
+                    .select('book_id, rating')
+
+                if (allBooksForRating) {
+                    // Calculate average rating per book
+                    const ratingMap: Record<string, { total: number; count: number }> = {}
+                    if (reviewStats) {
+                        reviewStats.forEach((r: any) => {
+                            if (!ratingMap[r.book_id]) {
+                                ratingMap[r.book_id] = { total: 0, count: 0 }
+                            }
+                            ratingMap[r.book_id].total += r.rating
+                            ratingMap[r.book_id].count += 1
+                        })
+                    }
+
+                    // Split into rated and unrated
+                    const rated = allBooksForRating
+                        .filter((b: any) => ratingMap[b.book_id])
+                        .map((b: any) => ({
+                            ...b,
+                            average_rating: Math.round((ratingMap[b.book_id].total / ratingMap[b.book_id].count) * 10) / 10,
+                            _count: ratingMap[b.book_id].count
+                        }))
+                        .sort((a: any, b: any) => b.average_rating - a.average_rating || b._count - a._count)
+
+                    const unrated = allBooksForRating
+                        .filter((b: any) => !ratingMap[b.book_id])
+                        .map((b: any) => ({ ...b, average_rating: 0 }))
+
+                    // Rated first, then unrated, max 9
+                    const combined = [...rated, ...unrated].slice(0, 9) as Book[]
+                    setTopRatedBooks(combined)
+                }
 
             } catch (error) {
                 console.error("Error fetching homepage data:", error)
@@ -161,7 +203,7 @@ export default function Home() {
                     </section>
 
                     {/* Sách Nổi Bật */}
-                    <section className="px-4 lg:px-10">
+                    <section className="bg-background/80 backdrop-blur-xl border shadow-2xl shadow-black/5 rounded-3xl p-6 lg:p-10">
                         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
                             <div>
                                 <h2 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
@@ -197,6 +239,47 @@ export default function Home() {
                             <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">
                                 <TrendingUp className="h-12 w-12 mb-4 opacity-20" />
                                 <p className="text-lg">Chưa có đủ dữ liệu</p>
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Sách Được Đánh Giá Cao */}
+                    <section className="bg-background/80 backdrop-blur-xl border shadow-2xl shadow-black/5 rounded-3xl p-6 lg:p-10">
+                        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                                        <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                                    </div>
+                                    Sách Được Đánh Giá Cao
+                                </h2>
+                                <p className="text-muted-foreground mt-3 text-lg">Được cộng đồng độc giả yêu thích và đánh giá 5 sao</p>
+                            </div>
+                            <Button variant="outline" className="rounded-full hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-colors" asChild>
+                                <Link href="/books">
+                                    Xem tất cả <ArrowRight className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
+                        </div>
+
+                        {isLoading ? (
+                            <div className="flex flex-wrap gap-6">
+                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                    <div key={i} className="h-[200px] flex-auto w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 bg-muted/40 animate-pulse rounded-2xl" />
+                                ))}
+                            </div>
+                        ) : topRatedBooks.length > 0 ? (
+                            <div className="flex flex-wrap gap-6">
+                                {topRatedBooks.map((book) => (
+                                    <div key={book.book_id} className="flex-auto w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                                        <BookCard book={book} />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">
+                                <Star className="h-12 w-12 mb-4 opacity-20" />
+                                <p className="text-lg">Chưa có đánh giá nào</p>
                             </div>
                         )}
                     </section>

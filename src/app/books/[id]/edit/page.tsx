@@ -296,7 +296,7 @@ export default function EditBookPage() {
                 className="mb-6"
             >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Book Details
+                Quay lại Chi Tiết Sách
             </Button>
 
             <Card>
@@ -306,9 +306,9 @@ export default function EditBookPage() {
                             <Pencil className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <CardTitle>Edit Book</CardTitle>
+                            <CardTitle>Chỉnh Sửa Sách</CardTitle>
                             <CardDescription>
-                                Update book information
+                                Cập nhật thông tin sách
                             </CardDescription>
                         </div>
                     </div>
@@ -323,14 +323,14 @@ export default function EditBookPage() {
 
                         {/* Basic Information */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Basic Information</h3>
+                            <h3 className="text-lg font-medium">Thông Tin Cơ Bản</h3>
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title">Title *</Label>
+                                    <Label htmlFor="title">Tên Sách *</Label>
                                     <Input
                                         id="title"
-                                        placeholder="Enter book title"
+                                        placeholder="Nhập tên sách"
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
                                         disabled={isSubmitting}
@@ -338,10 +338,10 @@ export default function EditBookPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="author">Author *</Label>
+                                    <Label htmlFor="author">Tác Giả *</Label>
                                     <Input
                                         id="author"
-                                        placeholder="Enter author name"
+                                        placeholder="Nhập tên tác giả"
                                         value={author}
                                         onChange={(e) => setAuthor(e.target.value)}
                                         disabled={isSubmitting}
@@ -362,14 +362,14 @@ export default function EditBookPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="category">Category</Label>
+                                    <Label htmlFor="category">Danh Mục</Label>
                                     <Select
                                         value={categoryId}
                                         onValueChange={setCategoryId}
                                         disabled={isSubmitting || isLoadingCategories}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select category" />
+                                            <SelectValue placeholder="Chọn danh mục" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {categories.map((category) => (
@@ -400,10 +400,10 @@ export default function EditBookPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">Mô Tả</Label>
                                 <textarea
                                     id="description"
-                                    placeholder="Enter book description"
+                                    placeholder="Nhập mô tả sách"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     disabled={isSubmitting}
@@ -416,21 +416,21 @@ export default function EditBookPage() {
 
                         {/* Publishing Information */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Publishing Information</h3>
+                            <h3 className="text-lg font-medium">Thông Tin Xuất Bản</h3>
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="publisher">Publisher</Label>
+                                    <Label htmlFor="publisher">Nhà Xuất Bản</Label>
                                     <Input
                                         id="publisher"
-                                        placeholder="Enter publisher name"
+                                        placeholder="Nhập tên nhà xuất bản"
                                         value={publisher}
                                         onChange={(e) => setPublisher(e.target.value)}
                                         disabled={isSubmitting}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="publishDate">Publish Date</Label>
+                                    <Label htmlFor="publishDate">Ngày Xuất Bản</Label>
                                     <Input
                                         id="publishDate"
                                         type="date"
@@ -446,10 +446,10 @@ export default function EditBookPage() {
 
                         {/* Document Information */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Document Information</h3>
+                            <h3 className="text-lg font-medium">Thông Tin Tài Liệu</h3>
 
                             <div className="space-y-2">
-                                <Label htmlFor="fileUpload">Upload Document File (PDF)</Label>
+                                <Label htmlFor="fileUpload">Tải Lên Tài Liệu (PDF)</Label>
                                 <div className="flex gap-2 items-center">
                                     <Input
                                         id="fileUpload"
@@ -460,7 +460,7 @@ export default function EditBookPage() {
                                     />
                                     {isUploadingDoc && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
                                 </div>
-                                <Label htmlFor="fileUrl" className="text-xs text-muted-foreground mt-4 block">Or provide an external URL:</Label>
+                                <Label htmlFor="fileUrl" className="text-xs text-muted-foreground mt-4 block">Hoặc cung cấp URL:</Label>
                                 <Input
                                     id="fileUrl"
                                     type="url"
@@ -474,14 +474,14 @@ export default function EditBookPage() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="fileType">File Type</Label>
+                                    <Label htmlFor="fileType">Định Dạng</Label>
                                     <Select
                                         value={fileType}
                                         onValueChange={setFileType}
                                         disabled={isSubmitting}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select format" />
+                                            <SelectValue placeholder="Chọn định dạng" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="PDF">PDF</SelectItem>
@@ -490,7 +490,7 @@ export default function EditBookPage() {
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="fileSize">File Size (MB)</Label>
+                                    <Label htmlFor="fileSize">Dung Lượng (MB)</Label>
                                     <Input
                                         id="fileSize"
                                         type="number"
@@ -509,10 +509,10 @@ export default function EditBookPage() {
 
                         {/* Cover Image */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Cover Image</h3>
+                            <h3 className="text-lg font-medium">Ảnh Bìa</h3>
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="md:col-span-2 space-y-2">
-                                    <Label htmlFor="coverUpload">Upload Cover Image (Max 5MB)</Label>
+                                    <Label htmlFor="coverUpload">Tải Lên Ảnh Bìa (Tối đa 5MB)</Label>
                                     <div className="flex gap-2 items-center">
                                         <Input
                                             id="coverUpload"
@@ -523,7 +523,7 @@ export default function EditBookPage() {
                                         />
                                         {isUploadingCover && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
                                     </div>
-                                    <Label htmlFor="coverImageUrl" className="text-xs text-muted-foreground mt-4 block">Or provide an external URL:</Label>
+                                    <Label htmlFor="coverImageUrl" className="text-xs text-muted-foreground mt-4 block">Hoặc cung cấp URL:</Label>
                                     <Input
                                         id="coverImageUrl"
                                         type="url"
@@ -566,7 +566,7 @@ export default function EditBookPage() {
                                 disabled={isSubmitting}
                                 className="flex-1"
                             >
-                                Cancel
+                                Hủy
                             </Button>
                             <Button
                                 type="submit"
@@ -576,12 +576,12 @@ export default function EditBookPage() {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Saving...
+                                        Đang lưu...
                                     </>
                                 ) : (
                                     <>
                                         <Save className="mr-2 h-4 w-4" />
-                                        Save Changes
+                                        Lưu Thay Đổi
                                     </>
                                 )}
                             </Button>

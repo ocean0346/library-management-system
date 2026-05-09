@@ -32,7 +32,7 @@ export default function Login() {
             router.push('/dashboard')
         } catch (error) {
             console.error('Login error:', error);
-            setError('Invalid credentials. Please check your email and password.')
+            setError('Thông tin đăng nhập không đúng. Vui lòng kiểm tra lại email và mật khẩu.')
         } finally {
             setIsLoading(false)
         }
@@ -43,7 +43,7 @@ export default function Login() {
             {/* Form Side */}
             <div className="flex-1 flex items-center justify-center p-6 md:p-12">
                 <div className="w-full max-w-md">
-                    <Card variant="glass" className="border-0 shadow-2xl">
+                    <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                         <CardHeader className="space-y-4 text-center pb-2">
                             {/* Logo Icon */}
                             <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
@@ -93,18 +93,18 @@ export default function Login() {
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <Label htmlFor="password" className="text-sm font-medium">
-                                            Password
+                                            Mật khẩu
                                         </Label>
                                         <Link
                                             href="/forgot-password"
                                             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                                         >
-                                            Forgot password?
+                                            Quên mật khẩu?
                                         </Link>
                                     </div>
                                     <PasswordInput
                                         id="password"
-                                        placeholder="Enter your password"
+                                        placeholder="Nhập mật khẩu của bạn"
                                         value={password}
                                         onChange={(e) => {
                                             setPassword(e.target.value)

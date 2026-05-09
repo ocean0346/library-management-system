@@ -57,6 +57,8 @@ export default function Header() {
 
     const isActivePath = (path: string) => pathname === path
 
+    const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
     if (pathname.includes('/read')) return null
 
     return (
@@ -64,7 +66,7 @@ export default function Header() {
             <div className="container h-16 flex items-center justify-between">
                 {/* Logo & Navigation */}
                 <div className="flex items-center gap-8">
-                    <Link href="/" className="flex items-center gap-3 group">
+                    <Link href="/" onClick={scrollToTop} className="flex items-center gap-3 group">
                         <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] shadow-lg shadow-[#02FF73]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(2,255,115,0.4)]">
                             <BookOpen className="w-5 h-5 text-black absolute" />
                             <Sparkles className="w-3 h-3 text-black absolute -top-1 -right-1 animate-pulse" />
@@ -83,6 +85,7 @@ export default function Header() {
                                 <Link
                                     key={item.href}
                                     href={item.href}
+                                    onClick={scrollToTop}
                                     className={cn(
                                         "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg group",
                                         isActive
@@ -108,6 +111,7 @@ export default function Header() {
                             <>
                                 <Link
                                     href="/bookshelf"
+                                    onClick={scrollToTop}
                                     className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
                                 >
                                     <span className="flex items-center gap-2">
@@ -119,6 +123,7 @@ export default function Header() {
                                 {isAdmin && (
                                     <Link
                                         href="/dashboard"
+                                        onClick={scrollToTop}
                                         className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
                                     >
                                         <span className="flex items-center gap-2">
