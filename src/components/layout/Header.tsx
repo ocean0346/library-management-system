@@ -62,7 +62,7 @@ export default function Header() {
     if (pathname.includes('/read')) return null
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/50 shadow-[inset_0_-1px_0_0_hsla(0,0%,100%,0.05),0_1px_3px_0_rgba(0,0,0,0.03)]">
             <div className="container h-16 flex items-center justify-between">
                 {/* Logo & Navigation */}
                 <div className="flex items-center gap-8">
