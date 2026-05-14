@@ -10,10 +10,12 @@ export async function uploadFileToSupabase(file: File, options: UploadOptions = 
     const bucket = options.bucket || 'media'
     const folder = options.folder || 'misc'
     
-    // Default max size: 20MB
-    const maxBytes = (options.maxSizeMB || 20) * 1024 * 1024
-    if (file.size > maxBytes) {
-        throw new Error(`Kích thước file vượt quá giới hạn cho phép (${options.maxSizeMB || 20}MB)`)
+    // Only check size if a limit is explicitly set
+    if (options.maxSizeMB) {
+        const maxBytes = options.maxSizeMB * 1024 * 1024
+        if (file.size > maxBytes) {
+            throw new Error(`Kích thước file vượt quá giới hạn cho phép (${options.maxSizeMB}MB)`)
+        }
     }
 
     // Clean file name to prevent encoding issues

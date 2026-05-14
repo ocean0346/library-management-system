@@ -29,6 +29,7 @@ export default function PdfViewer({ fileUrl, initialPage = 0, onPageChange }: Pd
                     plugins={[defaultLayoutPluginInstance]}
                     initialPage={initialPage}
                     onPageChange={handlePageChange}
+                    defaultScale={1.5}
                     theme="auto"
                 />
             </div>

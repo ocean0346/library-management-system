@@ -156,19 +156,19 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
             {/* Reading Content */}
             <div className="max-w-3xl mx-auto px-6 py-12">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold mb-4 font-serif">Chương {chapter.chapter_number}{chapter.title ? `: ${chapter.title}` : ''}</h2>
+                    <h2 className="text-3xl font-bold mb-4 font-display">Chương {chapter.chapter_number}{chapter.title ? `: ${chapter.title}` : ''}</h2>
                     <div className="h-1 w-20 mx-auto bg-primary/40 rounded-full"></div>
                 </div>
 
                 {chapter.content_text.includes('<p') || chapter.content_text.includes('<h') ? (
                     <div 
-                        className="prose dark:prose-invert max-w-none chapter-content font-serif prose-p:mb-[1.5em] prose-headings:font-sans prose-img:block prose-img:mx-auto prose-img:max-w-full prose-img:rounded-md break-words"
+                        className="prose dark:prose-invert max-w-none chapter-content prose-p:mb-[1.5em] prose-headings:font-display prose-img:block prose-img:mx-auto prose-img:max-w-full prose-img:rounded-md break-words"
                         style={{ fontSize: `${fontSize}px` }}
                         dangerouslySetInnerHTML={{ __html: chapter.content_text }}
                     />
                 ) : (
                     <div 
-                        className="font-serif leading-[1.8] whitespace-pre-wrap chapter-content break-words"
+                        className="leading-[1.8] whitespace-pre-wrap chapter-content break-words"
                         style={{ fontSize: `${fontSize}px` }}
                     >
                         {chapter.content_text}

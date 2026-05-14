@@ -64,7 +64,6 @@ export default function EditBookPage() {
     const [categoryId, setCategoryId] = useState<string>('')
     const [tagsInput, setTagsInput] = useState('')
     const [fileUrl, setFileUrl] = useState('')
-    const [fileSize, setFileSize] = useState<string>('')
     const [fileType, setFileType] = useState('PDF')
 
     const [isUploadingCover, setIsUploadingCover] = useState(false)
@@ -110,7 +109,7 @@ export default function EditBookPage() {
             setCategoryId(book.category_id?.toString() || '')
             setTagsInput((book.tags || []).join(', '))
             setFileUrl(book.file_url || '')
-            setFileSize(book.file_size_bytes ? (book.file_size_bytes / (1024 * 1024)).toString() : '')
+
             setFileType(book.file_type || 'PDF')
         } catch (err) {
             console.error('Error fetching book:', err)
@@ -200,9 +199,8 @@ export default function EditBookPage() {
         if (!file) return
         try {
             setIsUploadingDoc(true)
-            const url = await uploadFileToSupabase(file, { folder: 'book_documents', maxSizeMB: 50 })
+            const url = await uploadFileToSupabase(file, { folder: 'book_documents' })
             setFileUrl(url)
-            setFileSize((file.size / (1024 * 1024)).toFixed(2)) // Auto fill size
             toast({ title: 'Thành công', description: 'Đã tải tài liệu lên hệ thống.' })
         } catch (error: any) {
             toast({ title: 'Lỗi tải tệp', description: error.message, variant: 'destructive' })
@@ -225,7 +223,7 @@ export default function EditBookPage() {
             setError('Author is required')
             return
         }
-        if (!fileUrl.trim()) {
+        if (!fileUrl.trim() && fileType !== 'WEBNOVEL') {
             setError('File URL is required')
             return
         }
@@ -247,7 +245,7 @@ export default function EditBookPage() {
                     cover_image_url: coverImageUrl || null,
                     category_id: categoryId ? parseInt(categoryId) : null,
                     file_url: fileUrl || null,
-                    file_size_bytes: fileSize ? Math.round(parseFloat(fileSize) * 1024 * 1024) : null,
+
                     file_type: fileType,
                     tags: tagsArray
                 })
@@ -449,60 +447,47 @@ export default function EditBookPage() {
                             <h3 className="text-lg font-medium">Thông Tin Tài Liệu</h3>
 
                             <div className="space-y-2">
-                                <Label htmlFor="fileUpload">Tải Lên Tài Liệu (PDF)</Label>
-                                <div className="flex gap-2 items-center">
-                                    <Input
-                                        id="fileUpload"
-                                        type="file"
-                                        accept=".pdf"
-                                        onChange={handleDocUpload}
-                                        disabled={isSubmitting || isUploadingDoc}
-                                    />
-                                    {isUploadingDoc && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
-                                </div>
-                                <Label htmlFor="fileUrl" className="text-xs text-muted-foreground mt-4 block">Hoặc cung cấp URL:</Label>
-                                <Input
-                                    id="fileUrl"
-                                    type="url"
-                                    placeholder="https://example.com/document.pdf"
-                                    value={fileUrl}
-                                    onChange={(e) => setFileUrl(e.target.value)}
+                                <Label htmlFor="fileType">Định Dạng</Label>
+                                <Select
+                                    value={fileType}
+                                    onValueChange={setFileType}
                                     disabled={isSubmitting}
-                                    required={fileType !== 'WEBNOVEL'}
-                                />
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Chọn định dạng" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="PDF">PDF</SelectItem>
+                                        <SelectItem value="WEBNOVEL">Webnovel (Truyện chữ)</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
-                            <div className="grid gap-4 md:grid-cols-2">
+                            {fileType !== 'WEBNOVEL' && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="fileType">Định Dạng</Label>
-                                    <Select
-                                        value={fileType}
-                                        onValueChange={setFileType}
-                                        disabled={isSubmitting}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Chọn định dạng" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="PDF">PDF</SelectItem>
-                                            <SelectItem value="WEBNOVEL">Webnovel (Truyện chữ)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="fileSize">Dung Lượng (MB)</Label>
+                                    <Label htmlFor="fileUpload">Tải Lên Tài Liệu (PDF)</Label>
+                                    <div className="flex gap-2 items-center">
+                                        <Input
+                                            id="fileUpload"
+                                            type="file"
+                                            accept=".pdf"
+                                            onChange={handleDocUpload}
+                                            disabled={isSubmitting || isUploadingDoc}
+                                        />
+                                        {isUploadingDoc && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
+                                    </div>
+                                    <Label htmlFor="fileUrl" className="text-xs text-muted-foreground mt-4 block">Hoặc cung cấp URL:</Label>
                                     <Input
-                                        id="fileSize"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        placeholder="e.g., 2.5"
-                                        value={fileSize}
-                                        onChange={(e) => setFileSize(e.target.value)}
+                                        id="fileUrl"
+                                        type="url"
+                                        placeholder="https://example.com/document.pdf"
+                                        value={fileUrl}
+                                        onChange={(e) => setFileUrl(e.target.value)}
                                         disabled={isSubmitting}
+                                        required
                                     />
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         <Separator />

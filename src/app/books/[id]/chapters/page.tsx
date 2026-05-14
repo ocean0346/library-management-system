@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase-client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,6 +35,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
     const [chapterTitle, setChapterTitle] = useState('')
     const [chapterContent, setChapterContent] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [deleteChapterId, setDeleteChapterId] = useState<string | null>(null)
 
     const fetchData = useCallback(async () => {
         setIsLoading(true)
@@ -126,15 +128,17 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
-    const handleDelete = async (chapterId: string) => {
-        if (!confirm("Bạn có chắc muốn xóa chương này? Hành động không thể hoàn tác.")) return
+    const confirmDelete = async () => {
+        if (!deleteChapterId) return
         try {
-            const { error } = await supabase.from('chapters').delete().eq('chapter_id', chapterId)
+            const { error } = await supabase.from('chapters').delete().eq('chapter_id', deleteChapterId)
             if (error) throw error
             toast({ title: "Thành công", description: "Đã xóa chương." })
             fetchData()
         } catch (error: any) {
             toast({ title: "Lỗi", description: error.message, variant: "destructive" })
+        } finally {
+            setDeleteChapterId(null)
         }
     }
 
@@ -220,7 +224,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                                             <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-500" onClick={() => handleEdit(chap)}>
                                                 <Edit className="h-4 w-4" />
                                             </Button>
-                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500" onClick={() => handleDelete(chap.chapter_id)}>
+                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500" onClick={() => setDeleteChapterId(chap.chapter_id)}>
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
@@ -231,6 +235,28 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={!!deleteChapterId} onOpenChange={(open) => !open && setDeleteChapterId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Xác nhận xóa chương</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Bạn có chắc chắn muốn xóa chương này? Toàn bộ nội dung chương sẽ bị mất vĩnh viễn và không thể khôi phục.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Xóa chương
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

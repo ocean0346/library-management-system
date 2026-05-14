@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,6 +22,8 @@ export default function Login() {
     const [isGoogleLoading, setIsGoogleLoading] = useState(false)
     const { signIn, signInWithGoogle } = useAuth()
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const explicitRedirect = searchParams.get('redirect')
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -29,7 +32,24 @@ export default function Login() {
 
         try {
             await signIn(email, password)
-            router.push('/dashboard')
+
+            if (explicitRedirect) {
+                router.push(explicitRedirect)
+            } else {
+                // Check role to determine redirect
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('role')
+                    .eq('email', email)
+                    .single()
+
+                const role = userData?.role
+                if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+                    router.push('/dashboard')
+                } else {
+                    router.push('/')
+                }
+            }
         } catch (error) {
             console.error('Login error:', error);
             setError('Thông tin đăng nhập không đúng. Vui lòng kiểm tra lại email và mật khẩu.')

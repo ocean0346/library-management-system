@@ -45,7 +45,6 @@ export default function AddBookPage() {
     const [categoryId, setCategoryId] = useState<string>('')
     const [tagsInput, setTagsInput] = useState('')
     const [fileUrl, setFileUrl] = useState('')
-    const [fileSize, setFileSize] = useState<string>('')
     const [fileType, setFileType] = useState('WEBNOVEL')
 
     // Upload states
@@ -129,9 +128,8 @@ export default function AddBookPage() {
         if (!file) return
         try {
             setIsUploadingDoc(true)
-            const url = await uploadFileToSupabase(file, { folder: 'book_documents', maxSizeMB: 50 })
+            const url = await uploadFileToSupabase(file, { folder: 'book_documents' })
             setFileUrl(url)
-            setFileSize((file.size / (1024 * 1024)).toFixed(2)) // Auto fill size
             toast({ title: 'Thành công', description: 'Đã tải tài liệu lên hệ thống.' })
         } catch (error: any) {
             toast({ title: 'Lỗi tải tệp', description: error.message, variant: 'destructive' })
@@ -176,7 +174,7 @@ export default function AddBookPage() {
                 cover_image_url: coverImageUrl || null,
                 category_id: categoryId ? parseInt(categoryId) : null,
                 file_url: fileUrl || null,
-                file_size_bytes: fileSize ? Math.round(parseFloat(fileSize) * 1024 * 1024) : null,
+
                 file_type: fileType,
                 tags: tagsArray
             }
@@ -430,21 +428,6 @@ export default function AddBookPage() {
                                     />
                                 </div>
 
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="fileSize">Kích Thước File Yếu Lượng (MB)</Label>
-                                        <Input
-                                            id="fileSize"
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="ví dụ: 2.5"
-                                            value={fileSize}
-                                            onChange={(e) => setFileSize(e.target.value)}
-                                            disabled={isSubmitting}
-                                        />
-                                    </div>
-                                </div>
                             </div>
                         )}
 
