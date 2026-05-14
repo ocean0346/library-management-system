@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -14,7 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PasswordInput } from '@/components/ui/password-input'
 import { AlertCircle, Loader2, BookOpen, Mail, Sparkles } from 'lucide-react'
 
-export default function Login() {
+function LoginContent() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
@@ -268,5 +268,13 @@ export default function Login() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function Login() {
+    return (
+        <Suspense>
+            <LoginContent />
+        </Suspense>
     )
 }
