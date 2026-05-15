@@ -207,7 +207,7 @@ export default function Header() {
                             </DropdownMenu>
                         </>
                     ) : (
-                        <div className="flex items-center gap-3">
+                        <div className="hidden md:flex items-center gap-3">
                             <Link href="/login">
                                 <Button variant="ghost" size="sm">
                                     Đăng Nhập
@@ -238,8 +238,10 @@ export default function Header() {
             </div>
 
             {/* Mobile Navigation */}
-            {mobileMenuOpen && (
-                <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl">
+            <div className={cn(
+                "md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out",
+                mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 border-t-0"
+            )}>
                     <nav className="container py-4 flex flex-col gap-2">
                         {navItems.map((item) => {
                             const Icon = item.icon
@@ -261,6 +263,16 @@ export default function Header() {
                                 </Link>
                             )
                         })}
+                        {user && (
+                            <Link
+                                href="/bookshelf"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                            >
+                                <LibrarySquare className="h-5 w-5" />
+                                Tủ Sách Của Tôi
+                            </Link>
+                        )}
                         {user && isAdmin && (
                             <Link
                                 href="/dashboard"
@@ -271,9 +283,22 @@ export default function Header() {
                                 Bảng Quản Trị
                             </Link>
                         )}
+                        {!user && (
+                            <div className="border-t border-border/40 mt-2 pt-4 flex flex-col gap-2">
+                                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                                    <Button variant="outline" className="w-full justify-center">
+                                        Đăng Nhập
+                                    </Button>
+                                </Link>
+                                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                                    <Button variant="gradient" className="w-full justify-center">
+                                        Đăng Ký
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
                     </nav>
                 </div>
-            )}
         </header>
     )
 }

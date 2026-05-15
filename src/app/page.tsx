@@ -20,6 +20,7 @@ export default function Home() {
     const [recentBooks, setRecentBooks] = useState<Book[]>([])
     const [popularBooks, setPopularBooks] = useState<Book[]>([])
     const [topRatedBooks, setTopRatedBooks] = useState<Book[]>([])
+    const [topCategories, setTopCategories] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -34,6 +35,16 @@ export default function Home() {
                     .limit(9)
 
                 if (recent) setRecentBooks(recent as Book[])
+
+                // Fetch top categories by book count
+                const { data: catsData } = await supabase
+                    .from('categories')
+                    .select('name, books(count)')
+                
+                if (catsData) {
+                    const sortedCats = catsData.sort((a: any, b: any) => (b.books?.[0]?.count || 0) - (a.books?.[0]?.count || 0))
+                    setTopCategories(sortedCats.slice(0, 3).map(c => c.name))
+                }
 
                 // Fetch popular books by views (Leaderboards)
                 const { data: popular } = await supabase
@@ -98,7 +109,7 @@ export default function Home() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <section className="relative pt-28 pb-20 lg:pt-40 lg:pb-32 overflow-hidden w-full flex items-center justify-center min-h-[85vh]">
+            <section className="relative pt-16 pb-16 lg:pt-20 lg:pb-24 overflow-hidden w-full flex items-center justify-center min-h-[60vh]">
                 {/* Background Grid & Gradients */}
                 <div className="absolute inset-0 bg-background">
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_70%,transparent_110%)]" />
@@ -146,9 +157,9 @@ export default function Home() {
 
                     <div className="flex items-center justify-center gap-4">
                         <p className="text-sm font-medium text-muted-foreground">Phổ biến:</p>
-                        <div className="flex gap-2">
-                            {['Công nghệ', 'Kinh doanh', 'Tâm lý học'].map(tag => (
-                                <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-primary hover:text-black transition-colors" onClick={() => router.push(`/books?q=${tag}`)}>
+                        <div className="flex gap-2 flex-wrap justify-center">
+                            {(topCategories.length > 0 ? topCategories : ['Tiểu thuyết', 'Khoa học', 'Lịch sử']).map(tag => (
+                                <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-primary hover:text-black transition-colors" onClick={() => router.push(`/books?category=${encodeURIComponent(tag)}`)}>
                                     {tag}
                                 </Badge>
                             ))}
