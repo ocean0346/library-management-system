@@ -6,9 +6,17 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings, List } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: string, chapterNumber: string }> }) {
     const { id, chapterNumber } = use(params)
@@ -187,13 +195,57 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                         Chương Trước
                     </Button>
 
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => router.push(`/books/${id}`)}
-                        className="w-full sm:w-auto"
-                    >
-                        <BookOpen className="mr-2 h-4 w-4" /> Mục Lục
-                    </Button>
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button 
+                                variant="ghost" 
+                                className="w-full sm:w-auto"
+                            >
+                                <List className="mr-2 h-4 w-4" /> Mục Lục
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[320px] sm:w-[380px] p-0">
+                            <SheetHeader className="p-6 pb-4 border-b">
+                                <SheetTitle className="flex items-center gap-2">
+                                    <BookOpen className="h-5 w-5 text-primary" />
+                                    Mục Lục
+                                </SheetTitle>
+                                <p className="text-sm text-muted-foreground line-clamp-1">{book?.title}</p>
+                            </SheetHeader>
+                            <ScrollArea className="h-[calc(100vh-120px)]">
+                                <div className="p-2">
+                                    {allChapters.map((ch) => {
+                                        const isCurrent = ch.chapter_number === chapter.chapter_number
+                                        return (
+                                            <button
+                                                key={ch.chapter_number}
+                                                onClick={() => router.push(`/books/${id}/read/${ch.chapter_number}`)}
+                                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 transition-all duration-200 flex items-center gap-3 ${
+                                                    isCurrent 
+                                                        ? 'bg-primary/10 text-primary font-semibold border border-primary/20' 
+                                                        : 'hover:bg-muted/80 text-foreground'
+                                                }`}
+                                            >
+                                                <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                                                    isCurrent ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                                                }`}>
+                                                    {ch.chapter_number}
+                                                </span>
+                                                <span className="line-clamp-1 text-sm">
+                                                    {ch.title || `Chương ${ch.chapter_number}`}
+                                                </span>
+                                                {isCurrent && (
+                                                    <span className="ml-auto flex-shrink-0 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                                                        Đang đọc
+                                                    </span>
+                                                )}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            </ScrollArea>
+                        </SheetContent>
+                    </Sheet>
 
                     <Button 
                         variant="outline" 
