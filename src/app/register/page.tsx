@@ -70,7 +70,7 @@ export default function Register() {
                 formData.username,
                 formData.fullName
             )
-            router.push('/dashboard')
+            router.push('/')
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Không thể tạo tài khoản')
         } finally {
