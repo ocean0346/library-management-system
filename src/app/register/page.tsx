@@ -148,7 +148,7 @@ export default function Register() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="username" className="text-sm font-medium">
-                                            Tên Đăng Nhập
+                                            Username
                                         </Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -166,7 +166,7 @@ export default function Register() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="fullName" className="text-sm font-medium">
-                                            Họ và Tên
+                                            Full Name
                                         </Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -207,7 +207,7 @@ export default function Register() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="password" className="text-sm font-medium">
-                                            Mật Khẩu
+                                            Password
                                         </Label>
                                         <PasswordInput
                                             id="password"
@@ -221,7 +221,7 @@ export default function Register() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                                            Xác Nhận Mật Khẩu
+                                            Confirm Password
                                         </Label>
                                         <PasswordInput
                                             id="confirmPassword"
