@@ -81,6 +81,8 @@ export default function SearchFilters({
                         <SelectContent className="rounded-xl border-primary/20 backdrop-blur-xl bg-background/95">
                             <SelectItem value="created_at" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Mới cập nhật</SelectItem>
                             <SelectItem value="views_count" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Nhiều lượt xem nhất</SelectItem>
+                            <SelectItem value="featured" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Nổi bật</SelectItem>
+                            <SelectItem value="top_rated" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Đánh giá cao</SelectItem>
                             <SelectItem value="title" className="focus:bg-primary/20 cursor-pointer rounded-md my-1">Tên A-Z</SelectItem>
                         </SelectContent>
                     </Select>

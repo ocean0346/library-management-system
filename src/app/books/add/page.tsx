@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { uploadFileToSupabase } from '@/lib/storage'
-import { BookPlus, ArrowLeft, Loader2, Save, ImageIcon } from 'lucide-react'
+import { BookPlus, ArrowLeft, Loader2, Save, ImageIcon, HardDrive } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
@@ -46,6 +46,7 @@ export default function AddBookPage() {
     const [tagsInput, setTagsInput] = useState('')
     const [fileUrl, setFileUrl] = useState('')
     const [fileType, setFileType] = useState('WEBNOVEL')
+    const [fileSizeBytes, setFileSizeBytes] = useState<number | null>(null)
 
     // Upload states
     const [isUploadingCover, setIsUploadingCover] = useState(false)
@@ -123,15 +124,24 @@ export default function AddBookPage() {
         }
     }
 
+    const formatFileSize = (bytes: number) => {
+        if (bytes < 1024) return `${bytes} B`
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+        if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+        return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
+    }
+
     const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
         try {
             setIsUploadingDoc(true)
+            setFileSizeBytes(file.size)
             const url = await uploadFileToSupabase(file, { folder: 'book_documents' })
             setFileUrl(url)
-            toast({ title: 'Thành công', description: 'Đã tải tài liệu lên hệ thống.' })
+            toast({ title: 'Thành công', description: `Đã tải tài liệu lên (${formatFileSize(file.size)})` })
         } catch (error: any) {
+            setFileSizeBytes(null)
             toast({ title: 'Lỗi tải tệp', description: error.message, variant: 'destructive' })
         } finally {
             setIsUploadingDoc(false)
@@ -176,6 +186,7 @@ export default function AddBookPage() {
                 file_url: fileUrl || null,
 
                 file_type: fileType,
+                file_size_bytes: fileSizeBytes,
                 tags: tagsArray
             }
 
@@ -416,6 +427,13 @@ export default function AddBookPage() {
                                         />
                                         {isUploadingDoc && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
                                     </div>
+                                    {fileSizeBytes && fileUrl && (
+                                        <div className="flex items-center gap-2 mt-2 p-2.5 rounded-lg bg-primary/5 border border-primary/20">
+                                            <HardDrive className="h-4 w-4 text-primary" />
+                                            <span className="text-sm font-medium text-foreground">Dung lượng tệp:</span>
+                                            <span className="text-sm font-bold text-primary">{formatFileSize(fileSizeBytes)}</span>
+                                        </div>
+                                    )}
                                     <Label htmlFor="fileUrl" className="text-xs text-muted-foreground mt-4 block">Hoặc dán URL nếu file nằm trên server khác:</Label>
                                     <Input
                                         id="fileUrl"

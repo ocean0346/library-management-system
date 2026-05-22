@@ -84,17 +84,26 @@ function BookCatalog() {
     const fetchBooks = useCallback(async () => {
         setIsLoading(true)
         try {
+            // For top_rated, we need to fetch all matching books first, then sort client-side
+            const isTopRated = sortBy === 'top_rated'
+            
             let query = supabase
                 .from('books')
                 .select('*, categories(name), chapters(chapter_number, title, created_at)', { count: 'exact' })
-                .range((currentPage - 1) * booksPerPage, currentPage * booksPerPage - 1)
+
+            if (!isTopRated) {
+                query = query.range((currentPage - 1) * booksPerPage, currentPage * booksPerPage - 1)
+            }
 
             // Dynamic sorting
             if (sortBy === 'views_count') {
                 query = query.order('views_count', { ascending: false, nullsFirst: false })
+            } else if (sortBy === 'featured') {
+                query = query.order('views_count', { ascending: false, nullsFirst: false })
+                    .order('created_at', { ascending: false })
             } else if (sortBy === 'title') {
                 query = query.order('title', { ascending: true })
-            } else {
+            } else if (!isTopRated) {
                 query = query.order('created_at', { ascending: false })
             }
 
@@ -104,7 +113,6 @@ function BookCatalog() {
             }
 
             if (selectedCategory && selectedCategory !== 'all') {
-                // Get category ID first
                 const { data: categoryData } = await supabase
                     .from('categories')
                     .select('category_id')
@@ -124,8 +132,54 @@ function BookCatalog() {
 
             if (error) throw error
 
-            setBooks(data as Book[])
-            setTotalPages(Math.ceil((count || 0) / booksPerPage))
+            if (data) {
+                // Always fetch reviews to calculate average rating for BookCard display
+                const bookIds = data.map((b: any) => b.book_id)
+                const { data: reviews } = await supabase
+                    .from('reviews')
+                    .select('book_id, rating')
+                    .in('book_id', bookIds)
+
+                const ratingMap: Record<string, { total: number; count: number }> = {}
+                if (reviews) {
+                    reviews.forEach((r: any) => {
+                        if (!ratingMap[r.book_id]) ratingMap[r.book_id] = { total: 0, count: 0 }
+                        ratingMap[r.book_id].total += r.rating
+                        ratingMap[r.book_id].count++
+                    })
+                }
+
+                // Attach average_rating to each book
+                const booksWithRating = data.map((b: any) => ({
+                    ...b,
+                    average_rating: ratingMap[b.book_id]
+                        ? Math.round((ratingMap[b.book_id].total / ratingMap[b.book_id].count) * 10) / 10
+                        : 0
+                }))
+
+                if (isTopRated) {
+                    // Sort: rated books first (by avg desc), then unrated
+                    const sorted = [...booksWithRating].sort((a: any, b: any) => {
+                        const aHasRating = !!ratingMap[a.book_id]
+                        const bHasRating = !!ratingMap[b.book_id]
+                        
+                        if (aHasRating && !bHasRating) return -1
+                        if (!aHasRating && bHasRating) return 1
+                        if (!aHasRating && !bHasRating) return 0
+                        
+                        if (b.average_rating !== a.average_rating) return b.average_rating - a.average_rating
+                        return ratingMap[b.book_id].count - ratingMap[a.book_id].count
+                    })
+
+                    const totalCount = sorted.length
+                    const paged = sorted.slice((currentPage - 1) * booksPerPage, currentPage * booksPerPage)
+                    setBooks(paged as Book[])
+                    setTotalPages(Math.ceil(totalCount / booksPerPage))
+                } else {
+                    setBooks(booksWithRating as Book[])
+                    setTotalPages(Math.ceil((count || 0) / booksPerPage))
+                }
+            }
         } catch (error) {
             console.error('Error fetching books:', error)
         } finally {
