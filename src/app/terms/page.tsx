@@ -35,7 +35,7 @@ export default function TermsOfServicePage() {
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">2. Mô Tả Dịch Vụ</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        ThưViệnOnline cung cấp nền tảng đọc sách và truyện trực tuyến miễn phí. Dịch vụ của chúng tôi bao gồm
+                        ThưViệnOnline cung cấp thư viện tài liệu online miễn phí. Dịch vụ của chúng tôi bao gồm
                         kho sách đa dạng, tính năng lưu trữ và theo dõi tiến độ đọc, cùng với hệ thống đánh giá và nhận xét.
                     </p>
                 </section>

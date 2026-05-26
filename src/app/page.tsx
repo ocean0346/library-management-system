@@ -122,9 +122,9 @@ export default function Home() {
                         <Sparkles className="w-4 h-4 mr-2" /> Thư viện Mở 100% Miễn phí
                     </div>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.1]">
-                        Nền Tảng Đọc Sách <br className="hidden md:block" />
+                        Thư Viện Tài Liệu <br className="hidden md:block" />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#02FF73] via-[#09ADAA] to-blue-500 bg-300% animate-gradient">
-                            Trực Tuyến Hàng Đầu
+                            Online Hàng Đầu
                         </span>
                     </h1>
                     <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto mb-12 leading-relaxed">
@@ -267,7 +267,7 @@ export default function Home() {
                                 <p className="text-muted-foreground mt-3 text-lg">Được cộng đồng độc giả yêu thích và đánh giá 5 sao</p>
                             </div>
                             <Button variant="outline" className="rounded-full hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-colors" asChild>
-                                <Link href="/books">
+                                <Link href="/books?sort=top_rated">
                                     Xem tất cả <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>

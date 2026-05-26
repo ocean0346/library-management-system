@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'Thư Viện Online',
-    description: 'Nền tảng đọc sách và tài liệu trực tuyến miễn phí hàng đầu.',
+    description: 'Thư viện tài liệu online hàng đầu, miễn phí.',
     icons: {
         icon: '/thu-vien-online-logo.svg',
         apple: '/thu-vien-online-logo.svg',

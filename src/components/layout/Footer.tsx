@@ -52,7 +52,7 @@ export default function Footer() {
                             </span>
                         </Link>
                         <p className="text-muted-foreground text-sm max-w-xs mb-6">
-                            Thư Viện Online: Nền tảng tri thức mở, nơi lưu trữ, chia sẻ và lan tỏa cảm hứng đọc sách tới mọi người.
+                            Thư Viện Online: Thư viện tài liệu online hàng đầu, nơi lưu trữ, chia sẻ và lan tỏa tri thức tới mọi người.
                         </p>
                         <div className="flex items-center gap-4">
                             <a
