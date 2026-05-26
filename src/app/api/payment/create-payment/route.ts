@@ -18,7 +18,10 @@ export async function POST(req: NextRequest) {
         const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1'
 
         // Build VNPay payment URL
-        const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/payment/vnpay-return`
+        const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || 'localhost:3000'
+        const protocol = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https')
+        const baseUrl = `${protocol}://${host}`
+        const returnUrl = `${baseUrl}/payment/vnpay-return`
 
         const paymentUrl = vnpay.buildPaymentUrl({
             vnp_Amount: priceVnd, // VNPay lib tự nhân 100
