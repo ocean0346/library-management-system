@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, Download, Expand, Shrink } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
+import { useCoins, FREE_PDF_PAGES } from '@/hooks/useCoins'
+import LockedPDFOverlay from '@/components/coins/LockedPDFOverlay'
 
 const PdfViewer = dynamic(() => import('@/components/books/PdfViewer'), { ssr: false, loading: () => <div className="flex h-full w-full items-center justify-center"><Loading /></div> })
 
@@ -18,11 +20,16 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
     const router = useRouter()
     const { user } = useAuth()
     const { toast } = useToast()
+    const { isPDFLocked, fetchUnlockedContent } = useCoins()
 
     const [isLoading, setIsLoading] = useState(true)
     const [book, setBook] = useState<any>(null)
     const [isFullscreen, setIsFullscreen] = useState(false)
     const [initialPage, setInitialPage] = useState(0)
+    const [isLocked, setIsLocked] = useState(false)
+    const [coinPrice, setCoinPrice] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
+    const [showLockedOverlay, setShowLockedOverlay] = useState(false)
 
     const hasLoggedRef = useRef(false)
     const containerRef = useRef<HTMLDivElement>(null)
@@ -33,7 +40,7 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
             // Fetch Book Details
             const { data: bookData, error } = await supabase
                 .from('books')
-                .select('title, author, file_url, file_type, organization_id')
+                .select('title, author, file_url, file_type, organization_id, coin_price')
                 .eq('book_id', id)
                 .single()
 
@@ -44,6 +51,28 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
             }
 
             setBook(bookData)
+            const bookCoinPrice = bookData.coin_price ?? 0
+            setCoinPrice(bookCoinPrice)
+
+            // Check if PDF is locked
+            if (bookCoinPrice > 0) {
+                if (user) {
+                    await fetchUnlockedContent(id)
+                    const { data: unlocked } = await supabase
+                        .from('user_unlocked_content')
+                        .select('id')
+                        .eq('user_id', user.id)
+                        .eq('book_id', id)
+                        .is('chapter_number', null)
+                        .maybeSingle()
+                    
+                    setIsLocked(!unlocked)
+                } else {
+                    setIsLocked(true)
+                }
+            } else {
+                setIsLocked(false)
+            }
 
             // Log Access & Progress once per mount
             if (!hasLoggedRef.current) {
@@ -64,11 +93,8 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                     supabase.from('user_reading_progress').select('chapter_number').eq('user_id', user.id).eq('book_id', id).single()
                         .then(({ data }) => {
                             if (data) {
-                                // PDF pages are usually 0-indexed in react-pdf-viewer, but let's pass 0-indexed to initialPage
-                                // If chapter_number is stored as 1-indexed page, subtract 1
                                 setInitialPage(Math.max(0, data.chapter_number - 1))
                             } else {
-                                // First time reading
                                 supabase.from('user_reading_progress').insert({
                                     user_id: user.id,
                                     book_id: id,
@@ -111,13 +137,17 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
     }, [])
 
     const handlePageChange = useCallback((pageIndex: number) => {
+        setCurrentPage(pageIndex)
+
+        // If locked and past free pages, show overlay
+        if (isLocked && pageIndex >= FREE_PDF_PAGES) {
+            setShowLockedOverlay(true)
+        }
+
         if (!user) return
         
-        // Save to DB (pageIndex is 0-indexed, so we add 1 to store as 1-indexed page number in chapter_number field)
+        // Save to DB
         const pageNum = pageIndex + 1
-        
-        // Debounce simple implementation: We just let the viewer fire it, and we upsert it.
-        // It fires when page changes and stays.
         supabase.from('user_reading_progress').upsert({
             user_id: user.id,
             book_id: id,
@@ -125,7 +155,12 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
             last_read_at: new Date().toISOString()
         }, { onConflict: 'user_id, book_id' })
         .then(({ error }) => { if (error) console.error("Update progress error:", error) })
-    }, [id, user])
+    }, [id, user, isLocked])
+
+    const handleUnlocked = () => {
+        setIsLocked(false)
+        setShowLockedOverlay(false)
+    }
 
     if (isLoading) {
         return (
@@ -154,10 +189,12 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => window.open(book.file_url, '_blank')} className="hidden sm:flex">
-                        <Download className="h-4 w-4 mr-2" />
-                        Tải Xuống
-                    </Button>
+                    {!isLocked && (
+                        <Button variant="outline" size="sm" onClick={() => window.open(book.file_url, '_blank')} className="hidden sm:flex">
+                            <Download className="h-4 w-4 mr-2" />
+                            Tải Xuống
+                        </Button>
+                    )}
                     <Button variant="outline" size="sm" onClick={toggleFullscreen}>
                         {isFullscreen ? (
                             <><Shrink className="h-4 w-4 mr-2" /> Thu Nhỏ</>
@@ -175,11 +212,23 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                         <p className="text-muted-foreground">Không tìm thấy đường dẫn tài liệu.</p>
                     </div>
                 ) : (
-                    <PdfViewer 
-                        fileUrl={book.file_url} 
-                        initialPage={initialPage} 
-                        onPageChange={handlePageChange}
-                    />
+                    <>
+                        <PdfViewer 
+                            fileUrl={book.file_url} 
+                            initialPage={initialPage} 
+                            onPageChange={handlePageChange}
+                        />
+                        
+                        {/* Locked Overlay for PDF */}
+                        {showLockedOverlay && isLocked && (
+                            <LockedPDFOverlay
+                                bookId={id}
+                                bookTitle={book.title}
+                                coinPrice={coinPrice}
+                                onUnlocked={handleUnlocked}
+                            />
+                        )}
+                    </>
                 )}
             </main>
         </div>

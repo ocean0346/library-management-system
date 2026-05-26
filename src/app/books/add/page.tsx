@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { uploadFileToSupabase } from '@/lib/storage'
-import { BookPlus, ArrowLeft, Loader2, Save, ImageIcon, HardDrive } from 'lucide-react'
+import { BookPlus, ArrowLeft, Loader2, Save, ImageIcon, HardDrive, Coins } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
@@ -47,6 +47,7 @@ export default function AddBookPage() {
     const [fileUrl, setFileUrl] = useState('')
     const [fileType, setFileType] = useState('WEBNOVEL')
     const [fileSizeBytes, setFileSizeBytes] = useState<number | null>(null)
+    const [coinPrice, setCoinPrice] = useState(5)
 
     // Upload states
     const [isUploadingCover, setIsUploadingCover] = useState(false)
@@ -149,6 +150,15 @@ export default function AddBookPage() {
         }
     }
 
+    const handleFileTypeChange = (val: string) => {
+        setFileType(val)
+        if (val === 'WEBNOVEL') {
+            setCoinPrice(5)
+        } else if (val === 'PDF') {
+            setCoinPrice(50)
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
@@ -187,7 +197,8 @@ export default function AddBookPage() {
 
                 file_type: fileType,
                 file_size_bytes: fileSizeBytes,
-                tags: tagsArray
+                tags: tagsArray,
+                coin_price: coinPrice
             }
 
             const { data, error: insertError } = await supabase
@@ -271,7 +282,7 @@ export default function AddBookPage() {
                                 <Label htmlFor="fileType">Phân Loại *</Label>
                                 <Select
                                     value={fileType}
-                                    onValueChange={setFileType}
+                                    onValueChange={handleFileTypeChange}
                                     disabled={isSubmitting}
                                 >
                                     <SelectTrigger className="border-primary/50 bg-primary/5 ring-primary/20">
@@ -498,6 +509,31 @@ export default function AddBookPage() {
                                         </div>
                                     )}
                                 </div>
+                            </div>
+                        </div>
+
+                        <Separator />
+
+                        {/* Giá Xu */}
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-medium flex items-center gap-2">
+                                <Coins className="h-5 w-5 text-yellow-500" />
+                                Cài Đặt Xu
+                            </h3>
+                            <div className="space-y-2">
+                                <Label htmlFor="coinPrice">Giá xu (mỗi chương / toàn bộ PDF)</Label>
+                                <Input
+                                    id="coinPrice"
+                                    type="number"
+                                    min="0"
+                                    placeholder="5"
+                                    value={coinPrice}
+                                    onChange={(e) => setCoinPrice(parseInt(e.target.value) || 0)}
+                                    disabled={isSubmitting}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    💡 Đặt 0 = miễn phí toàn bộ. Sách chữ có thể tùy chỉnh mở/khóa riêng lẻ trong phần Quản lý Chương.
+                                </p>
                             </div>
                         </div>
 

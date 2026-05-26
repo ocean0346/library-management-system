@@ -37,6 +37,9 @@ import { useToast } from "@/hooks/use-toast"
 import { format } from 'date-fns'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Loading } from '@/components/ui/loading'
+import { useCoins, FREE_CHAPTERS } from '@/hooks/useCoins'
+import UnlockChapterButton from '@/components/coins/UnlockChapterButton'
+import { Coins, Lock } from 'lucide-react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -62,6 +65,8 @@ export default function BookDetails() {
     const [isFavorited, setIsFavorited] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
     const [isInteractionLoading, setIsInteractionLoading] = useState(false)
+
+    const { isChapterLocked, fetchUnlockedContent, balance } = useCoins()
 
     const params = useParams()
     const router = useRouter()
@@ -151,8 +156,13 @@ export default function BookDetails() {
             }
 
             // Luôn fetch chapters nếu có
-            const { data: chaps } = await supabase.from('chapters').select('chapter_number, title').eq('book_id', bookId).order('chapter_number', { ascending: true })
+            const { data: chaps } = await supabase.from('chapters').select('chapter_number, title, is_free').eq('book_id', bookId).order('chapter_number', { ascending: true })
             setChapters(chaps || [])
+
+            // Fetch unlocked content for coin system
+            if (user) {
+                await fetchUnlockedContent(bookId)
+            }
         } catch (error) {
             console.error('Fetch error:', error);
             toast({
@@ -501,30 +511,53 @@ export default function BookDetails() {
 
                         {/* List of Chapters (All Formats) */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold flex items-center gap-2">
-                                <BookOpen className="h-5 w-5 text-primary" />
-                                Danh Sách Chương Dạng Chữ
-                                <Badge variant="secondary" className="ml-2">{chapters.length} Chương</Badge>
-                            </h3>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                    <BookOpen className="h-5 w-5 text-primary" />
+                                    Danh Sách Chương Dạng Chữ
+                                    <Badge variant="secondary" className="ml-2">{chapters.length} Chương</Badge>
+                                </h3>
+                                {(book.coin_price ?? 0) > 0 && chapters.some(c => !c.is_free) && (
+                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                        <Lock className="h-3.5 w-3.5" />
+                                        <span>Một số chương yêu cầu mua bằng xu</span>
+                                    </div>
+                                )}
+                            </div>
                             
                             {chapters.length > 0 ? (
                                 <div className="bg-muted/20 border rounded-lg max-h-[300px] overflow-y-auto">
                                     <div className="divide-y">
-                                        {chapters.map(chap => (
-                                            <div 
-                                                key={chap.chapter_number} 
-                                                className="p-4 hover:bg-muted/50 transition-colors cursor-pointer flex justify-between items-center group"
-                                                onClick={() => router.push(`/books/${bookId}/read/${chap.chapter_number}`)}
-                                            >
-                                                <div>
-                                                    <span className="font-medium mr-2">Chương {chap.chapter_number}{chap.title ? ':' : ''}</span>
-                                                    <span className="text-muted-foreground group-hover:text-foreground transition-colors">{chap.title}</span>
+                                        {chapters.map(chap => {
+                                            const coinPrice = book.coin_price ?? 0
+                                            const locked = isChapterLocked(bookId, chap.chapter_number, coinPrice, chap.is_free)
+                                            return (
+                                                <div 
+                                                    key={chap.chapter_number} 
+                                                    className={`p-4 transition-colors flex justify-between items-center group ${locked ? 'opacity-80' : 'hover:bg-muted/50 cursor-pointer'}`}
+                                                    onClick={() => !locked && router.push(`/books/${bookId}/read/${chap.chapter_number}`)}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        {locked && <Lock className="h-3.5 w-3.5 text-yellow-500 shrink-0" />}
+                                                        <span className="font-medium mr-2">Chương {chap.chapter_number}{chap.title ? ':' : ''}</span>
+                                                        <span className="text-muted-foreground group-hover:text-foreground transition-colors">{chap.title}</span>
+                                                    </div>
+                                                    {locked ? (
+                                                        <UnlockChapterButton
+                                                            bookId={bookId}
+                                                            chapterNumber={chap.chapter_number}
+                                                            coinPrice={coinPrice}
+                                                            isLocked={locked}
+                                                            onUnlocked={() => fetchUnlockedContent(bookId)}
+                                                        />
+                                                    ) : (
+                                                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            Đọc <ArrowLeft className="h-4 w-4 ml-1 rotate-180" />
+                                                        </Button>
+                                                    )}
                                                 </div>
-                                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    Đọc <ArrowLeft className="h-4 w-4 ml-1 rotate-180" />
-                                                </Button>
-                                            </div>
-                                        ))}
+                                            )
+                                        })}
                                     </div>
                                 </div>
                             ) : null}

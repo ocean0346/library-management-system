@@ -6,7 +6,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import HeaderSearch from '@/components/layout/HeaderSearch'
-import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut, Search, Sparkles, Users, Tags, History, LibrarySquare } from 'lucide-react'
+import { CoinBalance } from '@/components/coins/CoinBalance'
+import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut, Search, Sparkles, Users, Tags, History, LibrarySquare, Coins } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -63,7 +64,7 @@ export default function Header() {
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/50 shadow-[inset_0_-1px_0_0_hsla(0,0%,100%,0.05),0_1px_3px_0_rgba(0,0,0,0.03)]">
-            <div className="container h-16 flex items-center justify-between">
+            <div className="container h-16 flex items-center justify-between gap-2">
                 {/* Logo & Navigation */}
                 <div className="flex items-center gap-8">
                     <Link href="/" onClick={scrollToTop} className="flex items-center gap-3 group">
@@ -77,7 +78,7 @@ export default function Header() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex items-center gap-1">
+                    <nav className="hidden md:flex items-center gap-1 whitespace-nowrap">
                         {navItems.map((item) => {
                             const Icon = item.icon
                             const isActive = isActivePath(item.href)
@@ -112,7 +113,7 @@ export default function Header() {
                                 <Link
                                     href="/bookshelf"
                                     onClick={scrollToTop}
-                                    className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
+                                    className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group whitespace-nowrap"
                                 >
                                     <span className="flex items-center gap-2">
                                         <LibrarySquare className="h-4 w-4" />
@@ -124,7 +125,7 @@ export default function Header() {
                                     <Link
                                         href="/dashboard"
                                         onClick={scrollToTop}
-                                        className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group"
+                                        className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group whitespace-nowrap"
                                     >
                                         <span className="flex items-center gap-2">
                                             <LayoutDashboard className="h-4 w-4" />
@@ -139,22 +140,23 @@ export default function Header() {
                 </div>
 
                 {/* Right Side */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-shrink-0">
                     <HeaderSearch />
                     {user ? (
                         <>
+                            <CoinBalance />
                             {/* User Menu */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="gap-2 hover:bg-accent/50"
+                                        className="gap-2 hover:bg-accent/50 flex-shrink-0"
                                     >
-                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center">
+                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center flex-shrink-0">
                                             <UserCircle className="h-5 w-5 text-black" />
                                         </div>
-                                        <span className="hidden md:inline max-w-[120px] truncate font-medium">
+                                        <span className="hidden md:inline max-w-[100px] truncate font-medium text-sm whitespace-nowrap">
                                             {user.user_metadata?.full_name || user.email?.split('@')[0]}
                                         </span>
                                     </Button>
@@ -193,6 +195,13 @@ export default function Header() {
                                     >
                                         <UserCircle className="mr-2 h-4 w-4" />
                                         Cài Đặt Tài Khoản
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => router.push('/account/coins')}
+                                        className="cursor-pointer"
+                                    >
+                                        <Coins className="mr-2 h-4 w-4" />
+                                        Lịch Sử Xu
                                     </DropdownMenuItem>
 
                                     <DropdownMenuSeparator />

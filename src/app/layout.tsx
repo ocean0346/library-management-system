@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
+import CoinProviderWrapper from '@/components/providers/CoinProviderWrapper'
 import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -26,6 +27,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
         <body className={inter.className} suppressHydrationWarning>
         <AuthProvider>
+            <CoinProviderWrapper>
                 <div className="flex min-h-screen flex-col">
                     <Header />
                     <main className="flex-1">
@@ -34,6 +36,7 @@ export default function RootLayout({
                     <Footer />
                 </div>
                 <Toaster />
+            </CoinProviderWrapper>
         </AuthProvider>
         </body>
         </html>

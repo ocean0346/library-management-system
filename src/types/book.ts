@@ -16,4 +16,6 @@ export type Book = {
     };
     tags?: string[];
     chapters?: any[];
+    coin_price?: number;
+    views_count?: number;
 }

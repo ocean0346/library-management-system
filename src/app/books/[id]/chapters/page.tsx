@@ -13,6 +13,7 @@ import { ArrowLeft, Plus, Save, Loader2, Trash2, Edit } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import dynamic from 'next/dynamic'
 import { useToast } from '@/hooks/use-toast'
+import { Switch } from '@/components/ui/switch'
 
 // Use dynamic import for Tiptap to avoid SSR hydration issues
 const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor').then(mod => mod.RichTextEditor), { ssr: false })
@@ -34,6 +35,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
     const [chapterNumber, setChapterNumber] = useState<number | ''>('')
     const [chapterTitle, setChapterTitle] = useState('')
     const [chapterContent, setChapterContent] = useState('')
+    const [isFree, setIsFree] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [deleteChapterId, setDeleteChapterId] = useState<string | null>(null)
 
@@ -58,7 +60,9 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
             setChapters(chaptersData || [])
             
             // Auto-increment next chapter
-            setChapterNumber(chaptersData && chaptersData.length > 0 ? (chaptersData[chaptersData.length - 1].chapter_number + 1) : 1)
+            const nextChapNum = chaptersData && chaptersData.length > 0 ? (chaptersData[chaptersData.length - 1].chapter_number + 1) : 1
+            setChapterNumber(nextChapNum)
+            setIsFree(nextChapNum <= 10)
 
         } catch (error) {
             console.error("Error fetching data:", error)
@@ -91,7 +95,8 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                 const { error } = await supabase.from('chapters').update({
                     chapter_number: chapterNumber,
                     title: finalTitle,
-                    content_text: chapterContent
+                    content_text: chapterContent,
+                    is_free: isFree
                 }).eq('chapter_id', currentChapterId)
                 if (error) throw error
                 toast({ title: "Thành công", description: "Đã cập nhật chương." })
@@ -100,7 +105,8 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                     book_id: id,
                     chapter_number: chapterNumber,
                     title: finalTitle,
-                    content_text: chapterContent
+                    content_text: chapterContent,
+                    is_free: isFree
                 })
                 if (error) throw error
                 toast({ title: "Thành công", description: "Đã thêm chương mới." })
@@ -111,6 +117,9 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
             setCurrentChapterId(null)
             setChapterTitle('')
             setChapterContent('')
+            const nextChap = chapters.length > 0 ? chapters[chapters.length-1].chapter_number + 1 : 1
+            setChapterNumber(nextChap)
+            setIsFree(nextChap <= 10)
             fetchData() // Refresh list
         } catch (error: any) {
             toast({ title: "Lỗi", description: error.message, variant: "destructive" })
@@ -125,6 +134,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
         setChapterNumber(chapter.chapter_number)
         setChapterTitle(chapter.title || '')
         setChapterContent(chapter.content_text)
+        setIsFree(chapter.is_free ?? false)
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
@@ -168,7 +178,13 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                                         type="number"
                                         min="1"
                                         value={chapterNumber}
-                                        onChange={(e) => setChapterNumber(parseInt(e.target.value) || '')}
+                                        onChange={(e) => {
+                                            const num = parseInt(e.target.value) || ''
+                                            setChapterNumber(num)
+                                            if (!isEditing && typeof num === 'number') {
+                                                setIsFree(num <= 10)
+                                            }
+                                        }}
                                         required
                                     />
                                 </div>
@@ -181,6 +197,10 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                                     />
                                 </div>
                             </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch id="is-free" checked={isFree} onCheckedChange={setIsFree} />
+                                <Label htmlFor="is-free">Chương Miễn Phí (Người đọc không cần trả xu)</Label>
+                            </div>
                             <div className="space-y-2">
                                 <Label>Cỗ máy Biên soạn Nội dung Chương (Rich Text)</Label>
                                 <RichTextEditor
@@ -192,7 +212,8 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                             <div className="flex justify-end gap-3">
                                 {isEditing && (
                                     <Button type="button" variant="outline" onClick={() => {
-                                        setIsEditing(false); setCurrentChapterId(null); setChapterTitle(''); setChapterContent(''); setChapterNumber(chapters.length > 0 ? chapters[chapters.length-1].chapter_number + 1 : 1);
+                                        const nextChap = chapters.length > 0 ? chapters[chapters.length-1].chapter_number + 1 : 1
+                                        setIsEditing(false); setCurrentChapterId(null); setChapterTitle(''); setChapterContent(''); setIsFree(nextChap <= 10); setChapterNumber(nextChap);
                                     }}>Hủy Sửa</Button>
                                 )}
                                 <Button type="submit" disabled={isSubmitting} className="bg-gradient-to-r from-[#02FF73] to-[#09ADAA] text-black">
@@ -217,7 +238,10 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                                 {chapters.map(chap => (
                                     <div key={chap.chapter_id} className="p-4 flex items-center justify-between group hover:bg-muted/50 transition-colors">
                                         <div className="flex flex-col gap-1 w-[70%]">
-                                            <span className="font-semibold text-sm">Chương {chap.chapter_number}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold text-sm">Chương {chap.chapter_number}</span>
+                                                {chap.is_free && <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-700 border border-green-200">Miễn phí</span>}
+                                            </div>
                                             <span className="text-xs text-muted-foreground truncate">{chap.title}</span>
                                         </div>
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

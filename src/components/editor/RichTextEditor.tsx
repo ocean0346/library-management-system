@@ -378,9 +378,11 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     }, [editor])
 
     // Sync external content changes into the editor (e.g. when fetching to Edit chapter)
-    if (editor && content !== editor.getHTML() && !editor.isFocused) {
-        editor.commands.setContent(content)
-    }
+    useEffect(() => {
+        if (editor && content !== editor.getHTML() && !editor.isFocused) {
+            editor.commands.setContent(content)
+        }
+    }, [content, editor])
 
     return (
         <div className="border border-input rounded-md shadow-sm overflow-hidden flex flex-col focus-within:ring-1 focus-within:ring-primary transition-shadow bg-background">

@@ -6,9 +6,11 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings, List } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings, List, Lock, Coins } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
+import { useCoins, FREE_CHAPTERS } from '@/hooks/useCoins'
+import UnlockChapterButton from '@/components/coins/UnlockChapterButton'
 import {
     Sheet,
     SheetContent,
@@ -23,11 +25,14 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
     const router = useRouter()
     const { user } = useAuth()
     const { toast } = useToast()
+    const { isChapterLocked, fetchUnlockedContent, unlockChapter, balance } = useCoins()
 
     const [isLoading, setIsLoading] = useState(true)
     const [book, setBook] = useState<any>(null)
     const [chapter, setChapter] = useState<any>(null)
     const [allChapters, setAllChapters] = useState<any[]>([])
+    const [isLocked, setIsLocked] = useState(false)
+    const [coinPrice, setCoinPrice] = useState(0)
 
     // Reading Settings
     const [fontSize, setFontSize] = useState(18)
@@ -39,11 +44,53 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
         setIsLoading(true)
         try {
             // Fetch Book Details
-            const { data: bookData } = await supabase.from('books').select('title, author, organization_id').eq('book_id', id).single()
+            const { data: bookData } = await supabase.from('books').select('title, author, organization_id, coin_price').eq('book_id', id).single()
             setBook(bookData)
+            const bookCoinPrice = bookData?.coin_price ?? 0
+            setCoinPrice(bookCoinPrice)
 
-            // Log Access & Progress once per mount
-            if (!hasLoggedRef.current) {
+            // Fetch unlocked content
+            if (user) {
+                await fetchUnlockedContent(id)
+            }
+
+            // Fetch Current Chapter first to get is_free
+            const { data: chapterData, error: chapterError } = await supabase.from('chapters')
+                .select('*')
+                .eq('book_id', id)
+                .eq('chapter_number', parseInt(chapterNumber))
+                .single()
+            
+            if (chapterError) {
+                toast({ title: "Lỗi", description: "Không tìm thấy chương này.", variant: "destructive" })
+                router.push(`/books/${id}`)
+                return
+            }
+            setChapter(chapterData)
+
+            // Check if this chapter is locked
+            const chapterNum = parseInt(chapterNumber)
+            const locked = isChapterLocked(id, chapterNum, bookCoinPrice, chapterData.is_free)
+            
+            // If locked, check if user has unlocked it
+            if (locked && user) {
+                const { data: unlocked } = await supabase
+                    .from('user_unlocked_content')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .eq('book_id', id)
+                    .eq('chapter_number', chapterNum)
+                    .maybeSingle()
+                
+                setIsLocked(!unlocked)
+            } else if (locked && !user) {
+                setIsLocked(true)
+            } else {
+                setIsLocked(false)
+            }
+
+            // Log Access & Progress once per mount (only if not locked)
+            if (!hasLoggedRef.current && !locked) {
                 hasLoggedRef.current = true
                 
                 // Tăng view cho quyển sách (Ai vào xem cũng tăng)
@@ -68,19 +115,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                 }
             }
 
-            // Fetch Current Chapter
-            const { data: chapterData, error: chapterError } = await supabase.from('chapters')
-                .select('*')
-                .eq('book_id', id)
-                .eq('chapter_number', parseInt(chapterNumber))
-                .single()
-            
-            if (chapterError) {
-                toast({ title: "Lỗi", description: "Không tìm thấy chương này.", variant: "destructive" })
-                router.push(`/books/${id}`)
-                return
-            }
-            setChapter(chapterData)
+
 
             // Fetch All Chapters for Navigation
             const { data: chaps } = await supabase.from('chapters')
@@ -113,6 +148,12 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
         localStorage.setItem('novel_settings', JSON.stringify({ size: fontSize, t: theme }))
     }, [fontSize, theme])
 
+    const handleUnlocked = () => {
+        setIsLocked(false)
+        hasLoggedRef.current = false // Allow logging after unlock
+        fetchReadingData()
+    }
+
     if (isLoading) {
         return <div className="min-h-screen flex items-center justify-center"><Loading size="lg" /></div>
     }
@@ -129,6 +170,9 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
         dark: "bg-[#1a1a1a] text-[#d4d4d4] border-[#333]",
         sepia: "bg-[#f4ecd8] text-[#5b4636] border-[#d3c2a8]"
     }
+
+    // Check if next chapter is locked
+    const isNextChapterLocked = nextChapter && isChapterLocked(id, nextChapter.chapter_number, coinPrice, nextChapter.is_free)
 
     return (
         <div className={`min-h-screen transition-colors duration-300 ${themeClasses[theme]}`}>
@@ -168,19 +212,66 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                     <div className="h-1 w-20 mx-auto bg-primary/40 rounded-full"></div>
                 </div>
 
-                {chapter.content_text.includes('<p') || chapter.content_text.includes('<h') ? (
-                    <div 
-                        className="prose dark:prose-invert max-w-none chapter-content prose-p:mb-[1.5em] prose-headings:font-display prose-img:block prose-img:mx-auto prose-img:max-w-full prose-img:rounded-md break-words"
-                        style={{ fontSize: `${fontSize}px` }}
-                        dangerouslySetInnerHTML={{ __html: chapter.content_text }}
-                    />
-                ) : (
-                    <div 
-                        className="leading-[1.8] whitespace-pre-wrap chapter-content break-words"
-                        style={{ fontSize: `${fontSize}px` }}
-                    >
-                        {chapter.content_text}
+                {/* Locked Content Overlay */}
+                {isLocked ? (
+                    <div className="relative">
+                        {/* Show blurred preview */}
+                        <div className="max-h-[200px] overflow-hidden relative">
+                            {chapter.content_text.includes('<p') || chapter.content_text.includes('<h') ? (
+                                <div 
+                                    className="prose dark:prose-invert max-w-none chapter-content blur-sm select-none"
+                                    style={{ fontSize: `${fontSize}px` }}
+                                    dangerouslySetInnerHTML={{ __html: chapter.content_text.substring(0, 500) }}
+                                />
+                            ) : (
+                                <div 
+                                    className="leading-[1.8] whitespace-pre-wrap chapter-content blur-sm select-none"
+                                    style={{ fontSize: `${fontSize}px` }}
+                                >
+                                    {chapter.content_text.substring(0, 500)}
+                                </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+                        </div>
+
+                        {/* Lock overlay */}
+                        <div className="flex flex-col items-center justify-center py-16 text-center">
+                            <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border-2 border-yellow-500/30 flex items-center justify-center mb-6">
+                                <Lock className="h-10 w-10 text-yellow-500" />
+                            </div>
+                            <h3 className="text-2xl font-bold mb-2">Chương Bị Khóa</h3>
+                            <p className="text-muted-foreground mb-6 max-w-md">
+                                Chương {chapter.chapter_number} là nội dung trả phí. Mở khóa bằng xu để tiếp tục đọc.
+                            </p>
+                            <UnlockChapterButton
+                                bookId={id}
+                                chapterNumber={parseInt(chapterNumber)}
+                                coinPrice={coinPrice}
+                                isLocked={true}
+                                onUnlocked={handleUnlocked}
+                            />
+                            <p className="text-sm text-muted-foreground mt-4">
+                                Số dư hiện tại: <span className="font-bold text-yellow-600 dark:text-yellow-400">{balance} xu</span>
+                            </p>
+                        </div>
                     </div>
+                ) : (
+                    <>
+                        {chapter.content_text.includes('<p') || chapter.content_text.includes('<h') ? (
+                            <div 
+                                className="prose dark:prose-invert max-w-none chapter-content prose-p:mb-[1.5em] prose-headings:font-display prose-img:block prose-img:mx-auto prose-img:max-w-full prose-img:rounded-md break-words"
+                                style={{ fontSize: `${fontSize}px` }}
+                                dangerouslySetInnerHTML={{ __html: chapter.content_text }}
+                            />
+                        ) : (
+                            <div 
+                                className="leading-[1.8] whitespace-pre-wrap chapter-content break-words"
+                                style={{ fontSize: `${fontSize}px` }}
+                            >
+                                {chapter.content_text}
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {/* Bottom Navigation */}
@@ -216,6 +307,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                                 <div className="p-2">
                                     {allChapters.map((ch) => {
                                         const isCurrent = ch.chapter_number === chapter.chapter_number
+                                        const chLocked = isChapterLocked(id, ch.chapter_number, coinPrice, ch.is_free)
                                         return (
                                             <button
                                                 key={ch.chapter_number}
@@ -229,7 +321,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                                                 <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                                                     isCurrent ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                                                 }`}>
-                                                    {ch.chapter_number}
+                                                    {chLocked ? <Lock className="h-3.5 w-3.5" /> : ch.chapter_number}
                                                 </span>
                                                 <span className="line-clamp-1 text-sm">
                                                     {ch.title || `Chương ${ch.chapter_number}`}
@@ -237,6 +329,12 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                                                 {isCurrent && (
                                                     <span className="ml-auto flex-shrink-0 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">
                                                         Đang đọc
+                                                    </span>
+                                                )}
+                                                {chLocked && !isCurrent && (
+                                                    <span className="ml-auto flex-shrink-0 text-[10px] bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                        <Coins className="h-2.5 w-2.5" />
+                                                        {coinPrice}
                                                     </span>
                                                 )}
                                             </button>
@@ -254,6 +352,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                         className={`w-full sm:w-auto ${themeClasses[theme]}`}
                     >
                         Chương Sau
+                        {isNextChapterLocked && <Lock className="ml-1 h-3 w-3 text-yellow-500" />}
                         <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                 </div>

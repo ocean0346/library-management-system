@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Pencil, ArrowLeft, Loader2, Save, ImageIcon } from 'lucide-react'
+import { Pencil, ArrowLeft, Loader2, Save, ImageIcon, Coins } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
@@ -65,6 +65,7 @@ export default function EditBookPage() {
     const [tagsInput, setTagsInput] = useState('')
     const [fileUrl, setFileUrl] = useState('')
     const [fileType, setFileType] = useState('PDF')
+    const [coinPrice, setCoinPrice] = useState(50)
 
     const [isUploadingCover, setIsUploadingCover] = useState(false)
     const [isUploadingDoc, setIsUploadingDoc] = useState(false)
@@ -111,6 +112,7 @@ export default function EditBookPage() {
             setFileUrl(book.file_url || '')
 
             setFileType(book.file_type || 'PDF')
+            setCoinPrice((data as any).coin_price ?? 5)
         } catch (err) {
             console.error('Error fetching book:', err)
             toast({
@@ -210,6 +212,15 @@ export default function EditBookPage() {
         }
     }
 
+    const handleFileTypeChange = (val: string) => {
+        setFileType(val)
+        if (val === 'WEBNOVEL') {
+            setCoinPrice(5)
+        } else if (val === 'PDF') {
+            setCoinPrice(50)
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
@@ -247,7 +258,8 @@ export default function EditBookPage() {
                     file_url: fileUrl || null,
 
                     file_type: fileType,
-                    tags: tagsArray
+                    tags: tagsArray,
+                    coin_price: coinPrice
                 })
                 .eq('book_id', bookId)
 
@@ -450,7 +462,7 @@ export default function EditBookPage() {
                                 <Label htmlFor="fileType">Định Dạng</Label>
                                 <Select
                                     value={fileType}
-                                    onValueChange={setFileType}
+                                    onValueChange={handleFileTypeChange}
                                     disabled={isSubmitting}
                                 >
                                     <SelectTrigger>
@@ -488,6 +500,26 @@ export default function EditBookPage() {
                                     />
                                 </div>
                             )}
+
+                            {/* Giá Xu */}
+                            <div className="space-y-2 mt-4">
+                                <Label htmlFor="coinPrice" className="flex items-center gap-2">
+                                    <Coins className="h-4 w-4 text-yellow-500" />
+                                    Giá Xu (cho mỗi chương / toàn bộ PDF)
+                                </Label>
+                                <Input
+                                    id="coinPrice"
+                                    type="number"
+                                    min="0"
+                                    placeholder="5"
+                                    value={coinPrice}
+                                    onChange={(e) => setCoinPrice(parseInt(e.target.value) || 0)}
+                                    disabled={isSubmitting}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    💡 Đặt 0 = miễn phí toàn bộ. Sách chữ có thể tùy chỉnh mở/khóa riêng lẻ trong phần Quản lý Chương.
+                                </p>
+                            </div>
                         </div>
 
                         <Separator />
