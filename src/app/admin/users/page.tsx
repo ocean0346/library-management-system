@@ -28,6 +28,50 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination"
+
+const ITEMS_PER_PAGE = 10
+
+function PaginationControls({ currentPage, totalItems, onPageChange }: { currentPage: number, totalItems: number, onPageChange: (p: number) => void }) {
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE)
+    if (totalPages <= 1) return null
+
+    return (
+        <Pagination className="mt-6 pb-2">
+            <PaginationContent>
+                <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); if (currentPage > 1) onPageChange(currentPage - 1) }}
+                    className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+                
+                {[...Array(totalPages)].map((_, i) => (
+                    <PaginationLink 
+                        key={i}
+                        href="#" 
+                        isActive={currentPage === i + 1}
+                        onClick={(e) => { e.preventDefault(); onPageChange(i + 1) }}
+                    >
+                        {i + 1}
+                    </PaginationLink>
+                ))}
+
+                <PaginationNext 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) onPageChange(currentPage + 1) }}
+                    className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+            </PaginationContent>
+        </Pagination>
+    )
+}
 
 const ROLE_OPTIONS = [
     { value: 'READER', label: 'Độc Giả', icon: UserIcon, color: 'bg-muted text-muted-foreground' },
@@ -63,6 +107,7 @@ export default function UserManagement() {
     const [isLoading, setIsLoading] = useState(true)
     const [isProcessing, setIsProcessing] = useState<string | null>(null)
     const [userToDelete, setUserToDelete] = useState<string | null>(null)
+    const [currentPage, setCurrentPage] = useState(1)
 
     const fetchUsers = useCallback(async () => {
         setIsLoading(true)
@@ -129,6 +174,7 @@ export default function UserManagement() {
             (u.username && u.username.toLowerCase().includes(query))
         )
         setFilteredUsers(sortUsers(filtered))
+        setCurrentPage(1)
     }, [searchQuery, usersList])
 
     const changeUserRole = async (targetUserId: string, newRole: string) => {
@@ -304,7 +350,7 @@ export default function UserManagement() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y">
-                                {filteredUsers.map((u) => {
+                                {filteredUsers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((u) => {
                                     const roleInfo = getRoleInfo(u.role)
                                     const RoleIcon = roleInfo.icon
                                     const isSelf = u.user_id === user?.id
@@ -424,6 +470,11 @@ export default function UserManagement() {
                                 Không tìm thấy dữ liệu người dùng.
                             </div>
                         )}
+                        <PaginationControls 
+                            currentPage={currentPage} 
+                            totalItems={filteredUsers.length} 
+                            onPageChange={setCurrentPage} 
+                        />
                     </div>
                 </CardContent>
             </Card>

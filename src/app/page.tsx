@@ -40,7 +40,7 @@ export default function Home() {
                 const { data: catsData } = await supabase
                     .from('categories')
                     .select('name, books(count)')
-                
+
                 if (catsData) {
                     const sortedCats = catsData.sort((a: any, b: any) => (b.books?.[0]?.count || 0) - (a.books?.[0]?.count || 0))
                     setTopCategories(sortedCats.slice(0, 3).map(c => c.name))
@@ -119,7 +119,7 @@ export default function Home() {
 
                 <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
                     <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-8 transition-all hover:bg-primary/20 cursor-default">
-                        <Sparkles className="w-4 h-4 mr-2" /> Thư viện Mở 100% Miễn phí
+                        <Sparkles className="w-4 h-4 mr-2" /> Thư viện Sách Chọn Lọc
                     </div>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.1]">
                         Thư Viện Tài Liệu <br className="hidden md:block" />

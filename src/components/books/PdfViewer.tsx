@@ -23,7 +23,14 @@ export default function PdfViewer({ fileUrl, initialPage = 0, onPageChange }: Pd
 
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-            <div className="h-full w-full">
+            <div className="h-full w-full pdf-viewer-container">
+                <style>{`
+                    .pdf-viewer-container [aria-label="Download"],
+                    .pdf-viewer-container [aria-label="Print"],
+                    .pdf-viewer-container [aria-label="Open"] {
+                        display: none !important;
+                    }
+                `}</style>
                 <Viewer
                     fileUrl={fileUrl}
                     plugins={[defaultLayoutPluginInstance]}

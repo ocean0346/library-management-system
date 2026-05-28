@@ -35,7 +35,7 @@ function BookCatalog() {
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState(searchParams.get('q') ? decodeURIComponent(searchParams.get('q')!) : '')
     const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'created_at')
-    
+
     useEffect(() => {
         const q = searchParams.get('q')
         if (q !== null) {
@@ -86,7 +86,7 @@ function BookCatalog() {
         try {
             // For top_rated, we need to fetch all matching books first, then sort client-side
             const isTopRated = sortBy === 'top_rated'
-            
+
             let query = supabase
                 .from('books')
                 .select('*, categories(name), chapters(chapter_number, title, created_at)', { count: 'exact' })
@@ -162,11 +162,11 @@ function BookCatalog() {
                     const sorted = [...booksWithRating].sort((a: any, b: any) => {
                         const aHasRating = !!ratingMap[a.book_id]
                         const bHasRating = !!ratingMap[b.book_id]
-                        
+
                         if (aHasRating && !bHasRating) return -1
                         if (!aHasRating && bHasRating) return 1
                         if (!aHasRating && !bHasRating) return 0
-                        
+
                         if (b.average_rating !== a.average_rating) return b.average_rating - a.average_rating
                         return ratingMap[b.book_id].count - ratingMap[a.book_id].count
                     })
@@ -202,13 +202,13 @@ function BookCatalog() {
                     .select('role')
                     .eq('user_id', user.id)
                     .single()
-                
+
                 if (data?.role === 'ADMIN' || data?.role === 'SUPER_ADMIN') {
                     setIsAdmin(true)
                 }
             }
         }
-        
+
         if (user) {
             checkAdmin()
         }
@@ -244,17 +244,17 @@ function BookCatalog() {
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#02FF73]/10 via-[#09ADAA]/5 to-background p-8 md:p-12 border shadow-sm">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#09ADAA]/20 blur-[80px] rounded-full animate-pulse" />
                 <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#02FF73]/10 blur-[100px] rounded-full" />
-                
+
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div>
                         <Badge variant="outline" className="mb-4 bg-background/50 backdrop-blur-md border-[#02FF73]/30 text-[#09ADAA]">
                             Khám phá tri thức
                         </Badge>
                         <h1 className="text-4xl md:text-5xl font-black mb-3">
-                            Tủ Sách Trực Tuyến
+                            Thư Viện Trực Tuyến
                         </h1>
                         <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-                            Hàng nghìn cuốn sách điện tử và tài liệu được chia sẻ hoàn toàn miễn phí. Tìm kiếm tựa sách yêu thích của bạn ngay hôm nay.
+                            Khám phá thư viện sách điện tử chất lượng cao với hàng nghìn đầu sách đáng đọc được cập nhật liên tục.
                         </p>
                     </div>
                     {isAdmin && (

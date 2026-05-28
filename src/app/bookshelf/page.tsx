@@ -7,7 +7,51 @@ import { supabase } from '@/lib/supabase-client'
 import { Book } from '@/types/book'
 import BookCard from '@/components/books/BookCard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Bookmark, Heart, LibrarySquare, Loader2 } from 'lucide-react'
+import { Bookmark, Heart, LibrarySquare, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination"
+
+const ITEMS_PER_PAGE = 6
+
+function PaginationControls({ currentPage, totalItems, onPageChange }: { currentPage: number, totalItems: number, onPageChange: (p: number) => void }) {
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE)
+    if (totalPages <= 1) return null
+
+    return (
+        <Pagination className="mt-8">
+            <PaginationContent>
+                <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); if (currentPage > 1) onPageChange(currentPage - 1) }}
+                    className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+                
+                {[...Array(totalPages)].map((_, i) => (
+                    <PaginationLink 
+                        key={i}
+                        href="#" 
+                        isActive={currentPage === i + 1}
+                        onClick={(e) => { e.preventDefault(); onPageChange(i + 1) }}
+                    >
+                        {i + 1}
+                    </PaginationLink>
+                ))}
+
+                <PaginationNext 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) onPageChange(currentPage + 1) }}
+                    className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+            </PaginationContent>
+        </Pagination>
+    )
+}
 
 export default function BookshelfPage() {
     const { user, loading: authLoading } = useAuth()
@@ -16,6 +60,11 @@ export default function BookshelfPage() {
     const [favoritedBooks, setFavoritedBooks] = useState<Book[]>([])
     const [historyBooks, setHistoryBooks] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+
+    // Pagination states
+    const [historyPage, setHistoryPage] = useState(1)
+    const [savedPage, setSavedPage] = useState(1)
+    const [favoritesPage, setFavoritesPage] = useState(1)
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -123,12 +172,19 @@ export default function BookshelfPage() {
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {historyBooks.map((book, idx) => (
-                                <div key={book.book_id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
-                                    <BookCard book={book} />
-                                </div>
-                            ))}
+                        <div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {historyBooks.slice((historyPage - 1) * ITEMS_PER_PAGE, historyPage * ITEMS_PER_PAGE).map((book, idx) => (
+                                    <div key={book.book_id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
+                                        <BookCard book={book} />
+                                    </div>
+                                ))}
+                            </div>
+                            <PaginationControls 
+                                currentPage={historyPage} 
+                                totalItems={historyBooks.length} 
+                                onPageChange={setHistoryPage} 
+                            />
                         </div>
                     )}
                 </TabsContent>
@@ -144,12 +200,19 @@ export default function BookshelfPage() {
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {savedBooks.map((book, idx) => (
-                                <div key={book.book_id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
-                                    <BookCard book={book} />
-                                </div>
-                            ))}
+                        <div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {savedBooks.slice((savedPage - 1) * ITEMS_PER_PAGE, savedPage * ITEMS_PER_PAGE).map((book, idx) => (
+                                    <div key={book.book_id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
+                                        <BookCard book={book} />
+                                    </div>
+                                ))}
+                            </div>
+                            <PaginationControls 
+                                currentPage={savedPage} 
+                                totalItems={savedBooks.length} 
+                                onPageChange={setSavedPage} 
+                            />
                         </div>
                     )}
                 </TabsContent>
@@ -162,12 +225,19 @@ export default function BookshelfPage() {
                             <p className="text-muted-foreground mb-6">Hãy thả tim cho các truyện bạn tâm đắc để chúng ưu tiên xuất hiện ở đây.</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {favoritedBooks.map((book, idx) => (
-                                <div key={book.book_id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
-                                    <BookCard book={book} />
-                                </div>
-                            ))}
+                        <div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {favoritedBooks.slice((favoritesPage - 1) * ITEMS_PER_PAGE, favoritesPage * ITEMS_PER_PAGE).map((book, idx) => (
+                                    <div key={book.book_id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
+                                        <BookCard book={book} />
+                                    </div>
+                                ))}
+                            </div>
+                            <PaginationControls 
+                                currentPage={favoritesPage} 
+                                totalItems={favoritedBooks.length} 
+                                onPageChange={setFavoritesPage} 
+                            />
                         </div>
                     )}
                 </TabsContent>

@@ -12,6 +12,50 @@ import { Loading } from '@/components/ui/loading'
 import { Coins, ArrowLeft, ArrowUpRight, ArrowDownLeft, Plus, BookOpen, Sparkles, Gift, Undo2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { CoinPurchaseModal } from '@/components/coins/CoinBalance'
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination"
+
+const ITEMS_PER_PAGE = 10
+
+function PaginationControls({ currentPage, totalItems, onPageChange }: { currentPage: number, totalItems: number, onPageChange: (p: number) => void }) {
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE)
+    if (totalPages <= 1) return null
+
+    return (
+        <Pagination className="mt-6">
+            <PaginationContent>
+                <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); if (currentPage > 1) onPageChange(currentPage - 1) }}
+                    className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+                
+                {[...Array(totalPages)].map((_, i) => (
+                    <PaginationLink 
+                        key={i}
+                        href="#" 
+                        isActive={currentPage === i + 1}
+                        onClick={(e) => { e.preventDefault(); onPageChange(i + 1) }}
+                    >
+                        {i + 1}
+                    </PaginationLink>
+                ))}
+
+                <PaginationNext 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) onPageChange(currentPage + 1) }}
+                    className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+            </PaginationContent>
+        </Pagination>
+    )
+}
 
 type Transaction = {
     id: string
@@ -30,6 +74,7 @@ export default function CoinHistoryPage() {
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [showPurchaseModal, setShowPurchaseModal] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
 
     useEffect(() => {
         if (authLoading) return
@@ -129,34 +174,41 @@ export default function CoinHistoryPage() {
                             <p>Chưa có giao dịch nào</p>
                         </div>
                     ) : (
-                        <div className="space-y-1">
-                            {transactions.map(tx => (
-                                <div key={tx.id} className="flex items-center justify-between p-4 rounded-lg hover:bg-muted/50 transition-colors border-b last:border-b-0">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                                            tx.amount > 0 
-                                                ? 'bg-green-500/10 text-green-500' 
-                                                : 'bg-red-500/10 text-red-500'
-                                        }`}>
-                                            {getTypeIcon(tx.type)}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-sm line-clamp-1">{tx.description}</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                {getTypeBadge(tx.type)}
-                                                <span className="text-xs text-muted-foreground">
-                                                    {format(new Date(tx.created_at), 'dd/MM/yyyy HH:mm')}
-                                                </span>
+                        <div>
+                            <div className="space-y-1">
+                                {transactions.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map(tx => (
+                                    <div key={tx.id} className="flex items-center justify-between p-4 rounded-lg hover:bg-muted/50 transition-colors border-b last:border-b-0">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
+                                                tx.amount > 0 
+                                                    ? 'bg-green-500/10 text-green-500' 
+                                                    : 'bg-red-500/10 text-red-500'
+                                            }`}>
+                                                {getTypeIcon(tx.type)}
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-sm line-clamp-1">{tx.description}</p>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    {getTypeBadge(tx.type)}
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {format(new Date(tx.created_at), 'dd/MM/yyyy HH:mm')}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
+                                        <span className={`font-bold tabular-nums text-base ${
+                                            tx.amount > 0 ? 'text-green-500' : 'text-red-500'
+                                        }`}>
+                                            {tx.amount > 0 ? '+' : ''}{tx.amount}
+                                        </span>
                                     </div>
-                                    <span className={`font-bold tabular-nums text-base ${
-                                        tx.amount > 0 ? 'text-green-500' : 'text-red-500'
-                                    }`}>
-                                        {tx.amount > 0 ? '+' : ''}{tx.amount}
-                                    </span>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
+                            <PaginationControls 
+                                currentPage={currentPage} 
+                                totalItems={transactions.length} 
+                                onPageChange={setCurrentPage} 
+                            />
                         </div>
                     )}
                 </CardContent>
