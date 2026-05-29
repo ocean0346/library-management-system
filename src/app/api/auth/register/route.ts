@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-// 使用 service role key 来绕过 RLS
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -17,11 +16,10 @@ export async function POST(request: NextRequest) {
     try {
         const { email, password, username, fullName } = await request.json();
 
-        // 1. 创建 Supabase Auth 用户
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
-            email_confirm: true, // 自动确认邮箱
+            email_confirm: true,
             user_metadata: {
                 username,
                 full_name: fullName
@@ -43,7 +41,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 2. 在 users 表中创建用户记录
         const { error: profileError } = await supabaseAdmin
             .from('users')
             .insert({
@@ -55,7 +52,6 @@ export async function POST(request: NextRequest) {
 
         if (profileError) {
             console.error('Profile creation error:', profileError);
-            // 如果创建资料失败，删除 auth 用户
             await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
             const profileErrorMessage = profileError.message || profileError.details || JSON.stringify(profileError);
             return NextResponse.json(

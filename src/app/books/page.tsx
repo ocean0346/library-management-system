@@ -43,14 +43,20 @@ function BookCatalog() {
             if (decoded !== searchTerm) {
                 setSearchTerm(decoded)
             }
+        } else if (q === null && searchTerm !== '') {
+            setSearchTerm('')
         }
         const sort = searchParams.get('sort')
         if (sort !== null && sort !== sortBy) {
             setSortBy(sort)
+        } else if (sort === null && sortBy !== 'created_at') {
+            setSortBy('created_at')
         }
         const cat = searchParams.get('category')
         if (cat !== null && cat !== selectedCategory) {
             setSelectedCategory(decodeURIComponent(cat))
+        } else if (cat === null && selectedCategory !== 'all') {
+            setSelectedCategory('all')
         }
         const tag = searchParams.get('tag')
         if (tag !== null && tag !== selectedTag) {
@@ -116,16 +122,28 @@ function BookCatalog() {
                 const { data: categoryData } = await supabase
                     .from('categories')
                     .select('category_id')
-                    .eq('name', selectedCategory)
-                    .single()
+                    .ilike('name', selectedCategory)
+                    .limit(1)
+                    .maybeSingle()
 
                 if (categoryData) {
-                    query = query.eq('category_id', categoryData.category_id)
+                    query = query.or(`category_id.eq.${categoryData.category_id},tags.cs.{"${selectedCategory}"}`)
                 }
             }
 
             if (selectedTag) {
-                query = query.contains('tags', [selectedTag])
+                const { data: tagCategoryData } = await supabase
+                    .from('categories')
+                    .select('category_id')
+                    .ilike('name', selectedTag)
+                    .limit(1)
+                    .maybeSingle()
+
+                if (tagCategoryData) {
+                    query = query.or(`tags.cs.{"${selectedTag}"},category_id.eq.${tagCategoryData.category_id}`)
+                } else {
+                    query = query.contains('tags', [selectedTag])
+                }
             }
 
             const { data, error, count } = await query
@@ -135,10 +153,18 @@ function BookCatalog() {
             if (data) {
                 // Always fetch reviews to calculate average rating for BookCard display
                 const bookIds = data.map((b: any) => b.book_id)
-                const { data: reviews } = await supabase
-                    .from('reviews')
-                    .select('book_id, rating')
-                    .in('book_id', bookIds)
+                let reviews: any[] | null = null
+                
+                if (bookIds.length > 0) {
+                    const { data: fetchedReviews, error: reviewsError } = await supabase
+                        .from('reviews')
+                        .select('book_id, rating')
+                        .in('book_id', bookIds)
+                    
+                    if (!reviewsError) {
+                        reviews = fetchedReviews
+                    }
+                }
 
                 const ratingMap: Record<string, { total: number; count: number }> = {}
                 if (reviews) {
@@ -180,8 +206,13 @@ function BookCatalog() {
                     setTotalPages(Math.ceil((count || 0) / booksPerPage))
                 }
             }
-        } catch (error) {
-            console.error('Error fetching books:', error)
+        } catch (error: any) {
+            console.error('Error fetching books:', JSON.stringify(error, null, 2))
+            console.error(error?.message)
+            // Hiển thị tạm lỗi ra màn hình để debug
+            if (typeof window !== 'undefined') {
+                alert("Chi tiết lỗi: " + (error?.message || JSON.stringify(error)));
+            }
         } finally {
             setIsLoading(false)
         }
@@ -216,11 +247,25 @@ function BookCatalog() {
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value)
+        if (selectedTag) {
+            setSelectedTag(null)
+            const params = new URLSearchParams()
+            if (value) params.set('q', value)
+            if (selectedCategory && selectedCategory !== 'all') params.set('category', selectedCategory)
+            router.replace(`/books?${params.toString()}`)
+        }
         setCurrentPage(1)
     }
 
     const handleCategoryChange = (value: string) => {
         setSelectedCategory(value)
+        if (selectedTag) {
+            setSelectedTag(null)
+            const params = new URLSearchParams()
+            if (searchTerm) params.set('q', searchTerm)
+            if (value && value !== 'all') params.set('category', value)
+            router.replace(`/books?${params.toString()}`)
+        }
         setCurrentPage(1)
     }
 
