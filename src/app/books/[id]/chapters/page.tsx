@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useCallback, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -14,22 +13,16 @@ import { Loading } from '@/components/ui/loading'
 import dynamic from 'next/dynamic'
 import { useToast } from '@/hooks/use-toast'
 import { Switch } from '@/components/ui/switch'
-
-// Use dynamic import for Tiptap to avoid SSR hydration issues
 const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor').then(mod => mod.RichTextEditor), { ssr: false })
-
 export default function ManageChaptersPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params)
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
     const { toast } = useToast()
-
     const [isAdmin, setIsAdmin] = useState(false)
     const [book, setBook] = useState<any>(null)
     const [chapters, setChapters] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
-
-    // Form State
     const [isEditing, setIsEditing] = useState(false)
     const [currentChapterId, setCurrentChapterId] = useState<string | null>(null)
     const [chapterNumber, setChapterNumber] = useState<number | ''>('')
@@ -38,7 +31,6 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
     const [isFree, setIsFree] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [deleteChapterId, setDeleteChapterId] = useState<string | null>(null)
-
     const fetchData = useCallback(async () => {
         setIsLoading(true)
         try {
@@ -50,27 +42,19 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                 return
             }
             setIsAdmin(true)
-
-            // Fetch Book Details
             const { data: bookData } = await supabase.from('books').select('*').eq('book_id', id).single()
             setBook(bookData)
-
-            // Fetch Chapters
             const { data: chaptersData } = await supabase.from('chapters').select('*').eq('book_id', id).order('chapter_number', { ascending: true })
             setChapters(chaptersData || [])
-            
-            // Auto-increment next chapter
             const nextChapNum = chaptersData && chaptersData.length > 0 ? (chaptersData[chaptersData.length - 1].chapter_number + 1) : 1
             setChapterNumber(nextChapNum)
             setIsFree(nextChapNum <= 10)
-
         } catch (error) {
             console.error("Error fetching data:", error)
         } finally {
             setIsLoading(false)
         }
     }, [id, user, router, toast])
-
     useEffect(() => {
         if (!authLoading && user) {
             fetchData()
@@ -78,17 +62,13 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
             router.push('/login')
         }
     }, [authLoading, user, fetchData])
-
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
         if (typeof chapterNumber !== 'number' || !chapterContent.trim()) {
             toast({ title: "Lỗi", description: "Vui lòng nhập số chương và nội dung chương", variant: "destructive" })
             return
         }
-
-        // Tựa đề có thể để trống
         const finalTitle = chapterTitle.trim() || null
-
         setIsSubmitting(true)
         try {
             if (isEditing && currentChapterId) {
@@ -111,8 +91,6 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                 if (error) throw error
                 toast({ title: "Thành công", description: "Đã thêm chương mới." })
             }
-            
-            // Reset form
             setIsEditing(false)
             setCurrentChapterId(null)
             setChapterTitle('')
@@ -127,7 +105,6 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
             setIsSubmitting(false)
         }
     }
-
     const handleEdit = (chapter: any) => {
         setIsEditing(true)
         setCurrentChapterId(chapter.chapter_id)
@@ -137,7 +114,6 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
         setIsFree(chapter.is_free ?? false)
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-
     const confirmDelete = async () => {
         if (!deleteChapterId) return
         try {
@@ -151,17 +127,14 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
             setDeleteChapterId(null)
         }
     }
-
     if (isLoading || authLoading) return <div className="flex justify-center py-20"><Loading size="lg" /></div>
-
     return (
         <div className="container max-w-5xl mx-auto py-8">
             <Button variant="ghost" onClick={() => router.push(`/books/${id}`)} className="mb-6">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Trở về Trang Sách
             </Button>
-
             <div className="grid md:grid-cols-[1fr_350px] gap-8 items-start">
-                {/* Form Khu Vực Chính */}
+                {}
                 <Card className="shadow-lg border-primary/20">
                     <CardHeader className="bg-gradient-to-r from-primary/10 to-background border-b border-primary/10 mb-4 pb-6">
                         <CardTitle className="text-2xl">{isEditing ? 'Chỉnh Sửa Chương' : 'Thêm Chương Mới'}</CardTitle>
@@ -224,8 +197,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                         </form>
                     </CardContent>
                 </Card>
-
-                {/* Danh Sách Các Chương Sidebar */}
+                {}
                 <Card className="sticky top-24 shadow-md bg-muted/20">
                     <CardHeader className="py-4 border-b">
                         <CardTitle className="text-lg">Danh Sách Chương Đã Đăng</CardTitle>
@@ -259,8 +231,7 @@ export default function ManageChaptersPage({ params }: { params: Promise<{ id: s
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Delete Confirmation Dialog */}
+            {}
             <AlertDialog open={!!deleteChapterId} onOpenChange={(open) => !open && setDeleteChapterId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>

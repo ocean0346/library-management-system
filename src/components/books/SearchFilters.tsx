@@ -8,7 +8,6 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Search, Filter } from 'lucide-react'
-
 type SearchFiltersProps = {
     searchTerm: string
     onSearchChange: (value: string) => void
@@ -16,7 +15,6 @@ type SearchFiltersProps = {
     onCategoryChange: (value: string) => void
     categories: string[]
 }
-
 export default function SearchFilters({
                                           searchTerm,
                                           onSearchChange,
@@ -29,7 +27,6 @@ export default function SearchFilters({
     return (
         <div className="bg-background/60 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-primary/10 mb-8 mt-2 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-[#02FF73]/5 to-[#09ADAA]/5 opacity-50" />
-            
             <div className="relative z-10 flex flex-col md:flex-row gap-6 items-end">
                 <div className="flex-1 w-full">
                     <Label htmlFor="search" className="mb-3 block text-muted-foreground font-medium">
@@ -50,7 +47,6 @@ export default function SearchFilters({
                         </div>
                     </div>
                 </div>
-                
                 <div className="w-full md:w-64">
                     <Label htmlFor="category" className="mb-3 block text-muted-foreground font-medium">
                         Thể Loại Sách

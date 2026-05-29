@@ -2,12 +2,10 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
 export const metadata: Metadata = {
     title: 'Điều Khoản Sử Dụng - ThưViệnOnline',
     description: 'Điều khoản sử dụng của ThưViệnOnline',
 }
-
 export default function TermsOfServicePage() {
     return (
         <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -19,11 +17,9 @@ export default function TermsOfServicePage() {
                     </Link>
                 </Button>
             </div>
-
             <article className="prose prose-neutral dark:prose-invert max-w-none">
                 <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Điều Khoản Sử Dụng</h1>
                 <p className="text-muted-foreground text-lg mb-8">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">1. Chấp Nhận Điều Khoản</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -31,7 +27,6 @@ export default function TermsOfServicePage() {
                         và điều kiện của thỏa thuận này. Nếu bạn không đồng ý với các điều khoản này, vui lòng không sử dụng dịch vụ của chúng tôi.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">2. Mô Tả Dịch Vụ</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -39,7 +34,6 @@ export default function TermsOfServicePage() {
                         kho sách đa dạng, tính năng lưu trữ và theo dõi tiến độ đọc, cùng với hệ thống đánh giá và nhận xét.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">3. Tài Khoản Người Dùng</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">Để sử dụng dịch vụ, bạn cần:</p>
@@ -50,7 +44,6 @@ export default function TermsOfServicePage() {
                         <li>Chịu trách nhiệm cho mọi hoạt động diễn ra trên tài khoản của bạn</li>
                     </ul>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">4. Quy Tắc Sử Dụng</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">Bạn đồng ý không:</p>
@@ -63,7 +56,6 @@ export default function TermsOfServicePage() {
                         <li>Chia sẻ thông tin đăng nhập tài khoản của bạn cho người khác</li>
                     </ul>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">5. Sở Hữu Trí Tuệ</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -72,7 +64,6 @@ export default function TermsOfServicePage() {
                         bạn tải lên nhưng cấp cho chúng tôi giấy phép sử dụng để cung cấp dịch vụ.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">6. Giới Hạn Trách Nhiệm</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -81,7 +72,6 @@ export default function TermsOfServicePage() {
                         doanh thu nào phát sinh từ việc bạn sử dụng dịch vụ.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">7. Chấm Dứt</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -90,7 +80,6 @@ export default function TermsOfServicePage() {
                         Bạn cũng có thể xóa tài khoản bất cứ lúc nào thông qua cài đặt tài khoản.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">8. Thay Đổi Điều Khoản</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -98,7 +87,6 @@ export default function TermsOfServicePage() {
                         Việc bạn tiếp tục sử dụng dịch vụ sau khi các thay đổi có hiệu lực đồng nghĩa với việc bạn chấp nhận các điều khoản mới.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">9. Liên Hệ</h2>
                     <p className="text-muted-foreground leading-relaxed">

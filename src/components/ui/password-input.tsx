@@ -1,20 +1,16 @@
 'use client'
-
 import * as React from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Eye, EyeOff, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
 export interface PasswordInputProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
     showIcon?: boolean
 }
-
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
     ({ className, showIcon = true, ...props }, ref) => {
         const [showPassword, setShowPassword] = React.useState(false)
-
         return (
             <div className="relative">
                 {showIcon && (
@@ -49,5 +45,4 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
     }
 )
 PasswordInput.displayName = 'PasswordInput'
-
 export { PasswordInput }

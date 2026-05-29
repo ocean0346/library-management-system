@@ -35,7 +35,7 @@ function PaginationControls({ currentPage, totalItems, onPageChange }: { current
                     onClick={(e) => { e.preventDefault(); if (currentPage > 1) onPageChange(currentPage - 1) }}
                     className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
                 />
-                
+
                 {[...Array(totalPages)].map((_, i) => (
                     <PaginationLink 
                         key={i}
@@ -91,7 +91,7 @@ export default function CoinHistoryPage() {
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
                 .limit(50)
-            
+
             setTransactions(data || [])
             setIsLoading(false)
         }
@@ -133,7 +133,7 @@ export default function CoinHistoryPage() {
                 <ArrowLeft className="h-4 w-4 mr-2" /> Quay lại
             </Button>
 
-            {/* Balance Card */}
+            {}
             <Card className="mb-8 overflow-hidden">
                 <div className="relative p-6 bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-transparent">
                     <div className="flex items-center justify-between">
@@ -159,7 +159,7 @@ export default function CoinHistoryPage() {
                 </div>
             </Card>
 
-            {/* Transaction History */}
+            {}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">

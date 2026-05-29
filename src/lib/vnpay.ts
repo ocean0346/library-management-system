@@ -1,7 +1,5 @@
 import { VNPay, HashAlgorithm, ignoreLogger } from 'vnpay'
 
-// VNPay Sandbox Configuration
-// Đây là thông tin sandbox mặc định của VNPay dùng cho testing
 const vnpay = new VNPay({
     tmnCode: process.env.VNPAY_TMN_CODE || 'CGXZLS0Z',
     secureSecret: process.env.VNPAY_HASH_SECRET || 'XNBCJFAKAZQSGTARRLGCHVZWCIOIGSHN',

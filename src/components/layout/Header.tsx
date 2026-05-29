@@ -1,5 +1,4 @@
 'use client'
-
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
@@ -20,14 +19,12 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
-
 export default function Header() {
     const router = useRouter()
     const pathname = usePathname()
     const { user, signOut } = useAuth()
     const [isAdmin, setIsAdmin] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
     useEffect(() => {
         const checkAdmin = async () => {
             if (user) {
@@ -36,36 +33,28 @@ export default function Header() {
                     .select('role')
                     .eq('user_id', user.id)
                     .single()
-                
                 if (data?.role === 'ADMIN' || data?.role === 'SUPER_ADMIN') {
                     setIsAdmin(true)
                 }
             }
         }
-        
         checkAdmin()
     }, [user])
-
     const handleSignOut = async () => {
         await signOut()
         router.push('/')
     }
-
     const navItems = [
         { href: '/', label: 'Trang Chủ', icon: BookOpen },
         { href: '/books', label: 'Thư Viện', icon: BookOpen },
     ]
-
     const isActivePath = (path: string) => pathname === path
-
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
-
     if (pathname.includes('/read')) return null
-
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/50 shadow-[inset_0_-1px_0_0_hsla(0,0%,100%,0.05),0_1px_3px_0_rgba(0,0,0,0.03)]">
             <div className="container h-16 flex items-center justify-between gap-2">
-                {/* Logo & Navigation */}
+                {}
                 <div className="flex items-center gap-8">
                     <Link href="/" onClick={scrollToTop} className="flex items-center gap-3 group">
                         <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] shadow-lg shadow-[#02FF73]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(2,255,115,0.4)]">
@@ -76,8 +65,7 @@ export default function Header() {
                             ThưViện<span className="text-foreground">Online</span>
                         </span>
                     </Link>
-
-                    {/* Desktop Navigation */}
+                    {}
                     <nav className="hidden md:flex items-center gap-1 whitespace-nowrap">
                         {navItems.map((item) => {
                             const Icon = item.icon
@@ -98,7 +86,7 @@ export default function Header() {
                                         <Icon className="h-4 w-4" />
                                         {item.label}
                                     </span>
-                                    {/* Active indicator */}
+                                    {}
                                     <span
                                         className={cn(
                                             "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] transition-all duration-300 rounded-full",
@@ -138,14 +126,13 @@ export default function Header() {
                         )}
                     </nav>
                 </div>
-
-                {/* Right Side */}
+                {}
                 <div className="flex items-center gap-3 flex-shrink-0">
                     <HeaderSearch />
                     {user ? (
                         <>
                             <CoinBalance />
-                            {/* User Menu */}
+                            {}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
@@ -203,7 +190,6 @@ export default function Header() {
                                         <Coins className="mr-2 h-4 w-4" />
                                         Lịch Sử Xu
                                     </DropdownMenuItem>
-
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         onClick={handleSignOut}
@@ -229,8 +215,7 @@ export default function Header() {
                             </Link>
                         </div>
                     )}
-
-                    {/* Mobile Menu Toggle */}
+                    {}
                     <Button
                         variant="ghost"
                         size="icon"
@@ -245,8 +230,7 @@ export default function Header() {
                     </Button>
                 </div>
             </div>
-
-            {/* Mobile Navigation */}
+            {}
             <div className={cn(
                 "md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out",
                 mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 border-t-0"

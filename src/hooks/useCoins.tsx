@@ -4,8 +4,8 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
 
-const FREE_CHAPTERS = 10  // 10 chương đầu miễn phí
-const FREE_PDF_PAGES = 10 // 10 trang PDF đầu miễn phí
+const FREE_CHAPTERS = 10  
+const FREE_PDF_PAGES = 10 
 
 export { FREE_CHAPTERS, FREE_PDF_PAGES }
 
@@ -31,7 +31,6 @@ export function CoinProvider({ children }: { children: ReactNode }) {
     const [unlockedChapters, setUnlockedChapters] = useState<Set<string>>(new Set())
     const [unlockedPDFs, setUnlockedPDFs] = useState<Set<string>>(new Set())
 
-    // Fetch user balance
     const fetchBalance = useCallback(async () => {
         if (!user) {
             setBalance(0)
@@ -56,7 +55,6 @@ export function CoinProvider({ children }: { children: ReactNode }) {
         fetchBalance()
     }, [fetchBalance])
 
-    // Check if a chapter is locked
     const isChapterLocked = useCallback((bookId: string, chapterNumber: number, coinPrice: number, isFree?: boolean): boolean => {
         if (coinPrice <= 0) return false
         if (isFree === true) return false
@@ -65,14 +63,12 @@ export function CoinProvider({ children }: { children: ReactNode }) {
         return true
     }, [unlockedChapters])
 
-    // Check if a PDF is locked
     const isPDFLocked = useCallback((bookId: string, coinPrice: number): boolean => {
         if (coinPrice <= 0) return false
         if (unlockedPDFs.has(bookId)) return false
         return true
     }, [unlockedPDFs])
 
-    // Fetch unlocked content for a specific book
     const fetchUnlockedContent = useCallback(async (bookId: string) => {
         if (!user) return
         try {
@@ -107,7 +103,6 @@ export function CoinProvider({ children }: { children: ReactNode }) {
         }
     }, [user])
 
-    // Unlock a chapter with coins
     const unlockChapter = useCallback(async (bookId: string, chapterNumber: number, coinCost: number) => {
         if (!user) return { success: false, message: 'Vui lòng đăng nhập' }
 
@@ -137,7 +132,6 @@ export function CoinProvider({ children }: { children: ReactNode }) {
         }
     }, [user, fetchBalance])
 
-    // Unlock a PDF with coins
     const unlockPDF = useCallback(async (bookId: string, coinCost: number) => {
         if (!user) return { success: false, message: 'Vui lòng đăng nhập' }
 

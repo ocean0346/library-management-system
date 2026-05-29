@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
-
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -11,11 +10,9 @@ const supabaseAdmin = createClient(
         }
     }
 );
-
 export async function POST(request: NextRequest) {
     try {
         const { email, password, username, fullName } = await request.json();
-
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
@@ -25,7 +22,6 @@ export async function POST(request: NextRequest) {
                 full_name: fullName
             }
         });
-
         if (authError) {
             console.error('Auth error:', authError);
             return NextResponse.json(
@@ -33,14 +29,12 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
-
         if (!authData.user) {
             return NextResponse.json(
                 { error: 'Failed to create user' },
                 { status: 500 }
             );
         }
-
         const { error: profileError } = await supabaseAdmin
             .from('users')
             .insert({
@@ -49,7 +43,6 @@ export async function POST(request: NextRequest) {
                 username: username,
                 full_name: fullName,
             });
-
         if (profileError) {
             console.error('Profile creation error:', profileError);
             await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
@@ -59,7 +52,6 @@ export async function POST(request: NextRequest) {
                 { status: 500 }
             );
         }
-
         return NextResponse.json({
             success: true,
             user: {
@@ -67,7 +59,6 @@ export async function POST(request: NextRequest) {
                 email: authData.user.email
             }
         });
-
     } catch (error) {
         console.error('Registration error:', error);
         return NextResponse.json(

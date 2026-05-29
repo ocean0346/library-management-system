@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -8,26 +7,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loading } from '@/components/ui/loading'
 import { Clock, History, Search as SearchIcon, ArrowLeft, ArrowRight } from 'lucide-react'
-
 const LOGS_PER_PAGE = 20
-
 export default function AccessLogs() {
     const { user, loading: authLoading } = useAuth()
     const router = useRouter()
-    
     const [isAdmin, setIsAdmin] = useState(false)
     const [logs, setLogs] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [totalLogs, setTotalLogs] = useState(0)
-
     const fetchLogs = useCallback(async () => {
         setIsLoading(true)
         try {
             const startRange = (currentPage - 1) * LOGS_PER_PAGE
             const endRange = startRange + LOGS_PER_PAGE - 1
-
             const { data, count, error } = await supabase
                 .from('access_logs')
                 .select(`
@@ -38,9 +32,7 @@ export default function AccessLogs() {
                 `, { count: 'exact' })
                 .order('access_date', { ascending: false })
                 .range(startRange, endRange)
-
             if (error) throw error
-
             setLogs(data || [])
             if (count !== null) {
                 setTotalLogs(count)
@@ -52,7 +44,6 @@ export default function AccessLogs() {
             setIsLoading(false)
         }
     }, [currentPage])
-
     useEffect(() => {
         const checkAccess = async () => {
             if (authLoading) return
@@ -65,7 +56,6 @@ export default function AccessLogs() {
                 .select('role')
                 .eq('user_id', user.id)
                 .single()
-            
             if (!userData?.role || (userData.role !== 'ADMIN' && userData.role !== 'SUPER_ADMIN')) {
                 router.push('/dashboard')
                 return
@@ -75,13 +65,10 @@ export default function AccessLogs() {
         }
         checkAccess()
     }, [user, authLoading, router, fetchLogs])
-
     if (authLoading || (isLoading && logs.length === 0)) {
         return <div className="flex h-[60vh] items-center justify-center"><Loading size="lg" /></div>
     }
-
     if (!isAdmin) return null
-
     return (
         <div className="container max-w-6xl mx-auto py-8">
             <div className="mb-8">
@@ -90,7 +77,6 @@ export default function AccessLogs() {
                     Theo dõi toàn bộ lịch sử đọc sách của người dùng trên toàn hệ thống ({totalLogs} lượt).
                 </p>
             </div>
-
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -134,15 +120,13 @@ export default function AccessLogs() {
                                 ))}
                             </tbody>
                         </table>
-                        
                         {logs.length === 0 && !isLoading && (
                             <div className="text-center py-10 text-muted-foreground">
                                 Chưa có lượt truy cập nào được ghi nhận.
                             </div>
                         )}
                     </div>
-
-                    {/* Pagination */}
+                    {}
                     {totalPages > 1 && (
                         <div className="flex items-center justify-between mt-6 pt-4 border-t">
                             <div className="text-sm text-muted-foreground hidden sm:block">

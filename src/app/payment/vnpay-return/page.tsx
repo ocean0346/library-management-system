@@ -15,19 +15,19 @@ function VNPayReturnContent() {
     const router = useRouter()
     const { user, loading: isAuthLoading } = useAuth()
     const { fetchBalance } = useCoins()
-    
+
     const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading')
     const [message, setMessage] = useState('')
     const [txnRef, setTxnRef] = useState('')
     const [amount, setAmount] = useState(0)
-    
+
     // Chống duplicate: chỉ xử lý 1 lần duy nhất
     const isProcessed = useRef(false)
 
     useEffect(() => {
         // Đợi auth load xong
         if (isAuthLoading) return
-        
+
         // Chống StrictMode gọi 2 lần
         if (isProcessed.current) return
         isProcessed.current = true
@@ -42,11 +42,10 @@ function VNPayReturnContent() {
             setTxnRef(vnp_TxnRef || '')
             setAmount(parseInt(vnp_Amount || '0') / 100)
 
-            // Kiểm tra thanh toán thành công
             if (vnp_ResponseCode === '00' && vnp_TransactionStatus === '00') {
                 if (user) {
                     try {
-                        // Kiểm tra giao dịch đã xử lý chưa (chống duplicate ở DB level)
+
                         const { data: existing } = await supabase
                             .from('coin_transactions')
                             .select('id')
@@ -54,18 +53,17 @@ function VNPayReturnContent() {
                             .maybeSingle()
 
                         if (existing) {
-                            // Đã xử lý rồi → chỉ hiện thành công, không cộng lại
+
                             await fetchBalance()
                             setStatus('success')
                             setMessage('Giao dịch đã được xử lý trước đó!')
                             return
                         }
 
-                        // Parse thông tin xu từ OrderInfo
                         const orderInfo = vnp_OrderInfo || ''
                         const coinMatch = orderInfo.match(/Nap (\d+) xu/)
                         const bonusMatch = orderInfo.match(/\+ (\d+) bonus/)
-                        
+
                         const coinAmount = coinMatch ? parseInt(coinMatch[1]) : 0
                         const bonusCoins = bonusMatch ? parseInt(bonusMatch[1]) : 0
                         const totalCoins = coinAmount + bonusCoins
@@ -111,14 +109,14 @@ function VNPayReturnContent() {
                     '79': 'Nhập sai mật khẩu thanh toán quá số lần quy định.',
                     '99': 'Lỗi không xác định.',
                 }
-                
+
                 setStatus('failed')
                 setMessage(errorMessages[vnp_ResponseCode || '99'] || 'Giao dịch không thành công.')
             }
         }
 
         processPayment()
-    }, [isAuthLoading, user]) // Chỉ chạy khi auth load xong
+    }, [isAuthLoading, user]) 
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted/30">
@@ -132,20 +130,20 @@ function VNPayReturnContent() {
                         </div>
                     ) : status === 'success' ? (
                         <div className="text-center">
-                            {/* Success Header */}
+                            {}
                             <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 p-8 border-b">
                                 <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25 mb-4">
                                     <CheckCircle2 className="h-10 w-10 text-white" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-green-600 dark:text-green-400">Thanh Toán Thành Công!</h2>
                             </div>
-                            
+
                             <div className="p-6 space-y-4">
                                 <div className="flex items-center justify-center gap-2 text-lg">
                                     <Coins className="h-6 w-6 text-yellow-500" />
                                     <span className="font-bold text-yellow-600 dark:text-yellow-400">{message}</span>
                                 </div>
-                                
+
                                 <div className="text-sm text-muted-foreground space-y-1">
                                     <p>Mã giao dịch: <span className="font-mono text-foreground">{txnRef}</span></p>
                                     <p>Số tiền: <span className="font-bold text-foreground">{amount.toLocaleString()} VNĐ</span></p>
@@ -169,7 +167,7 @@ function VNPayReturnContent() {
                         </div>
                     ) : (
                         <div className="text-center">
-                            {/* Failed Header */}
+                            {}
                             <div className="bg-gradient-to-br from-red-500/10 to-orange-500/10 p-8 border-b">
                                 <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/25 mb-4">
                                     <XCircle className="h-10 w-10 text-white" />
@@ -179,7 +177,7 @@ function VNPayReturnContent() {
 
                             <div className="p-6 space-y-4">
                                 <p className="text-muted-foreground">{message}</p>
-                                
+
                                 {txnRef && (
                                     <p className="text-sm text-muted-foreground">
                                         Mã giao dịch: <span className="font-mono text-foreground">{txnRef}</span>

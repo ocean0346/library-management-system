@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, Cell } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,27 +8,23 @@ import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase-client'
 import { format, subDays, subMonths, startOfMonth, endOfMonth, getDaysInMonth, parse } from 'date-fns'
 import { Loader2, ArrowLeft } from 'lucide-react'
-
 const chartConfig = {
     views: {
         label: "Lượt truy cập",
         color: "hsl(var(--primary))",
     },
 } satisfies ChartConfig
-
 export function ViewsChart() {
     const [timeframe, setTimeframe] = useState<'30days' | '12months' | 'years' | 'specific_month'>('30days')
     const [targetMonth, setTargetMonth] = useState<Date | null>(null)
     const [data, setData] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(false)
-
     useEffect(() => {
         const fetchChartData = async () => {
             setIsLoading(true)
             try {
                 let startDate = new Date()
                 let endDate = new Date()
-                
                 if (timeframe === '30days') {
                     startDate = subDays(new Date(), 30)
                 } else if (timeframe === '12months') {
@@ -38,23 +33,18 @@ export function ViewsChart() {
                     startDate = startOfMonth(targetMonth)
                     endDate = endOfMonth(targetMonth)
                 } else {
-                    startDate = new Date('2000-01-01') // Fetch everything for years
+                    startDate = new Date('2000-01-01') 
                 }
-
                 let query = supabase
                     .from('access_logs')
                     .select('access_date')
                     .gte('access_date', startDate.toISOString())
                     .order('access_date', { ascending: true })
-
                 if (timeframe === 'specific_month') {
                     query = query.lte('access_date', endDate.toISOString())
                 }
-
                 const { data: rawLogs } = await query
-
                 const viewCounts: Record<string, number> = {}
-                
                 if (rawLogs) {
                     rawLogs.forEach(log => {
                         if (log.access_date) {
@@ -73,9 +63,7 @@ export function ViewsChart() {
                         }
                     })
                 }
-
                 const finalChartData = []
-                
                 if (timeframe === '30days') {
                     for (let i = 29; i >= 0; i--) {
                         const d = subDays(new Date(), i)
@@ -102,7 +90,6 @@ export function ViewsChart() {
                         finalChartData.push({ date: year, views: viewCounts[year] || 0, rawDate: new Date(`${year}-01-01`) })
                     })
                 }
-
                 setData(finalChartData)
             } catch (error) {
                 console.error("Error fetching chart data:", error)
@@ -110,18 +97,14 @@ export function ViewsChart() {
                 setIsLoading(false)
             }
         }
-
         fetchChartData()
     }, [timeframe, targetMonth])
-
     const handleBarClick = (entry: any) => {
         if (timeframe === '12months') {
-            // entry.payload.rawDate contains the Date object for that month
             setTargetMonth(entry.payload.rawDate)
             setTimeframe('specific_month')
         }
     }
-
     return (
         <Card className="col-span-1 lg:col-span-2 relative min-h-[400px]">
             <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 gap-4">
@@ -207,4 +190,3 @@ export function ViewsChart() {
         </Card>
     )
 }
-

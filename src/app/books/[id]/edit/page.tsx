@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -22,12 +21,10 @@ import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
 import { uploadFileToSupabase } from '@/lib/storage'
-
 interface Category {
     category_id: number
     name: string
 }
-
 interface Book {
     book_id: number
     title: string
@@ -44,7 +41,6 @@ interface Book {
     organization_id: number
     tags?: string[]
 }
-
 export default function EditBookPage() {
     const params = useParams()
     const router = useRouter()
@@ -52,8 +48,6 @@ export default function EditBookPage() {
     const { user, loading: authLoading } = useAuth()
     const [isAdmin, setIsAdmin] = useState(false)
     const { toast } = useToast()
-
-    // Form state
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [isbn, setIsbn] = useState('')
@@ -66,29 +60,22 @@ export default function EditBookPage() {
     const [fileUrl, setFileUrl] = useState('')
     const [fileType, setFileType] = useState('PDF')
     const [coinPrice, setCoinPrice] = useState(50)
-
     const [isUploadingCover, setIsUploadingCover] = useState(false)
     const [isUploadingDoc, setIsUploadingDoc] = useState(false)
-
-    // UI state
     const [categories, setCategories] = useState<Category[]>([])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [isLoadingCategories, setIsLoadingCategories] = useState(true)
-
     const fetchBook = useCallback(async () => {
         if (!bookId) return
-
         try {
             const { data, error } = await supabase
                 .from('books')
                 .select('*')
                 .eq('book_id', bookId)
                 .single()
-
             if (error) throw error
-
             if (!data) {
                 toast({
                     title: "Error",
@@ -98,7 +85,6 @@ export default function EditBookPage() {
                 router.push('/books')
                 return
             }
-
             const book = data as Book
             setTitle(book.title)
             setAuthor(book.author)
@@ -110,7 +96,6 @@ export default function EditBookPage() {
             setCategoryId(book.category_id?.toString() || '')
             setTagsInput((book.tags || []).join(', '))
             setFileUrl(book.file_url || '')
-
             setFileType(book.file_type || 'PDF')
             setCoinPrice((data as any).coin_price ?? 5)
         } catch (err) {
@@ -125,14 +110,12 @@ export default function EditBookPage() {
             setIsLoading(false)
         }
     }, [bookId, router, toast])
-
     const fetchCategories = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('categories')
                 .select('category_id, name')
                 .order('name', { ascending: true })
-
             if (error) throw error
             setCategories(data || [])
         } catch (err) {
@@ -141,7 +124,6 @@ export default function EditBookPage() {
             setIsLoadingCategories(false)
         }
     }, [])
-
     useEffect(() => {
         const checkAdmin = async () => {
             if (user) {
@@ -150,7 +132,6 @@ export default function EditBookPage() {
                     .select('role')
                     .eq('user_id', user.id)
                     .single()
-                
                 if (data?.role === 'ADMIN' || data?.role === 'SUPER_ADMIN') {
                     setIsAdmin(true)
                 } else {
@@ -163,19 +144,16 @@ export default function EditBookPage() {
                 }
             }
         }
-        
         if (!authLoading) {
             checkAdmin()
         }
     }, [user, authLoading, router, toast])
-
     useEffect(() => {
         if (isAdmin && bookId) {
             fetchBook()
             fetchCategories()
         }
     }, [isAdmin, bookId, fetchBook, fetchCategories])
-
     const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -195,7 +173,6 @@ export default function EditBookPage() {
             e.target.value = ''
         }
     }
-
     const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -211,7 +188,6 @@ export default function EditBookPage() {
             e.target.value = ''
         }
     }
-
     const handleFileTypeChange = (val: string) => {
         setFileType(val)
         if (val === 'WEBNOVEL') {
@@ -220,12 +196,9 @@ export default function EditBookPage() {
             setCoinPrice(50)
         }
     }
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
-
-        // Validation
         if (!title.trim()) {
             setError('Title is required')
             return
@@ -238,12 +211,9 @@ export default function EditBookPage() {
             setError('File URL is required')
             return
         }
-
         setIsSubmitting(true)
-
         try {
             const tagsArray = tagsInput.split(',').map(t => t.trim()).filter(t => t.length > 0)
-            
             const { error: updateError } = await supabase
                 .from('books')
                 .update({
@@ -256,13 +226,11 @@ export default function EditBookPage() {
                     cover_image_url: coverImageUrl || null,
                     category_id: categoryId ? parseInt(categoryId) : null,
                     file_url: fileUrl || null,
-
                     file_type: fileType,
                     tags: tagsArray,
                     coin_price: coinPrice
                 })
                 .eq('book_id', bookId)
-
             if (updateError) {
                 if (updateError.code === '23505') {
                     setError('A book with this ISBN already exists')
@@ -271,12 +239,10 @@ export default function EditBookPage() {
                 }
                 return
             }
-
             toast({
                 title: "Success",
                 description: "Book updated successfully",
             })
-
             router.push(`/books/${bookId}`)
         } catch (err) {
             console.error('Error updating book:', err)
@@ -285,7 +251,6 @@ export default function EditBookPage() {
             setIsSubmitting(false)
         }
     }
-
     if (authLoading || (!isAdmin && user)) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -293,11 +258,9 @@ export default function EditBookPage() {
             </div>
         )
     }
-
     if (!user || (!isAdmin && !isLoading)) {
         return null
     }
-
     return (
         <div className="max-w-3xl mx-auto py-8">
             <Button
@@ -308,7 +271,6 @@ export default function EditBookPage() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Quay lại Chi Tiết Sách
             </Button>
-
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-3">
@@ -330,11 +292,9 @@ export default function EditBookPage() {
                                 <AlertDescription>{error}</AlertDescription>
                             </Alert>
                         )}
-
-                        {/* Basic Information */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Thông Tin Cơ Bản</h3>
-
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="title">Tên Sách *</Label>
@@ -359,7 +319,6 @@ export default function EditBookPage() {
                                     />
                                 </div>
                             </div>
-
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="isbn">ISBN</Label>
@@ -394,7 +353,6 @@ export default function EditBookPage() {
                                     </Select>
                                 </div>
                             </div>
-
                             <div className="space-y-2">
                                 <Label htmlFor="tags">Các Thể Loại Phụ / Tags</Label>
                                 <Input
@@ -408,7 +366,6 @@ export default function EditBookPage() {
                                     Thêm bao nhiêu thẻ tùy thích, mỗi thẻ ngăn cách nhau bằng dấu phẩy.
                                 </p>
                             </div>
-
                             <div className="space-y-2">
                                 <Label htmlFor="description">Mô Tả</Label>
                                 <textarea
@@ -421,13 +378,10 @@ export default function EditBookPage() {
                                 />
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Publishing Information */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Thông Tin Xuất Bản</h3>
-
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="publisher">Nhà Xuất Bản</Label>
@@ -451,13 +405,10 @@ export default function EditBookPage() {
                                 </div>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Document Information */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Thông Tin Tài Liệu</h3>
-
                             <div className="space-y-2">
                                 <Label htmlFor="fileType">Định Dạng</Label>
                                 <Select
@@ -474,7 +425,6 @@ export default function EditBookPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-
                             {fileType !== 'WEBNOVEL' && (
                                 <div className="space-y-2">
                                     <Label htmlFor="fileUpload">Tải Lên Tài Liệu (PDF)</Label>
@@ -500,8 +450,7 @@ export default function EditBookPage() {
                                     />
                                 </div>
                             )}
-
-                            {/* Giá Xu */}
+                            {}
                             <div className="space-y-2 mt-4">
                                 <Label htmlFor="coinPrice" className="flex items-center gap-2">
                                     <Coins className="h-4 w-4 text-yellow-500" />
@@ -521,10 +470,8 @@ export default function EditBookPage() {
                                 </p>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Cover Image */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Ảnh Bìa</h3>
                             <div className="grid gap-4 md:grid-cols-3">
@@ -571,10 +518,8 @@ export default function EditBookPage() {
                                 </div>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Actions */}
+                        {}
                         <div className="flex gap-4">
                             <Button
                                 type="button"

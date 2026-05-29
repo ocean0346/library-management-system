@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -11,25 +10,19 @@ import { Label } from '@/components/ui/label'
 import { Loading } from '@/components/ui/loading'
 import { Plus, Trash2, Pencil, Tags, Check, X as XIcon, Loader2 } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
-
 export default function CategoryManagement() {
     const { user, loading: authLoading } = useAuth()
     const router = useRouter()
     const { toast } = useToast()
-    
     const [isAdmin, setIsAdmin] = useState(false)
     const [categories, setCategories] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    
-    // Create new category state
     const [newCategoryName, setNewCategoryName] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
-
     // Edit category state
     const [editingId, setEditingId] = useState<number | null>(null)
     const [editName, setEditName] = useState('')
     const [isSavingEdit, setIsSavingEdit] = useState(false)
-
     const fetchCategories = useCallback(async () => {
         setIsLoading(true)
         try {
@@ -37,7 +30,6 @@ export default function CategoryManagement() {
                 .from('categories')
                 .select('*')
                 .order('name', { ascending: true })
-
             if (error) throw error
             setCategories(data || [])
         } catch (error) {
@@ -51,7 +43,6 @@ export default function CategoryManagement() {
             setIsLoading(false)
         }
     }, [toast])
-
     useEffect(() => {
         const checkAccess = async () => {
             if (authLoading) return
@@ -64,7 +55,6 @@ export default function CategoryManagement() {
                 .select('role')
                 .eq('user_id', user.id)
                 .single()
-            
             if (!userData?.role || (userData.role !== 'ADMIN' && userData.role !== 'SUPER_ADMIN')) {
                 router.push('/dashboard')
                 return
@@ -74,11 +64,9 @@ export default function CategoryManagement() {
         }
         checkAccess()
     }, [user, authLoading, router, fetchCategories])
-
     const handleAddCategory = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!newCategoryName.trim()) return
-
         setIsSubmitting(true)
         try {
             const { data, error } = await supabase
@@ -86,14 +74,12 @@ export default function CategoryManagement() {
                 .insert([{ name: newCategoryName.trim() }])
                 .select()
                 .single()
-
             if (error) {
-                if (error.code === '23505') { // unique violation
+                if (error.code === '23505') { 
                     throw new Error("Tên thể loại này đã tồn tại!")
                 }
                 throw error
             }
-
             toast({
                 title: "Thành công",
                 description: `Đã thêm thể loại "${data.name}"`,
@@ -110,18 +96,14 @@ export default function CategoryManagement() {
             setIsSubmitting(false)
         }
     }
-
     const handleDeleteCategory = async (id: number, name: string) => {
         if (!confirm(`Bạn có chắc muốn xóa thể loại "${name}" không? Các sách thuộc thể loại này sẽ bị gỡ phân loại.`)) return
-
         try {
             const { error } = await supabase
                 .from('categories')
                 .delete()
                 .eq('category_id', id)
-
             if (error) throw error
-
             toast({
                 title: "Đã Xóa",
                 description: `Đã xóa thể loại ${name}`,
@@ -136,17 +118,14 @@ export default function CategoryManagement() {
             })
         }
     }
-
     const startEdit = (cat: any) => {
         setEditingId(cat.category_id)
         setEditName(cat.name)
     }
-
     const cancelEdit = () => {
         setEditingId(null)
         setEditName('')
     }
-
     const saveEdit = async (id: number) => {
         if (!editName.trim()) return
         setIsSavingEdit(true)
@@ -157,12 +136,10 @@ export default function CategoryManagement() {
                 .eq('category_id', id)
                 .select()
                 .single()
-
             if (error) {
                 if (error.code === '23505') throw new Error("Tên thể loại này đã tồn tại!")
                 throw error
             }
-
             setCategories(prev => prev.map(c => c.category_id === id ? data : c).sort((a, b) => a.name.localeCompare(b.name)))
             setEditingId(null)
             toast({
@@ -179,13 +156,10 @@ export default function CategoryManagement() {
             setIsSavingEdit(false)
         }
     }
-
     if (authLoading || isLoading) {
         return <div className="flex h-[60vh] items-center justify-center"><Loading size="lg" /></div>
     }
-
     if (!isAdmin) return null
-
     return (
         <div className="container max-w-5xl mx-auto py-8">
             <div className="mb-8">
@@ -194,9 +168,8 @@ export default function CategoryManagement() {
                     Thêm, sửa, hoặc xóa các chủ đề và thể loại sách trong hệ thống.
                 </p>
             </div>
-
             <div className="grid md:grid-cols-3 gap-6">
-                {/* Form Add New */}
+                {}
                 <Card className="md:col-span-1 h-fit">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
@@ -223,8 +196,7 @@ export default function CategoryManagement() {
                         </form>
                     </CardContent>
                 </Card>
-
-                {/* List Categories */}
+                {}
                 <Card className="md:col-span-2">
                     <CardHeader>
                         <CardTitle className="text-lg">Danh Sách Hiện Tại</CardTitle>
@@ -238,7 +210,7 @@ export default function CategoryManagement() {
                             <div className="grid gap-3">
                                 {categories.map(cat => (
                                     <div key={cat.category_id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 rounded-xl border bg-muted/20 hover:bg-muted/50 transition-colors gap-3">
-                                        {/* View or Edit mode */}
+                                        {}
                                         {editingId === cat.category_id ? (
                                             <div className="flex-1 flex items-center gap-2 w-full">
                                                 <Input 

@@ -37,7 +37,7 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
     const fetchReadingData = useCallback(async () => {
         setIsLoading(true)
         try {
-            // Fetch Book Details
+
             const { data: bookData, error } = await supabase
                 .from('books')
                 .select('title, author, file_url, file_type, organization_id, coin_price')
@@ -54,7 +54,6 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
             const bookCoinPrice = bookData.coin_price ?? 0
             setCoinPrice(bookCoinPrice)
 
-            // Check if PDF is locked
             if (bookCoinPrice > 0) {
                 if (user) {
                     await fetchUnlockedContent(id)
@@ -65,7 +64,7 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                         .eq('book_id', id)
                         .is('chapter_number', null)
                         .maybeSingle()
-                    
+
                     setIsLocked(!unlocked)
                 } else {
                     setIsLocked(true)
@@ -74,11 +73,9 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                 setIsLocked(false)
             }
 
-            // Log Access & Progress once per mount
             if (!hasLoggedRef.current) {
                 hasLoggedRef.current = true
-                
-                // Tăng view cho quyển sách (Ai vào xem cũng tăng)
+
                 supabase.rpc('increment_book_views', { p_book_id: id })
                     .then(({ error }) => { if (error) console.error("Increment views error:", error) })
 
@@ -89,7 +86,6 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                         p_user_id: user.id
                     }).then(({ error }) => { if (error) console.error("Record access error:", error) })
 
-                    // Fetch or Create user_reading_progress
                     supabase.from('user_reading_progress').select('chapter_number').eq('user_id', user.id).eq('book_id', id).single()
                         .then(({ data }) => {
                             if (data) {
@@ -139,14 +135,12 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
     const handlePageChange = useCallback((pageIndex: number) => {
         setCurrentPage(pageIndex)
 
-        // If locked and past free pages, show overlay
         if (isLocked && pageIndex >= FREE_PDF_PAGES) {
             setShowLockedOverlay(true)
         }
 
         if (!user) return
-        
-        // Save to DB
+
         const pageNum = pageIndex + 1
         supabase.from('user_reading_progress').upsert({
             user_id: user.id,
@@ -174,7 +168,7 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
 
     return (
         <div className="flex flex-col h-screen bg-background" ref={containerRef}>
-            {/* Header Toolbar */}
+            {}
             <header className={`flex items-center justify-between p-4 border-b bg-card shrink-0 transition-all ${isFullscreen ? 'opacity-0 hover:opacity-100 absolute top-0 left-0 right-0 z-50 shadow-md' : ''}`}>
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" asChild className="shrink-0">
@@ -205,7 +199,7 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                 </div>
             </header>
 
-            {/* Document Viewer */}
+            {}
             <main className="flex-1 overflow-hidden relative bg-muted/30">
                 {!book.file_url ? (
                     <div className="flex h-full items-center justify-center">
@@ -218,8 +212,8 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                             initialPage={initialPage} 
                             onPageChange={handlePageChange}
                         />
-                        
-                        {/* Locked Overlay for PDF */}
+
+                        {}
                         {showLockedOverlay && isLocked && (
                             <LockedPDFOverlay
                                 bookId={id}

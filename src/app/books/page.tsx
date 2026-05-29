@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
@@ -15,7 +14,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ChevronLeft, ChevronRight, Building2, Plus } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
 import Link from 'next/link'
-
 export default function BookCatalogPage() {
     return (
         <Suspense fallback={<div className="container py-10"><Loading /></div>}>
@@ -23,19 +21,16 @@ export default function BookCatalogPage() {
         </Suspense>
     )
 }
-
 function BookCatalog() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { user, loading: authLoading } = useAuth()
     const [isAdmin, setIsAdmin] = useState(false)
-
     const [books, setBooks] = useState<Book[]>([])
     const [categories, setCategories] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState(searchParams.get('q') ? decodeURIComponent(searchParams.get('q')!) : '')
     const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'created_at')
-
     useEffect(() => {
         const q = searchParams.get('q')
         if (q !== null) {
@@ -64,44 +59,51 @@ function BookCatalog() {
         } else if (tag === null && selectedTag !== null) {
             setSelectedTag(null)
         }
+        const page = searchParams.get('page')
+        if (page) {
+            const p = parseInt(page, 10)
+            if (!isNaN(p) && p !== currentPage) {
+                setCurrentPage(p)
+            }
+        } else if (currentPage !== 1) {
+            setCurrentPage(1)
+        }
     }, [searchParams])
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') ? decodeURIComponent(searchParams.get('category')!) : 'all')
     const [selectedTag, setSelectedTag] = useState<string | null>(searchParams.get('tag') ? decodeURIComponent(searchParams.get('tag')!) : null)
-    const [currentPage, setCurrentPage] = useState(1)
+    const [currentPage, setCurrentPage] = useState(() => {
+        const p = searchParams.get('page')
+        if (p) {
+            const parsed = parseInt(p, 10)
+            return isNaN(parsed) ? 1 : parsed
+        }
+        return 1
+    })
     const [totalPages, setTotalPages] = useState(1)
     const booksPerPage = 12
-
     const fetchCategories = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('categories')
                 .select('name')
                 .order('name', { ascending: true })
-
             if (error) throw error
-            // Remove duplicates
             const uniqueCategories = [...new Set(data.map(category => category.name))]
             setCategories(uniqueCategories)
         } catch (error) {
             console.error('Error fetching categories:', error)
         }
     }, [])
-
     const fetchBooks = useCallback(async () => {
         setIsLoading(true)
         try {
-            // For top_rated, we need to fetch all matching books first, then sort client-side
             const isTopRated = sortBy === 'top_rated'
-
             let query = supabase
                 .from('books')
                 .select('*, categories(name), chapters(chapter_number, title, created_at)', { count: 'exact' })
-
             if (!isTopRated) {
                 query = query.range((currentPage - 1) * booksPerPage, currentPage * booksPerPage - 1)
             }
-
-            // Dynamic sorting
             if (sortBy === 'views_count') {
                 query = query.order('views_count', { ascending: false, nullsFirst: false })
             } else if (sortBy === 'featured') {
@@ -112,12 +114,10 @@ function BookCatalog() {
             } else if (!isTopRated) {
                 query = query.order('created_at', { ascending: false })
             }
-
             if (searchTerm) {
                 const termToSearch = searchTerm.trim().toLowerCase()
                 query = query.or(`title.ilike.%${termToSearch}%,author.ilike.%${termToSearch}%,isbn.ilike.%${termToSearch}%`)
             }
-
             if (selectedCategory && selectedCategory !== 'all') {
                 const { data: categoryData } = await supabase
                     .from('categories')
@@ -125,12 +125,10 @@ function BookCatalog() {
                     .ilike('name', selectedCategory)
                     .limit(1)
                     .maybeSingle()
-
                 if (categoryData) {
                     query = query.or(`category_id.eq.${categoryData.category_id},tags.cs.{"${selectedCategory}"}`)
                 }
             }
-
             if (selectedTag) {
                 const { data: tagCategoryData } = await supabase
                     .from('categories')
@@ -138,34 +136,26 @@ function BookCatalog() {
                     .ilike('name', selectedTag)
                     .limit(1)
                     .maybeSingle()
-
                 if (tagCategoryData) {
                     query = query.or(`tags.cs.{"${selectedTag}"},category_id.eq.${tagCategoryData.category_id}`)
                 } else {
                     query = query.contains('tags', [selectedTag])
                 }
             }
-
             const { data, error, count } = await query
-
             if (error) throw error
-
             if (data) {
-                // Always fetch reviews to calculate average rating for BookCard display
                 const bookIds = data.map((b: any) => b.book_id)
                 let reviews: any[] | null = null
-                
                 if (bookIds.length > 0) {
                     const { data: fetchedReviews, error: reviewsError } = await supabase
                         .from('reviews')
                         .select('book_id, rating')
                         .in('book_id', bookIds)
-                    
                     if (!reviewsError) {
                         reviews = fetchedReviews
                     }
                 }
-
                 const ratingMap: Record<string, { total: number; count: number }> = {}
                 if (reviews) {
                     reviews.forEach((r: any) => {
@@ -174,29 +164,22 @@ function BookCatalog() {
                         ratingMap[r.book_id].count++
                     })
                 }
-
-                // Attach average_rating to each book
                 const booksWithRating = data.map((b: any) => ({
                     ...b,
                     average_rating: ratingMap[b.book_id]
                         ? Math.round((ratingMap[b.book_id].total / ratingMap[b.book_id].count) * 10) / 10
                         : 0
                 }))
-
                 if (isTopRated) {
-                    // Sort: rated books first (by avg desc), then unrated
                     const sorted = [...booksWithRating].sort((a: any, b: any) => {
                         const aHasRating = !!ratingMap[a.book_id]
                         const bHasRating = !!ratingMap[b.book_id]
-
                         if (aHasRating && !bHasRating) return -1
                         if (!aHasRating && bHasRating) return 1
                         if (!aHasRating && !bHasRating) return 0
-
                         if (b.average_rating !== a.average_rating) return b.average_rating - a.average_rating
                         return ratingMap[b.book_id].count - ratingMap[a.book_id].count
                     })
-
                     const totalCount = sorted.length
                     const paged = sorted.slice((currentPage - 1) * booksPerPage, currentPage * booksPerPage)
                     setBooks(paged as Book[])
@@ -207,11 +190,10 @@ function BookCatalog() {
                 }
             }
         } catch (error: any) {
-            console.error('Error fetching books:', JSON.stringify(error, null, 2))
-            console.error(error?.message)
-            // Hiển thị tạm lỗi ra màn hình để debug
-            if (typeof window !== 'undefined') {
-                alert("Chi tiết lỗi: " + (error?.message || JSON.stringify(error)));
+            if (error?.code === 'PGRST103') {
+                setCurrentPage(1)
+            } else {
+                console.error('Error fetching books:', error)
             }
         } finally {
             setIsLoading(false)
@@ -220,11 +202,9 @@ function BookCatalog() {
     useEffect(() => {
         fetchCategories()
     }, [fetchCategories])
-
     useEffect(() => {
         fetchBooks()
     }, [fetchBooks])
-
     useEffect(() => {
         const checkAdmin = async () => {
             if (user) {
@@ -233,63 +213,71 @@ function BookCatalog() {
                     .select('role')
                     .eq('user_id', user.id)
                     .single()
-
                 if (data?.role === 'ADMIN' || data?.role === 'SUPER_ADMIN') {
                     setIsAdmin(true)
                 }
             }
         }
-
         if (user) {
             checkAdmin()
         }
     }, [user])
-
+    const updateUrlParams = (updates: Record<string, string | null>) => {
+        const params = new URLSearchParams(searchParams.toString())
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value === null || value === '' || value === 'all' || (key === 'page' && value === '1')) {
+                params.delete(key)
+            } else {
+                params.set(key, value)
+            }
+        })
+        router.push(`/books?${params.toString()}`, { scroll: false })
+    }
     const handleSearchChange = (value: string) => {
         setSearchTerm(value)
-        if (selectedTag) {
-            setSelectedTag(null)
-            const params = new URLSearchParams()
-            if (value) params.set('q', value)
-            if (selectedCategory && selectedCategory !== 'all') params.set('category', selectedCategory)
-            router.replace(`/books?${params.toString()}`)
-        }
         setCurrentPage(1)
+        if (selectedTag) setSelectedTag(null)
+        updateUrlParams({
+            q: value,
+            tag: null,
+            page: '1'
+        })
     }
-
     const handleCategoryChange = (value: string) => {
         setSelectedCategory(value)
-        if (selectedTag) {
-            setSelectedTag(null)
-            const params = new URLSearchParams()
-            if (searchTerm) params.set('q', searchTerm)
-            if (value && value !== 'all') params.set('category', value)
-            router.replace(`/books?${params.toString()}`)
-        }
         setCurrentPage(1)
+        if (selectedTag) setSelectedTag(null)
+        updateUrlParams({
+            category: value,
+            tag: null,
+            page: '1'
+        })
     }
-
     const handleSortChange = (value: string) => {
         setSortBy(value)
         setCurrentPage(1)
+        updateUrlParams({
+            sort: value,
+            page: '1'
+        })
     }
-
+    const updatePageParam = (page: number) => {
+        setCurrentPage(page)
+        updateUrlParams({ page: page.toString() })
+    }
     const handlePreviousPage = () => {
-        setCurrentPage((prev) => Math.max(prev - 1, 1))
+        const next = Math.max(currentPage - 1, 1)
+        updatePageParam(next)
     }
-
     const handleNextPage = () => {
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+        const next = Math.min(currentPage + 1, totalPages)
+        updatePageParam(next)
     }
-
-
-
     return (
         <div className="space-y-8 container max-w-7xl mx-auto py-8">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#02FF73]/10 via-[#09ADAA]/5 to-background p-8 md:p-12 border shadow-sm">
                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#09ADAA]/20 blur-[80px] rounded-full animate-pulse" />
                 <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#02FF73]/10 blur-[100px] rounded-full" />
-
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div>
                         <Badge variant="outline" className="mb-4 bg-background/50 backdrop-blur-md border-[#02FF73]/30 text-[#09ADAA]">
@@ -312,7 +300,6 @@ function BookCatalog() {
                     )}
                 </div>
             </div>
-
             <SearchFilters
                 searchTerm={searchTerm}
                 onSearchChange={handleSearchChange}
@@ -322,7 +309,6 @@ function BookCatalog() {
                 sortBy={sortBy}
                 onSortChange={handleSortChange}
             />
-
             {selectedTag && (
                 <div className="mb-6 flex items-center justify-between bg-primary/5 p-4 rounded-xl border border-primary/20">
                     <div className="flex items-center gap-2">
@@ -336,7 +322,6 @@ function BookCatalog() {
                     </Button>
                 </div>
             )}
-
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {Array.from({ length: 12 }).map((_, index) => (
@@ -373,7 +358,6 @@ function BookCatalog() {
                             ))}
                         </div>
                     )}
-
                     {totalPages > 1 && (
                         <nav className="flex justify-center mt-8">
                             <PaginationContent>
@@ -388,13 +372,11 @@ function BookCatalog() {
                                         Trang Trước
                                     </Button>
                                 </PaginationItem>
-
                                 <PaginationItem>
                                     <span className="flex items-center px-4">
                                         Trang {currentPage} / {totalPages}
                                     </span>
                                 </PaginationItem>
-
                                 <PaginationItem>
                                     <Button
                                         variant="outline"
@@ -414,4 +396,3 @@ function BookCatalog() {
         </div>
     )
 }
-

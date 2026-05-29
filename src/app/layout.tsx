@@ -6,9 +6,7 @@ import Footer from '@/components/layout/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
 import CoinProviderWrapper from '@/components/providers/CoinProviderWrapper'
 import { Toaster } from '@/components/ui/toaster'
-
 const inter = Inter({ subsets: ['latin'] })
-
 export const metadata: Metadata = {
     title: 'Thư Viện Online',
     description: 'Thư viện tài liệu online hàng đầu, miễn phí.',
@@ -17,7 +15,6 @@ export const metadata: Metadata = {
         apple: '/thu-vien-online-logo.svg',
     },
 }
-
 export default function RootLayout({
                                        children,
                                    }: {

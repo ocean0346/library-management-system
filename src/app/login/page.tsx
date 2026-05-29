@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -13,7 +12,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PasswordInput } from '@/components/ui/password-input'
 import { AlertCircle, Loader2, BookOpen, Mail, Sparkles } from 'lucide-react'
-
 function LoginContent() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -24,25 +22,20 @@ function LoginContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const explicitRedirect = searchParams.get('redirect')
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
         setIsLoading(true)
-
         try {
             await signIn(email, password)
-
             if (explicitRedirect) {
                 router.push(explicitRedirect)
             } else {
-                // Check role to determine redirect
                 const { data: userData } = await supabase
                     .from('users')
                     .select('role')
                     .eq('email', email)
                     .single()
-
                 const role = userData?.role
                 if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
                     router.push('/dashboard')
@@ -57,15 +50,14 @@ function LoginContent() {
             setIsLoading(false)
         }
     }
-
     return (
         <div className="min-h-[calc(100vh-4rem)] flex">
-            {/* Form Side */}
+            {}
             <div className="flex-1 flex items-center justify-center p-6 md:p-12">
                 <div className="w-full max-w-md">
                     <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                         <CardHeader className="space-y-4 text-center pb-2">
-                            {/* Logo Icon */}
+                            {}
                             <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
                                 <BookOpen className="h-8 w-8 text-black" />
                             </div>
@@ -78,7 +70,6 @@ function LoginContent() {
                                 </CardDescription>
                             </div>
                         </CardHeader>
-
                         <CardContent className="pt-6">
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 {error && (
@@ -87,7 +78,6 @@ function LoginContent() {
                                         <AlertDescription>{error}</AlertDescription>
                                     </Alert>
                                 )}
-
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-sm font-medium">
                                         Email
@@ -109,7 +99,6 @@ function LoginContent() {
                                         />
                                     </div>
                                 </div>
-
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <Label htmlFor="password" className="text-sm font-medium">
@@ -134,7 +123,6 @@ function LoginContent() {
                                         required
                                     />
                                 </div>
-
                                 <Button
                                     type="submit"
                                     variant="gradient"
@@ -151,7 +139,6 @@ function LoginContent() {
                                         'Đăng Nhập'
                                     )}
                                 </Button>
-
                                 <div className="relative">
                                     <div className="absolute inset-0 flex items-center">
                                         <div className="w-full border-t border-border" />
@@ -162,7 +149,6 @@ function LoginContent() {
                                         </span>
                                     </div>
                                 </div>
-
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -206,7 +192,6 @@ function LoginContent() {
                                 </Button>
                             </form>
                         </CardContent>
-
                         <CardFooter className="flex flex-col gap-4 pt-2">
                             <div className="relative w-full">
                                 <div className="absolute inset-0 flex items-center">
@@ -227,16 +212,13 @@ function LoginContent() {
                     </Card>
                 </div>
             </div>
-
-            {/* Visual Side */}
+            {}
             <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[#02FF73] to-[#09ADAA] items-center justify-center p-12 relative overflow-hidden">
-                {/* Background Pattern */}
+                {}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#0001_1px,transparent_1px),linear-gradient(to_bottom,#0001_1px,transparent_1px)] bg-[size:24px_24px]" />
-
-                {/* Decorative Circles */}
+                {}
                 <div className="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
                 <div className="absolute bottom-20 left-20 w-48 h-48 bg-black/10 rounded-full blur-3xl" />
-
                 <div className="relative z-10 max-w-md text-black">
                     <div className="mb-8">
                         <div className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md shadow-xl border border-white/20">
@@ -270,7 +252,6 @@ function LoginContent() {
         </div>
     )
 }
-
 export default function Login() {
     return (
         <Suspense>

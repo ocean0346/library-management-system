@@ -2,12 +2,10 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
 export const metadata: Metadata = {
     title: 'Chính Sách Bảo Mật - ThưViệnOnline',
     description: 'Chính sách bảo mật của ThưViệnOnline',
 }
-
 export default function PrivacyPolicyPage() {
     return (
         <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -19,11 +17,9 @@ export default function PrivacyPolicyPage() {
                     </Link>
                 </Button>
             </div>
-
             <article className="prose prose-neutral dark:prose-invert max-w-none">
                 <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Chính Sách Bảo Mật</h1>
                 <p className="text-muted-foreground text-lg mb-8">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">1. Giới Thiệu</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -32,7 +28,6 @@ export default function PrivacyPolicyPage() {
                         và cho bạn biết về quyền riêng tư cũng như cách pháp luật bảo vệ bạn.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">2. Thông Tin Chúng Tôi Thu Thập</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">Chúng tôi có thể thu thập, sử dụng, lưu trữ và chuyển giao các loại dữ liệu cá nhân khác nhau về bạn:</p>
@@ -44,7 +39,6 @@ export default function PrivacyPolicyPage() {
                         <li><strong>Dữ liệu thư viện:</strong> bao gồm thông tin về sách đã đọc, lịch sử đọc và danh sách yêu thích</li>
                     </ul>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">3. Cách Chúng Tôi Sử Dụng Thông Tin</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">Chúng tôi sử dụng dữ liệu cá nhân của bạn cho các mục đích sau:</p>
@@ -57,7 +51,6 @@ export default function PrivacyPolicyPage() {
                         <li>Tuân thủ các nghĩa vụ pháp lý</li>
                     </ul>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">4. Bảo Mật Dữ Liệu</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -66,7 +59,6 @@ export default function PrivacyPolicyPage() {
                         để bảo vệ dữ liệu của bạn.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">5. Lưu Trữ Dữ Liệu</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -74,7 +66,6 @@ export default function PrivacyPolicyPage() {
                         Khi bạn xóa tài khoản, chúng tôi sẽ xóa hoặc ẩn danh dữ liệu cá nhân của bạn trong vòng 30 ngày.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">6. Quyền Của Bạn</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">Theo luật bảo vệ dữ liệu, bạn có các quyền bao gồm:</p>
@@ -86,7 +77,6 @@ export default function PrivacyPolicyPage() {
                         <li><strong>Phản đối:</strong> Bạn có thể phản đối một số hình thức xử lý dữ liệu</li>
                     </ul>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">7. Dịch Vụ Bên Thứ Ba</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -95,7 +85,6 @@ export default function PrivacyPolicyPage() {
                         Chúng tôi sử dụng Supabase cho dịch vụ xác thực và cơ sở dữ liệu.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">8. Thay Đổi Chính Sách</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -103,7 +92,6 @@ export default function PrivacyPolicyPage() {
                         bằng cách đăng chính sách mới trên trang này và cập nhật ngày &quot;Cập nhật lần cuối&quot;.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">9. Liên Hệ</h2>
                     <p className="text-muted-foreground leading-relaxed">

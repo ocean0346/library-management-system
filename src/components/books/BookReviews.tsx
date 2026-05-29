@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase-client'
@@ -9,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Star, MessageSquare, Trash2, Send, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-
 type Review = {
     review_id: string
     user_id: string
@@ -18,23 +16,17 @@ type Review = {
     created_at: string
     users: { full_name: string }
 }
-
 export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdmin: boolean }) {
     const { user } = useAuth()
     const { toast } = useToast()
     const router = useRouter()
-    
     const [reviews, setReviews] = useState<Review[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    
-    // Form state
     const [rating, setRating] = useState(5)
     const [comment, setComment] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
-    
     // Check if user already reviewed
     const hasReviewed = reviews.some(r => r.user_id === user?.id)
-
     const fetchReviews = useCallback(async () => {
         setIsLoading(true)
         try {
@@ -46,7 +38,6 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                 `)
                 .eq('book_id', bookId)
                 .order('created_at', { ascending: false })
-
             if (error) throw error
             setReviews(data as any || [])
         } catch (error) {
@@ -55,20 +46,16 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
             setIsLoading(false)
         }
     }, [bookId])
-
     useEffect(() => {
         if (bookId) fetchReviews()
     }, [bookId, fetchReviews])
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!user) {
             toast({ title: "Yêu cầu đăng nhập", description: "Vui lòng đăng nhập để đánh giá.", variant: "destructive" })
             return
         }
-
         if (!comment.trim()) return
-
         setIsSubmitting(true)
         try {
             const { error } = await supabase
@@ -79,9 +66,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                     rating,
                     comment: comment.trim()
                 })
-
             if (error) throw error
-
             toast({ title: "Đã gửi đánh giá", description: "Cảm ơn bạn đã chia sẻ cảm nhận!" })
             setComment('')
             setRating(5)
@@ -96,25 +81,20 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
             setIsSubmitting(false)
         }
     }
-
     const handleDelete = async (reviewId: string) => {
         if (!confirm('Bạn có chắc muốn xóa bình luận này?')) return
-
         try {
             const { error } = await supabase
                 .from('reviews')
                 .delete()
                 .eq('review_id', reviewId)
-
             if (error) throw error
-            
             toast({ title: "Đã xóa", description: "Bình luận đã bị xóa khỏi hệ thống." })
             setReviews(prev => prev.filter(r => r.review_id !== reviewId))
         } catch (error) {
             toast({ title: "Lỗi", description: "Xóa thất bại.", variant: "destructive" })
         }
     }
-
     return (
         <Card className="mt-8 border-t-4 border-t-primary/50">
             <CardHeader>
@@ -124,7 +104,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                {/* Form Add Review */}
+                {}
                 {user && hasReviewed ? (
                     <div className="mb-8 p-4 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground border">
                         Bạn đã đánh giá cuốn sách này rồi. Cảm ơn bạn!
@@ -167,8 +147,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                         </div>
                     </form>
                 )}
-
-                {/* Reviews List */}
+                {}
                 <div className="space-y-4">
                     {isLoading ? (
                         <div className="py-10 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" /></div>
@@ -199,8 +178,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                                         </p>
                                     </div>
                                 </div>
-
-                                {/* Delete Button for Admin or Owner */}
+                                {}
                                 {(isAdmin || user?.id === review.user_id) && (
                                     <button 
                                         onClick={() => handleDelete(review.review_id)}

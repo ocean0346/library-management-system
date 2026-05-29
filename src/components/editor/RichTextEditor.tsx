@@ -1,5 +1,4 @@
 'use client'
-
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -30,35 +29,28 @@ import { Toggle } from '@/components/ui/toggle'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { uploadFileToSupabase } from '@/lib/storage'
 import { useToast } from '@/hooks/use-toast'
-
 interface RichTextEditorProps {
     content: string
     onChange: (content: string) => void
     placeholder?: string
 }
-
 const MenuBar = ({ editor }: { editor: any }) => {
     const { toast } = useToast()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [isUploading, setIsUploading] = useState(false)
-
     if (!editor) {
         return null
     }
-
     const triggerUpload = () => {
         fileInputRef.current?.click()
     }
-
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
-
         if (!file.type.startsWith('image/')) {
             toast({ title: 'Lỗi định dạng', description: 'Vui lòng chọn file hình ảnh!', variant: 'destructive'})
             return
         }
-
         try {
             setIsUploading(true)
             const url = await uploadFileToSupabase(file, { folder: 'chapter_images', maxSizeMB: 5 })
@@ -70,7 +62,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
             if (fileInputRef.current) fileInputRef.current.value = ''
         }
     }
-
     return (
         <div className="flex flex-wrap items-center gap-1 p-2 border-b border-input bg-muted/40 rounded-t-md">
             <Toggle
@@ -105,9 +96,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             >
                 <Strikethrough className="h-4 w-4" />
             </Toggle>
-
             <div className="w-[1px] h-6 bg-border mx-1" />
-
             <Toggle
                 size="sm"
                 pressed={editor.isActive('heading', { level: 1 })}
@@ -124,9 +113,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             >
                 <Heading2 className="h-4 w-4" />
             </Toggle>
-
             <div className="w-[1px] h-6 bg-border mx-1" />
-
             <Toggle
                 size="sm"
                 pressed={editor.isActive({ textAlign: 'left' })}
@@ -159,9 +146,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             >
                 <AlignJustify className="h-4 w-4" />
             </Toggle>
-
             <div className="w-[1px] h-6 bg-border mx-1" />
-
             <Toggle
                 size="sm"
                 pressed={editor.isActive('bulletList')}
@@ -186,9 +171,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             >
                 <Quote className="h-4 w-4" />
             </Toggle>
-
             <div className="w-[1px] h-6 bg-border mx-1" />
-
             <input 
                 type="file"
                 accept="image/*"
@@ -206,9 +189,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             >
                 {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
             </Button>
-
             <div className="w-[1px] h-6 bg-border mx-1" />
-
             <Button
                 variant="ghost"
                 size="sm"
@@ -239,7 +220,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
         </div>
     )
 }
-
 export function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
     const editor = useEditor({
         immediatelyRender: false,
@@ -269,17 +249,11 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
             onChange(editor.getHTML())
         },
     })
-
-    // Handle paste: convert clipboard content to proper paragraphs
     useEffect(() => {
         if (!editor) return
-
         const editorElement = editor.view.dom
-
         const buildParagraphsFromText = (rawText: string): string => {
             const cleanText = rawText.replace(/\t/g, ' ').replace(/ {2,}/g, ' ')
-
-            // Case 1: Has double newlines → clear paragraph breaks
             if (cleanText.includes('\n\n')) {
                 return cleanText
                     .split(/\n\s*\n/)
@@ -290,26 +264,21 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
                     .filter(Boolean)
                     .join('')
             }
-
             // Case 2: Only single newlines (PDF/ebook word-wrap)
             // "Short line" heuristic: the last line of a paragraph is usually
             // shorter than other lines because it doesn't fill the full width.
             const lines = cleanText.split(/\n/).map(l => l.trim()).filter(Boolean)
             if (lines.length <= 1) return lines[0] ? `<p>${lines[0]}</p>` : ''
-
             // Calculate max line length — full-width lines are this long
             // A paragraph's last line is shorter because it doesn't fill the width
             const maxLen = Math.max(...lines.map(l => l.length))
             const shortThreshold = maxLen * 0.85
-
             const result: string[] = []
             let current = lines[0]
-
             for (let i = 1; i < lines.length; i++) {
                 const prevLine = lines[i - 1]
                 const isShortLine = prevLine.length < shortThreshold
                 const endsWithPunctuation = /[.!?»"':]$/.test(prevLine)
-
                 if (isShortLine && endsWithPunctuation) {
                     // Short line + ends with punctuation = end of paragraph
                     result.push(current.trim())
@@ -320,21 +289,17 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
                 }
             }
             if (current.trim()) result.push(current.trim())
-
             return result.map(p => `<p>${p}</p>`).join('')
         }
-
         const handlePaste = (e: ClipboardEvent) => {
             const html = e.clipboardData?.getData('text/html')
             const text = e.clipboardData?.getData('text/plain')
             let paragraphs = ''
-
             if (html) {
                 const tempDiv = document.createElement('div')
                 tempDiv.innerHTML = html
                 tempDiv.querySelectorAll('style, script, meta, link').forEach(el => el.remove())
                 const hasBlocks = tempDiv.querySelector('p, div, h1, h2, h3, h4, h5, h6, li, blockquote')
-
                 if (hasBlocks) {
                     const blocks: string[] = []
                     const walk = (node: Node) => {
@@ -365,25 +330,21 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
             } else if (text && text.includes('\n')) {
                 paragraphs = buildParagraphsFromText(text)
             }
-
             if (paragraphs) {
                 e.preventDefault()
                 e.stopPropagation()
                 editor.commands.insertContent(paragraphs)
             }
         }
-
         editorElement.addEventListener('paste', handlePaste, true)
         return () => editorElement.removeEventListener('paste', handlePaste, true)
     }, [editor])
-
     // Sync external content changes into the editor (e.g. when fetching to Edit chapter)
     useEffect(() => {
         if (editor && content !== editor.getHTML() && !editor.isFocused) {
             editor.commands.setContent(content)
         }
     }, [content, editor])
-
     return (
         <div className="border border-input rounded-md shadow-sm overflow-hidden flex flex-col focus-within:ring-1 focus-within:ring-primary transition-shadow bg-background">
             <MenuBar editor={editor} />

@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
@@ -11,9 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Search, BookOpen, Sparkles, TrendingUp, ChevronRight, User, Star, ArrowRight, Award } from 'lucide-react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-
 import { format } from 'date-fns'
-
 export default function Home() {
     const router = useRouter()
     const [searchQuery, setSearchQuery] = useState('')
@@ -22,7 +19,6 @@ export default function Home() {
     const [topRatedBooks, setTopRatedBooks] = useState<Book[]>([])
     const [topCategories, setTopCategories] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(true)
-
     useEffect(() => {
         const fetchHomepageData = async () => {
             setIsLoading(true)
@@ -33,39 +29,27 @@ export default function Home() {
                     .select('*, categories(name), chapters(chapter_number, title, created_at)')
                     .order('created_at', { ascending: false })
                     .limit(9)
-
                 if (recent) setRecentBooks(recent as Book[])
-
-                // Fetch top categories by book count
                 const { data: catsData } = await supabase
                     .from('categories')
                     .select('name, books(count)')
-
                 if (catsData) {
                     const sortedCats = catsData.sort((a: any, b: any) => (b.books?.[0]?.count || 0) - (a.books?.[0]?.count || 0))
                     setTopCategories(sortedCats.slice(0, 3).map(c => c.name))
                 }
-
-                // Fetch popular books by views (Leaderboards)
                 const { data: popular } = await supabase
                     .from('books')
                     .select('*, categories(name), chapters(chapter_number, title, created_at)')
                     .order('views_count', { ascending: false, nullsFirst: false })
                     .limit(9)
-
                 if (popular) setPopularBooks(popular as Book[])
-
-                // Fetch top rated books: rated first sorted by avg stars, unrated last
                 const { data: allBooksForRating } = await supabase
                     .from('books')
                     .select('*, categories(name), chapters(chapter_number, title, created_at)')
-
                 const { data: reviewStats } = await supabase
                     .from('reviews')
                     .select('book_id, rating')
-
                 if (allBooksForRating) {
-                    // Calculate average rating per book
                     const ratingMap: Record<string, { total: number; count: number }> = {}
                     if (reviewStats) {
                         reviewStats.forEach((r: any) => {
@@ -76,8 +60,6 @@ export default function Home() {
                             ratingMap[r.book_id].count += 1
                         })
                     }
-
-                    // Split into rated and unrated
                     const rated = allBooksForRating
                         .filter((b: any) => ratingMap[b.book_id])
                         .map((b: any) => ({
@@ -86,37 +68,30 @@ export default function Home() {
                             _count: ratingMap[b.book_id].count
                         }))
                         .sort((a: any, b: any) => b.average_rating - a.average_rating || b._count - a._count)
-
                     const unrated = allBooksForRating
                         .filter((b: any) => !ratingMap[b.book_id])
                         .map((b: any) => ({ ...b, average_rating: 0 }))
-
-                    // Rated first, then unrated, max 9
                     const combined = [...rated, ...unrated].slice(0, 9) as Book[]
                     setTopRatedBooks(combined)
                 }
-
             } catch (error) {
                 console.error("Error fetching homepage data:", error)
             } finally {
                 setIsLoading(false)
             }
         }
-
         fetchHomepageData()
     }, [])
-
     return (
         <div className="flex flex-col min-h-screen">
-            {/* Hero Section */}
+            {}
             <section className="relative pt-16 pb-16 lg:pt-20 lg:pb-24 overflow-hidden w-full flex items-center justify-center min-h-[60vh]">
-                {/* Background Grid & Gradients */}
+                {}
                 <div className="absolute inset-0 bg-background">
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_70%,transparent_110%)]" />
                     <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#02FF73]/20 rounded-full blur-[120px] opacity-70 animate-pulse" />
                     <div className="absolute top-40 left-1/4 w-[400px] h-[400px] bg-[#09ADAA]/20 rounded-full blur-[100px] opacity-60" />
                 </div>
-
                 <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
                     <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-8 transition-all hover:bg-primary/20 cursor-default">
                         <Sparkles className="w-4 h-4 mr-2" /> Thư viện Sách Chọn Lọc
@@ -131,7 +106,6 @@ export default function Home() {
                         Thư viện của chúng tôi cung cấp hàng nghìn tài liệu và sách điện tử công khai.
                         Đọc trực tiếp trên trình duyệt, không giới hạn, không cần đăng nhập cầu kỳ.
                     </p>
-
                     <div className="w-full max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 mb-16 px-4">
                         <div className="relative w-full group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -154,7 +128,6 @@ export default function Home() {
                             Tìm Kiếm
                         </Button>
                     </div>
-
                     <div className="flex items-center justify-center gap-4">
                         <p className="text-sm font-medium text-muted-foreground">Phổ biến:</p>
                         <div className="flex gap-2 flex-wrap justify-center">
@@ -167,12 +140,10 @@ export default function Home() {
                     </div>
                 </div>
             </section>
-
-            {/* Content Sections */}
+            {}
             <div className="flex-1 w-full bg-muted/10 relative z-20 pb-24">
                 <div className="container mx-auto px-4 -mt-10 lg:-mt-20 relative z-30 space-y-24">
-
-                    {/* Sách Mới Cập Nhật */}
+                    {}
                     <section className="bg-background/80 backdrop-blur-xl border shadow-2xl shadow-black/5 rounded-3xl p-6 lg:p-10">
                         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
                             <div>
@@ -190,7 +161,6 @@ export default function Home() {
                                 </Link>
                             </Button>
                         </div>
-
                         {isLoading ? (
                             <div className="flex flex-wrap gap-6">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -212,8 +182,7 @@ export default function Home() {
                             </div>
                         )}
                     </section>
-
-                    {/* Sách Nổi Bật */}
+                    {}
                     <section className="bg-background/80 backdrop-blur-xl border shadow-2xl shadow-black/5 rounded-3xl p-6 lg:p-10">
                         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
                             <div>
@@ -231,7 +200,6 @@ export default function Home() {
                                 </Link>
                             </Button>
                         </div>
-
                         {isLoading ? (
                             <div className="flex flex-wrap gap-6">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -253,8 +221,7 @@ export default function Home() {
                             </div>
                         )}
                     </section>
-
-                    {/* Sách Được Đánh Giá Cao */}
+                    {}
                     <section className="bg-background/80 backdrop-blur-xl border shadow-2xl shadow-black/5 rounded-3xl p-6 lg:p-10">
                         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
                             <div>
@@ -272,7 +239,6 @@ export default function Home() {
                                 </Link>
                             </Button>
                         </div>
-
                         {isLoading ? (
                             <div className="flex flex-wrap gap-6">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -294,7 +260,6 @@ export default function Home() {
                             </div>
                         )}
                     </section>
-
                 </div>
             </div>
         </div>

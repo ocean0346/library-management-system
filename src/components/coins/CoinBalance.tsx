@@ -72,7 +72,6 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
         fetchPackages()
     }, [])
 
-    // Block body scroll when modal is open
     useEffect(() => {
         document.body.style.overflow = 'hidden'
         return () => { document.body.style.overflow = '' }
@@ -93,7 +92,7 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
         setSelectedPkg(pkg.id)
 
         try {
-            // Gọi API tạo VNPay payment URL
+
             const response = await fetch('/api/payment/create-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -113,7 +112,6 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
                 throw new Error(data.error || 'Không thể tạo thanh toán')
             }
 
-            // Redirect tới VNPay payment page
             window.location.href = data.paymentUrl
         } catch (error: any) {
             toast({
@@ -138,15 +136,15 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
             className="fixed inset-0 flex items-center justify-center p-4"
             style={{ zIndex: 9999 }}
         >
-            {/* Backdrop */}
+            {}
             <div 
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" 
                 onClick={onClose} 
             />
 
-            {/* Modal */}
+            {}
             <div className="relative w-full max-w-lg bg-background border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                {/* Header */}
+                {}
                 <div className="relative p-6 pb-4 bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-transparent border-b">
                     <button
                         onClick={onClose}
@@ -168,7 +166,7 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
                     </div>
                 </div>
 
-                {/* Packages */}
+                {}
                 <div className="p-6 space-y-3 max-h-[60vh] overflow-y-auto">
                     {isLoading ? (
                         <div className="flex justify-center py-8">
@@ -231,7 +229,7 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
                     )}
                 </div>
 
-                {/* Footer */}
+                {}
                 <div className="p-4 border-t bg-muted/30">
                     <p className="text-xs text-muted-foreground text-center">
                         🔒 Thanh toán an toàn qua <span className="font-semibold">VNPay</span> — Hỗ trợ ATM, Visa, MasterCard, QR Pay

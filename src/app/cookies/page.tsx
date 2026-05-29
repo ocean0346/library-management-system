@@ -2,12 +2,10 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
 export const metadata: Metadata = {
     title: 'Chính Sách Cookie - ThưViệnOnline',
     description: 'Chính sách Cookie của ThưViệnOnline',
 }
-
 export default function CookiePolicyPage() {
     return (
         <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -19,11 +17,9 @@ export default function CookiePolicyPage() {
                     </Link>
                 </Button>
             </div>
-
             <article className="prose prose-neutral dark:prose-invert max-w-none">
                 <h1 className="text-4xl font-display font-bold tracking-tight mb-4">Chính Sách Cookie</h1>
                 <p className="text-muted-foreground text-lg mb-8">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">1. Cookie Là Gì?</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -32,7 +28,6 @@ export default function CookiePolicyPage() {
                         Cookie giúp chúng tôi cải thiện trải nghiệm của bạn bằng cách ghi nhớ tùy chọn và hiểu cách bạn sử dụng dịch vụ.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">2. Cách Chúng Tôi Sử Dụng Cookie</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
@@ -46,10 +41,8 @@ export default function CookiePolicyPage() {
                         <li><strong>Hiệu suất:</strong> Để đảm bảo trang web tải nhanh và hoạt động ổn định</li>
                     </ul>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">3. Các Loại Cookie Chúng Tôi Sử Dụng</h2>
-
                     <div className="mb-6">
                         <h3 className="text-xl font-display font-medium mb-3">Cookie Thiết Yếu</h3>
                         <p className="text-muted-foreground leading-relaxed">
@@ -58,7 +51,6 @@ export default function CookiePolicyPage() {
                             vì dịch vụ sẽ không thể hoạt động nếu thiếu chúng.
                         </p>
                     </div>
-
                     <div className="mb-6">
                         <h3 className="text-xl font-display font-medium mb-3">Cookie Chức Năng</h3>
                         <p className="text-muted-foreground leading-relaxed">
@@ -66,7 +58,6 @@ export default function CookiePolicyPage() {
                             và cung cấp các tính năng cá nhân hóa.
                         </p>
                     </div>
-
                     <div className="mb-6">
                         <h3 className="text-xl font-display font-medium mb-3">Cookie Phân Tích</h3>
                         <p className="text-muted-foreground leading-relaxed">
@@ -75,7 +66,6 @@ export default function CookiePolicyPage() {
                         </p>
                     </div>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">4. Cookie Bên Thứ Ba</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
@@ -89,7 +79,6 @@ export default function CookiePolicyPage() {
                         Các dịch vụ bên thứ ba này có chính sách cookie riêng. Chúng tôi khuyến khích bạn xem xét chúng.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">5. Thời Hạn Cookie</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
@@ -103,7 +92,6 @@ export default function CookiePolicyPage() {
                         Cookie xác thực của chúng tôi thường tồn tại từ 7-30 ngày tùy theo tùy chọn phiên đăng nhập của bạn.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">6. Quản Lý Cookie</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
@@ -119,7 +107,6 @@ export default function CookiePolicyPage() {
                         vì một số tính năng yêu cầu cookie để hoạt động.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">7. Hướng Dẫn Theo Trình Duyệt</h2>
                     <p className="text-muted-foreground leading-relaxed mb-4">
@@ -132,7 +119,6 @@ export default function CookiePolicyPage() {
                         <li><a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Microsoft Edge</a></li>
                     </ul>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">8. Cập Nhật Chính Sách</h2>
                     <p className="text-muted-foreground leading-relaxed">
@@ -140,7 +126,6 @@ export default function CookiePolicyPage() {
                         hoặc vì lý do pháp lý. Chúng tôi sẽ đăng bất kỳ thay đổi nào trên trang này và cập nhật ngày &quot;Cập nhật lần cuối&quot;.
                     </p>
                 </section>
-
                 <section className="mb-8">
                     <h2 className="text-2xl font-display font-semibold mb-4">9. Liên Hệ</h2>
                     <p className="text-muted-foreground leading-relaxed">

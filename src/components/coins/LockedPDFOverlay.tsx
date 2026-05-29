@@ -66,10 +66,10 @@ export default function LockedPDFOverlay({ bookId, bookTitle, coinPrice, onUnloc
     return (
         <>
             <div className="absolute inset-0 z-40 flex items-center justify-center">
-                {/* Gradient overlay at bottom */}
+                {}
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/95 to-transparent" />
 
-                {/* Lock card */}
+                {}
                 <div className="relative z-10 text-center max-w-md mx-auto p-8">
                     <div className="relative inline-flex mb-6">
                         <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border-2 border-yellow-500/30 flex items-center justify-center">

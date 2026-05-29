@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -10,66 +9,52 @@ import { BookOpen, Users, Clock, Loader2, ArrowRight, Tags, History, PlusCircle 
 import { Loading } from '@/components/ui/loading'
 import Link from 'next/link'
 import { ViewsChart } from '@/components/dashboard/ViewsChart'
-
 export default function Dashboard() {
     const { user, loading: authLoading } = useAuth()
     const router = useRouter()
-    
     const [isAdmin, setIsAdmin] = useState(false)
     const [stats, setStats] = useState({
         totalBooks: 0,
         totalDownloads: 0,
     })
     const [isLoading, setIsLoading] = useState(true)
-
     const fetchDashboardData = useCallback(async () => {
         if (!user) return
-
         setIsLoading(true)
         try {
-            // Check Admin
             const { data: userData } = await supabase
                 .from('users')
                 .select('role')
                 .eq('user_id', user.id)
                 .single()
-            
             const adminMode = userData?.role === 'ADMIN' || userData?.role === 'SUPER_ADMIN'
             setIsAdmin(adminMode)
-
             if (!adminMode) {
                 router.push('/bookshelf')
                 return
             }
-
-            // Admin stats
             const { count: booksCount } = await supabase.from('books').select('*', { count: 'exact', head: true })
             const { count: logsCount } = await supabase.from('access_logs').select('*', { count: 'exact', head: true })
-            
             setStats({
                 totalBooks: booksCount || 0,
                 totalDownloads: logsCount || 0
             })
-
         } catch (error) {
             console.error('Error fetching dashboard:', error)
         } finally {
             setIsLoading(false)
         }
     }, [user])
-
     useEffect(() => {
         if (!authLoading && !user) {
             router.push('/login')
         }
     }, [user, authLoading, router])
-
     useEffect(() => {
         if (user) {
             fetchDashboardData()
         }
     }, [user, fetchDashboardData])
-
     if (authLoading || isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -77,9 +62,7 @@ export default function Dashboard() {
             </div>
         )
     }
-
     if (!user) return null
-
     return (
         <div className="container max-w-7xl mx-auto py-8">
             <div className="flex justify-between items-center mb-8">
@@ -96,9 +79,8 @@ export default function Dashboard() {
                     </Link>
                 </Button>
             </div>
-
             <div className="space-y-10">
-                    {/* Thống kê nhanh */}
+                    {}
                     <section>
                         <div className="flex items-center gap-2 mb-4">
                             <div className="h-6 w-2 rounded-full bg-gradient-to-b from-[#02FF73] to-[#09ADAA]"></div>
@@ -122,7 +104,6 @@ export default function Dashboard() {
                                     </CardContent>
                                 </Card>
                             </Link>
-
                             <Link href="/admin/logs">
                                 <Card className="relative overflow-hidden group cursor-pointer border-0 ring-1 ring-border shadow-sm hover:shadow-md transition-all h-full bg-gradient-to-br from-background to-muted/30">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#02FF73]/10 rounded-full blur-2xl group-hover:bg-[#02FF73]/20 transition-all -translate-y-1/2 translate-x-1/2"></div>
@@ -142,13 +123,11 @@ export default function Dashboard() {
                             </Link>
                         </div>
                     </section>
-
-                    {/* Chart Section */}
+                    {}
                     <section>
                         <ViewsChart />
                     </section>
-
-                    {/* Công cụ quản trị */}
+                    {}
                     <section>
                         <div className="flex items-center gap-2 mb-4">
                             <div className="h-6 w-2 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500"></div>
@@ -168,7 +147,6 @@ export default function Dashboard() {
                                     </CardContent>
                                 </Card>
                             </Link>
-
                             <Link href="/admin/categories">
                                 <Card className="hover:border-orange-500/50 hover:shadow-sm transition-all group cursor-pointer h-full bg-muted/20">
                                     <CardContent className="p-5 flex items-center gap-4">

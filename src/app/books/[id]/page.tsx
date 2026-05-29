@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -52,7 +51,6 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import Link from 'next/link'
-
 export default function BookDetails() {
     const [book, setBook] = useState<Book | null>(null)
     const [relatedBooks, setRelatedBooks] = useState<Book[]>([])
@@ -60,21 +58,16 @@ export default function BookDetails() {
     const [isLoading, setIsLoading] = useState(true)
     const [isDeleting, setIsDeleting] = useState(false)
     const [lastReadChapter, setLastReadChapter] = useState<number | null>(null)
-    
-    // Interactions state
     const [isFavorited, setIsFavorited] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
     const [isInteractionLoading, setIsInteractionLoading] = useState(false)
-
     const { isChapterLocked, fetchUnlockedContent, balance } = useCoins()
-
     const params = useParams()
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
     const [isAdmin, setIsAdmin] = useState(false)
     const { toast } = useToast()
     const bookId = params.id as string
-
     useEffect(() => {
         const checkAdmin = async () => {
             if (user) {
@@ -83,16 +76,13 @@ export default function BookDetails() {
                     .select('role')
                     .eq('user_id', user.id)
                     .single()
-                
                 if (data?.role === 'ADMIN' || data?.role === 'SUPER_ADMIN') {
                     setIsAdmin(true)
                 }
             }
         }
-        
         checkAdmin()
     }, [user])
-
     const fetchBook = useCallback(async () => {
         setIsLoading(true)
         try {
@@ -104,7 +94,6 @@ export default function BookDetails() {
                 `)
                 .eq('book_id', bookId)
                 .single()
-
             if (error) {
                 console.error('Fetch error:', error);
                 toast({
@@ -115,8 +104,6 @@ export default function BookDetails() {
                 return
             }
             setBook(data)
-
-            // fetch related books
             let related: Book[] = [];
             if (data?.category_id) {
                 const { data: catRelated } = await supabase
@@ -125,11 +112,8 @@ export default function BookDetails() {
                     .eq('category_id', data.category_id)
                     .neq('book_id', bookId)
                     .limit(5)
-                
                 if (catRelated) related = catRelated;
             }
-            
-            // Fallback if no related books in category
             if (related.length === 0) {
                 const { data: anyRelated } = await supabase
                     .from('books')
@@ -137,13 +121,9 @@ export default function BookDetails() {
                     .neq('book_id', bookId)
                     .order('created_at', { ascending: false })
                     .limit(5)
-                
                 if (anyRelated) related = anyRelated;
             }
-            
             setRelatedBooks(related)
-
-            // fetch interactions if user is logged in
             if (user) {
                 const [favRes, saveRes, progressRes] = await Promise.all([
                     supabase.from('user_favorites').select('book_id').eq('user_id', user.id).eq('book_id', bookId).single(),
@@ -154,12 +134,8 @@ export default function BookDetails() {
                 if (saveRes.data) setIsSaved(true)
                 if (progressRes.data) setLastReadChapter(progressRes.data.chapter_number)
             }
-
-            // Luôn fetch chapters nếu có
             const { data: chaps } = await supabase.from('chapters').select('chapter_number, title, is_free').eq('book_id', bookId).order('chapter_number', { ascending: true })
             setChapters(chaps || [])
-
-            // Fetch unlocked content for coin system
             if (user) {
                 await fetchUnlockedContent(bookId)
             }
@@ -174,13 +150,11 @@ export default function BookDetails() {
             setIsLoading(false)
         }
     }, [bookId, toast])
-
     useEffect(() => {
         if (bookId) {
             fetchBook()
         }
     }, [bookId, fetchBook])
-
     const handleAccessDocument = async () => {
         if (chapters.length === 0 && (!book || !book.file_url)) {
             toast({
@@ -190,20 +164,16 @@ export default function BookDetails() {
             })
             return
         }
-
         if (chapters.length > 0) {
             router.push(`/books/${bookId}/read/${lastReadChapter || 1}`)
             return
         }
-
         if (!book?.file_url) {
             toast({ title: "Thông Báo", description: "Truyện / Sách này chưa có nội dung được đăng.", variant: "default" })
             return
         }
-
         router.push(`/books/${bookId}/read`)
     }
-
     const handleToggleFavorite = async () => {
         if (!user) {
             toast({ title: "Yêu cầu đăng nhập", description: "Vui lòng đăng nhập để thực hiện tính năng này." })
@@ -227,7 +197,6 @@ export default function BookDetails() {
             setIsInteractionLoading(false)
         }
     }
-
     const handleToggleSave = async () => {
         if (!user) {
             toast({ title: "Yêu cầu đăng nhập", description: "Vui lòng đăng nhập để thực hiện tính năng này." })
@@ -251,28 +220,19 @@ export default function BookDetails() {
             setIsInteractionLoading(false)
         }
     }
-
     const handleDelete = async () => {
         if (!isAdmin || !book) return
-
         setIsDeleting(true)
         try {
-            // Documents don't have constraints like active loans
-            // we can just delete it immediately
-
-
             const { error } = await supabase
                 .from('books')
                 .delete()
                 .eq('book_id', bookId)
-
             if (error) throw error
-
             toast({
                 title: "Success",
                 description: "Book deleted successfully",
             })
-
             router.push('/books')
         } catch (error) {
             console.error('Delete error:', error)
@@ -285,9 +245,6 @@ export default function BookDetails() {
             setIsDeleting(false)
         }
     }
-
-
-
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -295,7 +252,6 @@ export default function BookDetails() {
             </div>
         )
     }
-
     if (!book) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -309,9 +265,6 @@ export default function BookDetails() {
             </div>
         )
     }
-
-
-
     return (
         <div className="container max-w-7xl mx-auto px-4">
             <Button
@@ -322,9 +275,8 @@ export default function BookDetails() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Trở Lại Tủ Sách
             </Button>
-
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Book Cover and Actions */}
+                {}
                 <Card className="lg:col-span-1">
                     <CardContent className="p-6">
                         <div className="relative aspect-2/3 w-full rounded-lg overflow-hidden mb-6">
@@ -352,8 +304,7 @@ export default function BookDetails() {
                                     ? (book.file_type === 'WEBNOVEL' || chapters.length > 0 ? `Đọc Tiếp Chương ${lastReadChapter}` : 'Tiếp Tục Đọc') 
                                     : 'Đọc Ngay'}
                             </Button>
-                            
-                            {/* Interaction Buttons */}
+                            {}
                             <div className="grid grid-cols-2 gap-3 mt-4">
                                 <Button 
                                     variant="outline" 
@@ -374,8 +325,7 @@ export default function BookDetails() {
                                     {isSaved ? 'Đã Lưu' : 'Lưu Lại'}
                                 </Button>
                             </div>
-
-                            {/* Admin/Librarian Actions */}
+                            {}
                             {isAdmin && (
                                 <>
                                     <Separator className="my-4" />
@@ -436,8 +386,7 @@ export default function BookDetails() {
                         </div>
                     </CardContent>
                 </Card>
-
-                {/* Book Details */}
+                {}
                 <Card className="lg:col-span-2">
                     <CardHeader>
                         <CardTitle className="text-3xl">{book.title}</CardTitle>
@@ -446,7 +395,7 @@ export default function BookDetails() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {/* Book Information */}
+                        {}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 <div className="flex items-center space-x-2">
@@ -496,20 +445,16 @@ export default function BookDetails() {
                                 </div>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Book Description */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold">Giới Thiệu Nội Dung</h3>
                             <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                                 {book.description || 'Chưa có mô tả cho cuốn sách này.'}
                             </p>
                         </div>
-
                         <Separator />
-
-                        {/* List of Chapters (All Formats) */}
+                        {}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -524,7 +469,6 @@ export default function BookDetails() {
                                     </div>
                                 )}
                             </div>
-                            
                             {chapters.length > 0 ? (
                                 <div className="bg-muted/20 border rounded-lg max-h-[300px] overflow-y-auto">
                                     <div className="divide-y">
@@ -562,15 +506,11 @@ export default function BookDetails() {
                                 </div>
                             ) : null}
                         </div>
-
                     </CardContent>
                 </Card>
             </div>
-
             {/* Book Reviews */}
             <BookReviews bookId={bookId} isAdmin={isAdmin} />
-
-
             {/* Có thể bạn muốn đọc thêm */}
             {relatedBooks.length > 0 && (
                 <div className="mt-12 bg-card rounded-xl border border-border shadow-sm p-6 overflow-hidden">
@@ -580,7 +520,6 @@ export default function BookDetails() {
                         </div>
                         <h3 className="text-lg font-bold text-foreground">CÓ THỂ BẠN MUỐN ĐỌC THÊM</h3>
                     </div>
-                    
                     <div className="flex flex-col gap-4">
                         {relatedBooks.slice(0, 5).map((relatedBook) => (
                             <Link 

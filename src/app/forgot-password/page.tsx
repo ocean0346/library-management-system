@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
@@ -9,29 +8,23 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, Loader2, BookOpen, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
-
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
         setIsLoading(true)
-
         try {
             const redirectUrl = `${window.location.origin}/reset-password`
-
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl,
             })
-
             if (error) {
                 throw error
             }
-
             setIsSuccess(true)
         } catch (error) {
             console.error('Password reset error:', error)
@@ -44,7 +37,6 @@ export default function ForgotPassword() {
             setIsLoading(false)
         }
     }
-
     if (isSuccess) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
@@ -78,7 +70,6 @@ export default function ForgotPassword() {
             </div>
         )
     }
-
     return (
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
             <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
@@ -95,7 +86,6 @@ export default function ForgotPassword() {
                         </CardDescription>
                     </div>
                 </CardHeader>
-
                 <CardContent className="pt-6">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {error && (
@@ -104,7 +94,6 @@ export default function ForgotPassword() {
                                 <AlertDescription>{error}</AlertDescription>
                             </Alert>
                         )}
-
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium">
                                 Email
@@ -126,7 +115,6 @@ export default function ForgotPassword() {
                                 />
                             </div>
                         </div>
-
                         <Button
                             type="submit"
                             variant="gradient"
@@ -145,7 +133,6 @@ export default function ForgotPassword() {
                         </Button>
                     </form>
                 </CardContent>
-
                 <CardFooter className="flex justify-center pt-2">
                     <Link
                         href="/login"

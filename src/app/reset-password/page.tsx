@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -11,7 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PasswordInput } from '@/components/ui/password-input'
 import { AlertCircle, Loader2, BookOpen, CheckCircle2, ArrowLeft } from 'lucide-react'
-
 export default function ResetPassword() {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -20,12 +18,10 @@ export default function ResetPassword() {
     const [isSuccess, setIsSuccess] = useState(false)
     const [isValidSession, setIsValidSession] = useState<boolean | null>(null)
     const router = useRouter()
-
     useEffect(() => {
         // Check if we have a valid recovery session
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession()
-
             // The session will exist if the user clicked the reset link
             // Supabase automatically exchanges the token for a session
             if (session) {
@@ -39,52 +35,37 @@ export default function ResetPassword() {
                         setIsValidSession(true)
                     }
                 })
-
-                // Give it a moment for the token to be processed
                 setTimeout(() => {
                     if (isValidSession === null) {
                         setIsValidSession(false)
                     }
                 }, 2000)
-
                 return () => subscription.unsubscribe()
             }
         }
-
         checkSession()
     }, [isValidSession])
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
-
         if (password.length < 6) {
             setError('Mật khẩu phải có ít nhất 6 ký tự')
             return
         }
-
         if (password !== confirmPassword) {
             setError('Mật khẩu xác nhận không khớp')
             return
         }
-
         setIsLoading(true)
-
         try {
             const { error } = await supabase.auth.updateUser({
                 password: password
             })
-
             if (error) {
                 throw error
             }
-
             setIsSuccess(true)
-
-            // Sign out after password reset for security
             await supabase.auth.signOut()
-
-            // Redirect to login after 3 seconds
             setTimeout(() => {
                 router.push('/login')
             }, 3000)
@@ -99,8 +80,6 @@ export default function ResetPassword() {
             setIsLoading(false)
         }
     }
-
-    // Loading state while checking session
     if (isValidSession === null) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
@@ -113,8 +92,6 @@ export default function ResetPassword() {
             </div>
         )
     }
-
-    // Invalid or expired session
     if (isValidSession === false) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
@@ -151,8 +128,6 @@ export default function ResetPassword() {
             </div>
         )
     }
-
-    // Success state
     if (isSuccess) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
@@ -178,8 +153,6 @@ export default function ResetPassword() {
             </div>
         )
     }
-
-    // Reset password form
     return (
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
             <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
@@ -196,7 +169,6 @@ export default function ResetPassword() {
                         </CardDescription>
                     </div>
                 </CardHeader>
-
                 <CardContent className="pt-6">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {error && (
@@ -205,7 +177,6 @@ export default function ResetPassword() {
                                 <AlertDescription>{error}</AlertDescription>
                             </Alert>
                         )}
-
                         <div className="space-y-2">
                             <Label htmlFor="password" className="text-sm font-medium">
                                 Mật Khẩu Mới
@@ -226,7 +197,6 @@ export default function ResetPassword() {
                                 Tối thiểu 6 ký tự
                             </p>
                         </div>
-
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword" className="text-sm font-medium">
                                 Xác Nhận Mật Khẩu Mới
@@ -243,7 +213,6 @@ export default function ResetPassword() {
                                 required
                             />
                         </div>
-
                         <Button
                             type="submit"
                             variant="gradient"

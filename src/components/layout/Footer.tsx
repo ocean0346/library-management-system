@@ -1,10 +1,8 @@
 'use client'
-
 import Image from 'next/image'
 import Link from 'next/link'
 import { BookOpen, Users, Building2, Mail, Sparkles } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-
 const footerLinks = {
     product: {
         title: 'Khám Phá',
@@ -31,16 +29,14 @@ const footerLinks = {
         ],
     },
 }
-
 export default function Footer() {
     const pathname = usePathname()
     if (pathname && pathname.includes('/read')) return null
-
     return (
         <footer className="border-t border-border/40 bg-muted/30">
             <div className="container py-12 md:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
-                    {/* Brand Section */}
+                    {}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center gap-3 mb-4 group">
                             <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] shadow-lg shadow-[#02FF73]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(2,255,115,0.4)]">
@@ -77,8 +73,7 @@ export default function Footer() {
                             </a>
                         </div>
                     </div>
-
-                    {/* Links Sections */}
+                    {}
                     {Object.values(footerLinks).map((section) => (
                         <div key={section.title}>
                             <h4 className="font-display font-semibold text-sm mb-4">
@@ -99,8 +94,7 @@ export default function Footer() {
                         </div>
                     ))}
                 </div>
-
-                {/* Bottom Bar */}
+                {}
                 <div className="border-t border-border/40 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-muted-foreground">
                         &copy; {new Date().getFullYear()} Thư Viện Online. Đã đăng ký bản quyền.

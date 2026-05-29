@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -22,19 +21,15 @@ import { BookPlus, ArrowLeft, Loader2, Save, ImageIcon, HardDrive, Coins } from 
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
-
 interface Category {
     category_id: number
     name: string
 }
-
 export default function AddBookPage() {
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
     const [isAdmin, setIsAdmin] = useState(false)
     const { toast } = useToast()
-
-    // Form state
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [isbn, setIsbn] = useState('')
@@ -48,24 +43,18 @@ export default function AddBookPage() {
     const [fileType, setFileType] = useState('WEBNOVEL')
     const [fileSizeBytes, setFileSizeBytes] = useState<number | null>(null)
     const [coinPrice, setCoinPrice] = useState(5)
-
-    // Upload states
     const [isUploadingCover, setIsUploadingCover] = useState(false)
     const [isUploadingDoc, setIsUploadingDoc] = useState(false)
-
-    // UI state
     const [categories, setCategories] = useState<Category[]>([])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [isLoadingCategories, setIsLoadingCategories] = useState(true)
-
     const fetchCategories = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('categories')
                 .select('category_id, name')
                 .order('name', { ascending: true })
-
             if (error) throw error
             setCategories(data || [])
         } catch (err) {
@@ -74,13 +63,11 @@ export default function AddBookPage() {
             setIsLoadingCategories(false)
         }
     }, [])
-
     useEffect(() => {
         if (!authLoading && !user) {
             router.push('/login')
             return
         }
-
         const checkAdmin = async () => {
             if (user) {
                 const { data } = await supabase
@@ -88,7 +75,6 @@ export default function AddBookPage() {
                     .select('role')
                     .eq('user_id', user.id)
                     .single()
-                
                 if (data?.role === 'ADMIN' || data?.role === 'SUPER_ADMIN') {
                     setIsAdmin(true)
                     fetchCategories()
@@ -104,7 +90,6 @@ export default function AddBookPage() {
         }
         if (!authLoading) checkAdmin()
     }, [user, authLoading, router, toast])
-
     const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -124,14 +109,12 @@ export default function AddBookPage() {
             e.target.value = ''
         }
     }
-
     const formatFileSize = (bytes: number) => {
         if (bytes < 1024) return `${bytes} B`
         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
         if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
         return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
     }
-
     const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -149,7 +132,6 @@ export default function AddBookPage() {
             e.target.value = ''
         }
     }
-
     const handleFileTypeChange = (val: string) => {
         setFileType(val)
         if (val === 'WEBNOVEL') {
@@ -158,12 +140,9 @@ export default function AddBookPage() {
             setCoinPrice(50)
         }
     }
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
-
-        // Validation
         if (!title.trim()) {
             setError('Title is required')
             return
@@ -176,13 +155,10 @@ export default function AddBookPage() {
             setError('Đường dẫn file là bắt buộc đối với định dạng Tài Liệu')
             return
         }
-
         setIsSubmitting(true)
         setError(null)
-
         try {
             const tagsArray = tagsInput.split(',').map(t => t.trim()).filter(t => t.length > 0)
-            
             const bookData = {
                 organization_id: null,
                 title: title.trim(),
@@ -194,19 +170,16 @@ export default function AddBookPage() {
                 cover_image_url: coverImageUrl || null,
                 category_id: categoryId ? parseInt(categoryId) : null,
                 file_url: fileUrl || null,
-
                 file_type: fileType,
                 file_size_bytes: fileSizeBytes,
                 tags: tagsArray,
                 coin_price: coinPrice
             }
-
             const { data, error: insertError } = await supabase
                 .from('books')
                 .insert([bookData])
                 .select()
                 .single()
-
             if (insertError) {
                 if (insertError.code === '23505') {
                     setError('A book with this ISBN already exists in your organization')
@@ -215,12 +188,10 @@ export default function AddBookPage() {
                 }
                 return
             }
-
             toast({
                 title: "Success",
                 description: "Book added successfully",
             })
-
             router.push(`/books/${data.book_id}`)
         } catch (err: any) {
             console.error('Error adding book:', err)
@@ -229,7 +200,6 @@ export default function AddBookPage() {
             setIsSubmitting(false)
         }
     }
-
     if (authLoading || (!isAdmin && user)) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -237,11 +207,9 @@ export default function AddBookPage() {
             </div>
         )
     }
-
     if (!user || (!isAdmin && !isLoadingCategories)) {
         return null
     }
-
     return (
         <div className="max-w-3xl mx-auto py-8">
             <Button
@@ -252,7 +220,6 @@ export default function AddBookPage() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Quay lại Thư Viện
             </Button>
-
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-3">
@@ -274,8 +241,7 @@ export default function AddBookPage() {
                                 <AlertDescription>{error}</AlertDescription>
                             </Alert>
                         )}
-
-                        {/* Format Selection */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Định Dạng Tác Phẩm</h3>
                             <div className="space-y-2">
@@ -295,13 +261,10 @@ export default function AddBookPage() {
                                 </Select>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Basic Information */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Thông Tin Chung</h3>
-
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="title">Tựa đề tác phẩm *</Label>
@@ -326,7 +289,6 @@ export default function AddBookPage() {
                                     />
                                 </div>
                             </div>
-
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="isbn">Mã Tiêu Chuẩn (Nếu có)</Label>
@@ -361,7 +323,6 @@ export default function AddBookPage() {
                                     </Select>
                                 </div>
                             </div>
-
                             <div className="space-y-2">
                                 <Label htmlFor="tags">Các Thể Loại Phụ / Tags</Label>
                                 <Input
@@ -375,7 +336,6 @@ export default function AddBookPage() {
                                     Thêm bao nhiêu thẻ tùy thích, mỗi thẻ ngăn cách nhau bằng dấu phẩy.
                                 </p>
                             </div>
-
                             <div className="space-y-2">
                                 <Label htmlFor="description">Mô Tả / Trích Dẫn</Label>
                                 <textarea
@@ -388,13 +348,10 @@ export default function AddBookPage() {
                                 />
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Publishing Information */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Thông Tin Xuất Bản</h3>
-
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="publisher">Nhà Xuất Bản</Label>
@@ -418,14 +375,11 @@ export default function AddBookPage() {
                                 </div>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Document Information - HIDE FOR WEBNOVEL */}
+                        {}
                         {fileType !== 'WEBNOVEL' && (
                             <div className="space-y-4">
                                 <h3 className="text-lg font-medium">Thông Tin Tệp (File Chi Tiết)</h3>
-
                                 <div className="space-y-2">
                                     <Label htmlFor="fileUpload">Tải lên File PDF Trực Tiếp *</Label>
                                     <div className="flex gap-2 items-center">
@@ -456,16 +410,12 @@ export default function AddBookPage() {
                                         required={fileType !== 'WEBNOVEL'}
                                     />
                                 </div>
-
                             </div>
                         )}
-
                         <Separator />
-
-                        {/* Cover Image */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Ảnh Bìa</h3>
-
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="md:col-span-2 space-y-2">
                                     <Label htmlFor="coverUpload">Tải Lên Máy Tính (Tối đa 5MB)</Label>
@@ -479,7 +429,6 @@ export default function AddBookPage() {
                                         />
                                         {isUploadingCover && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
                                     </div>
-
                                     <Label htmlFor="coverImageUrl" className="text-xs text-muted-foreground mt-4 block">Hoặc Dán URL Ảnh Bắn Ra Từ Nguồn Khác</Label>
                                     <Input
                                         id="coverImageUrl"
@@ -511,10 +460,8 @@ export default function AddBookPage() {
                                 </div>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Giá Xu */}
+                        {}
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium flex items-center gap-2">
                                 <Coins className="h-5 w-5 text-yellow-500" />
@@ -536,10 +483,8 @@ export default function AddBookPage() {
                                 </p>
                             </div>
                         </div>
-
                         <Separator />
-
-                        {/* Actions */}
+                        {}
                         <div className="flex gap-4">
                             <Button
                                 type="button"

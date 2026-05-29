@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -23,7 +22,6 @@ import {
     MapPin,
     Save
 } from 'lucide-react'
-
 type UserProfile = {
     user_id: string
     username: string
@@ -32,24 +30,18 @@ type UserProfile = {
     phone: string | null
     address: string | null
 }
-
 export default function AccountSettings() {
     const { user, loading: authLoading } = useAuth()
     const router = useRouter()
-
-    // Profile state
     const [profile, setProfile] = useState<UserProfile | null>(null)
     const [profileLoading, setProfileLoading] = useState(true)
     const [profileSaving, setProfileSaving] = useState(false)
     const [profileError, setProfileError] = useState<string | null>(null)
     const [profileSuccess, setProfileSuccess] = useState(false)
-
-    // Email change state
     const [newEmail, setNewEmail] = useState('')
     const [emailLoading, setEmailLoading] = useState(false)
     const [emailError, setEmailError] = useState<string | null>(null)
     const [emailSuccess, setEmailSuccess] = useState(false)
-
     // Password change state
     const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
@@ -57,19 +49,16 @@ export default function AccountSettings() {
     const [passwordLoading, setPasswordLoading] = useState(false)
     const [passwordError, setPasswordError] = useState<string | null>(null)
     const [passwordSuccess, setPasswordSuccess] = useState(false)
-
     // Fetch user profile
     useEffect(() => {
         const fetchProfile = async () => {
             if (!user) return
-
             try {
                 const { data, error } = await supabase
                     .from('users')
                     .select('user_id, username, email, full_name, phone, address')
                     .eq('user_id', user.id)
                     .single()
-
                 if (error) throw error
                 setProfile(data)
             } catch (error) {
@@ -79,28 +68,21 @@ export default function AccountSettings() {
                 setProfileLoading(false)
             }
         }
-
         if (user) {
             fetchProfile()
         }
     }, [user])
-
-    // Redirect if not authenticated
     useEffect(() => {
         if (!authLoading && !user) {
             router.push('/login')
         }
     }, [user, authLoading, router])
-
-    // Handle profile update
     const handleProfileUpdate = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!profile || !user) return
-
         setProfileSaving(true)
         setProfileError(null)
         setProfileSuccess(false)
-
         try {
             const { error } = await supabase
                 .from('users')
@@ -111,17 +93,13 @@ export default function AccountSettings() {
                     address: profile.address
                 })
                 .eq('user_id', user.id)
-
             if (error) throw error
-
-            // Also update Supabase Auth user metadata
             await supabase.auth.updateUser({
                 data: {
                     username: profile.username,
                     full_name: profile.full_name
                 }
             })
-
             setProfileSuccess(true)
             setTimeout(() => setProfileSuccess(false), 3000)
         } catch (error) {
@@ -135,23 +113,17 @@ export default function AccountSettings() {
             setProfileSaving(false)
         }
     }
-
-    // Handle email change
     const handleEmailChange = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!user) return
-
         setEmailLoading(true)
         setEmailError(null)
         setEmailSuccess(false)
-
         try {
             const { error } = await supabase.auth.updateUser({
                 email: newEmail
             })
-
             if (error) throw error
-
             setEmailSuccess(true)
             setNewEmail('')
         } catch (error) {
@@ -165,45 +137,32 @@ export default function AccountSettings() {
             setEmailLoading(false)
         }
     }
-
-    // Handle password change
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!user) return
-
         setPasswordError(null)
         setPasswordSuccess(false)
-
         if (newPassword.length < 6) {
             setPasswordError('New password must be at least 6 characters')
             return
         }
-
         if (newPassword !== confirmPassword) {
             setPasswordError('Passwords do not match')
             return
         }
-
         setPasswordLoading(true)
-
         try {
-            // First verify current password by re-authenticating
             const { error: signInError } = await supabase.auth.signInWithPassword({
                 email: user.email!,
                 password: currentPassword
             })
-
             if (signInError) {
                 throw new Error('Current password is incorrect')
             }
-
-            // Update password
             const { error } = await supabase.auth.updateUser({
                 password: newPassword
             })
-
             if (error) throw error
-
             setPasswordSuccess(true)
             setCurrentPassword('')
             setNewPassword('')
@@ -220,7 +179,6 @@ export default function AccountSettings() {
             setPasswordLoading(false)
         }
     }
-
     if (authLoading || profileLoading) {
         return (
             <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
@@ -228,11 +186,9 @@ export default function AccountSettings() {
             </div>
         )
     }
-
     if (!user || !profile) {
         return null
     }
-
     return (
         <div className="container max-w-4xl py-8">
             <div className="mb-8">
@@ -241,7 +197,6 @@ export default function AccountSettings() {
                     Quản lý thông tin cá nhân và bảo mật tài khoản của bạn
                 </p>
             </div>
-
             <Tabs defaultValue="profile" className="space-y-6">
                 <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
                     <TabsTrigger value="profile" className="gap-2">
@@ -257,8 +212,7 @@ export default function AccountSettings() {
                         <span className="hidden sm:inline">Mật Khẩu</span>
                     </TabsTrigger>
                 </TabsList>
-
-                {/* Profile Tab */}
+                {}
                 <TabsContent value="profile">
                     <Card>
                         <CardHeader>
@@ -283,7 +237,6 @@ export default function AccountSettings() {
                                         </AlertDescription>
                                     </Alert>
                                 )}
-
                                 <div className="grid gap-6 md:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label htmlFor="username">Tên Đăng Nhập</Label>
@@ -298,7 +251,6 @@ export default function AccountSettings() {
                                             />
                                         </div>
                                     </div>
-
                                     <div className="space-y-2">
                                         <Label htmlFor="fullName">Họ và Tên</Label>
                                         <div className="relative">
@@ -312,7 +264,6 @@ export default function AccountSettings() {
                                             />
                                         </div>
                                     </div>
-
                                     <div className="space-y-2">
                                         <Label htmlFor="phone">Số Điện Thoại</Label>
                                         <div className="relative">
@@ -327,7 +278,6 @@ export default function AccountSettings() {
                                             />
                                         </div>
                                     </div>
-
                                     <div className="space-y-2">
                                         <Label htmlFor="email-display">Email</Label>
                                         <div className="relative">
@@ -344,7 +294,6 @@ export default function AccountSettings() {
                                         </p>
                                     </div>
                                 </div>
-
                                 <div className="space-y-2">
                                     <Label htmlFor="address">Địa Chỉ</Label>
                                     <div className="relative">
@@ -358,7 +307,6 @@ export default function AccountSettings() {
                                         />
                                     </div>
                                 </div>
-
                                 <Button
                                     type="submit"
                                     variant="gradient"
@@ -380,7 +328,6 @@ export default function AccountSettings() {
                         </CardContent>
                     </Card>
                 </TabsContent>
-
                 {/* Email Tab */}
                 <TabsContent value="email">
                     <Card>
@@ -406,7 +353,6 @@ export default function AccountSettings() {
                                         </AlertDescription>
                                     </Alert>
                                 )}
-
                                 <div className="space-y-2">
                                     <Label htmlFor="currentEmail">Email Hiện Tại</Label>
                                     <div className="relative">
@@ -419,7 +365,6 @@ export default function AccountSettings() {
                                         />
                                     </div>
                                 </div>
-
                                 <div className="space-y-2">
                                     <Label htmlFor="newEmail">Email Mới</Label>
                                     <div className="relative">
@@ -438,7 +383,6 @@ export default function AccountSettings() {
                                         />
                                     </div>
                                 </div>
-
                                 <Button
                                     type="submit"
                                     variant="gradient"
@@ -457,8 +401,7 @@ export default function AccountSettings() {
                         </CardContent>
                     </Card>
                 </TabsContent>
-
-                {/* Password Tab */}
+                {}
                 <TabsContent value="password">
                     <Card>
                         <CardHeader>
@@ -483,7 +426,6 @@ export default function AccountSettings() {
                                         </AlertDescription>
                                     </Alert>
                                 )}
-
                                 <div className="space-y-2">
                                     <Label htmlFor="currentPassword">Mật Khẩu Hiện Tại</Label>
                                     <PasswordInput
@@ -497,7 +439,6 @@ export default function AccountSettings() {
                                         required
                                     />
                                 </div>
-
                                 <div className="space-y-2">
                                     <Label htmlFor="newPassword">Mật Khẩu Mới</Label>
                                     <PasswordInput
@@ -515,7 +456,6 @@ export default function AccountSettings() {
                                         Tối thiểu 6 ký tự
                                     </p>
                                 </div>
-
                                 <div className="space-y-2">
                                     <Label htmlFor="confirmPassword">Xác Nhận Mật Khẩu Mới</Label>
                                     <PasswordInput
@@ -529,7 +469,6 @@ export default function AccountSettings() {
                                         required
                                     />
                                 </div>
-
                                 <Button
                                     type="submit"
                                     variant="gradient"

@@ -34,7 +34,6 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
     const [isLocked, setIsLocked] = useState(false)
     const [coinPrice, setCoinPrice] = useState(0)
 
-    // Reading Settings
     const [fontSize, setFontSize] = useState(18)
     const [theme, setTheme] = useState<'light' | 'dark' | 'sepia'>('light')
 
@@ -43,24 +42,22 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
     const fetchReadingData = useCallback(async () => {
         setIsLoading(true)
         try {
-            // Fetch Book Details
+
             const { data: bookData } = await supabase.from('books').select('title, author, organization_id, coin_price').eq('book_id', id).single()
             setBook(bookData)
             const bookCoinPrice = bookData?.coin_price ?? 0
             setCoinPrice(bookCoinPrice)
 
-            // Fetch unlocked content
             if (user) {
                 await fetchUnlockedContent(id)
             }
 
-            // Fetch Current Chapter first to get is_free
             const { data: chapterData, error: chapterError } = await supabase.from('chapters')
                 .select('*')
                 .eq('book_id', id)
                 .eq('chapter_number', parseInt(chapterNumber))
                 .single()
-            
+
             if (chapterError) {
                 toast({ title: "Lỗi", description: "Không tìm thấy chương này.", variant: "destructive" })
                 router.push(`/books/${id}`)
@@ -68,11 +65,9 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
             }
             setChapter(chapterData)
 
-            // Check if this chapter is locked
             const chapterNum = parseInt(chapterNumber)
             const locked = isChapterLocked(id, chapterNum, bookCoinPrice, chapterData.is_free)
-            
-            // If locked, check if user has unlocked it
+
             if (locked && user) {
                 const { data: unlocked } = await supabase
                     .from('user_unlocked_content')
@@ -81,7 +76,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                     .eq('book_id', id)
                     .eq('chapter_number', chapterNum)
                     .maybeSingle()
-                
+
                 setIsLocked(!unlocked)
             } else if (locked && !user) {
                 setIsLocked(true)
@@ -89,11 +84,9 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                 setIsLocked(false)
             }
 
-            // Log Access & Progress once per mount (only if not locked)
             if (!hasLoggedRef.current && !locked) {
                 hasLoggedRef.current = true
-                
-                // Tăng view cho quyển sách (Ai vào xem cũng tăng)
+
                 supabase.rpc('increment_book_views', { p_book_id: id })
                     .then(({ error }) => { if (error) console.error("Increment views error:", error) })
 
@@ -104,7 +97,6 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                         p_user_id: user.id
                     }).then(({ error }) => { if (error) console.error("Record access error:", error) })
 
-                    // Lưu tiến độ đọc trang của người dùng
                     supabase.from('user_reading_progress').upsert({
                         user_id: user.id,
                         book_id: id,
@@ -115,9 +107,6 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                 }
             }
 
-
-
-            // Fetch All Chapters for Navigation
             const { data: chaps } = await supabase.from('chapters')
                 .select('chapter_number, title')
                 .eq('book_id', id)
@@ -133,8 +122,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
 
     useEffect(() => {
         fetchReadingData()
-        
-        // Restore settings if any
+
         const savedSettings = localStorage.getItem('novel_settings')
         if (savedSettings) {
             const { size, t } = JSON.parse(savedSettings)
@@ -143,14 +131,13 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
         }
     }, [fetchReadingData])
 
-    // Save preferences
     useEffect(() => {
         localStorage.setItem('novel_settings', JSON.stringify({ size: fontSize, t: theme }))
     }, [fontSize, theme])
 
     const handleUnlocked = () => {
         setIsLocked(false)
-        hasLoggedRef.current = false // Allow logging after unlock
+        hasLoggedRef.current = false 
         fetchReadingData()
     }
 
@@ -160,7 +147,6 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
 
     if (!chapter) return null
 
-    // Find Prev/Next
     const currentIndex = allChapters.findIndex(c => c.chapter_number === chapter.chapter_number)
     const prevChapter = currentIndex > 0 ? allChapters[currentIndex - 1] : null
     const nextChapter = currentIndex < allChapters.length - 1 ? allChapters[currentIndex + 1] : null
@@ -171,12 +157,11 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
         sepia: "bg-[#f4ecd8] text-[#5b4636] border-[#d3c2a8]"
     }
 
-    // Check if next chapter is locked
     const isNextChapterLocked = nextChapter && isChapterLocked(id, nextChapter.chapter_number, coinPrice, nextChapter.is_free)
 
     return (
         <div className={`min-h-screen transition-colors duration-300 ${themeClasses[theme]}`}>
-            {/* Top Navigation Bar */}
+            {}
             <div className={`sticky top-0 z-50 backdrop-blur-xl bg-opacity-90 border-b px-4 py-3 flex items-center justify-between ${themeClasses[theme]}`}>
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" onClick={() => router.push(`/books/${id}`)}>
@@ -187,16 +172,16 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                         <p className="text-xs opacity-70">Chương {chapter.chapter_number}</p>
                     </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                    {/* Theme Controls */}
+                    {}
                     <div className="hidden sm:flex bg-black/5 rounded-full p-1 border">
                         <button onClick={() => setTheme('light')} className={`h-6 w-6 rounded-full bg-[#f4f4f4] border border-gray-300 ${theme === 'light' ? 'ring-2 ring-primary ring-offset-2' : ''}`} />
                         <button onClick={() => setTheme('sepia')} className={`h-6 w-6 rounded-full bg-[#f4ecd8] border border-transparent mx-2 ${theme === 'sepia' ? 'ring-2 ring-primary ring-offset-2' : ''}`} />
                         <button onClick={() => setTheme('dark')} className={`h-6 w-6 rounded-full bg-[#1a1a1a] border border-transparent ${theme === 'dark' ? 'ring-2 ring-primary ring-offset-2' : ''}`} />
                     </div>
-                    
-                    {/* Font Size Controls */}
+
+                    {}
                     <div className="hidden sm:flex items-center gap-1 bg-black/5 rounded-full px-2 border ml-2">
                         <button onClick={() => setFontSize(f => Math.max(12, f - 2))} className="px-2 py-1 hover:bg-black/10 rounded font-bold">A-</button>
                         <span className="text-xs px-1">{fontSize}</span>
@@ -205,7 +190,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                 </div>
             </div>
 
-            {/* Reading Content */}
+            {}
             <div className="max-w-3xl mx-auto px-6 py-12">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold mb-4 font-display">Chương {chapter.chapter_number}{chapter.title ? `: ${chapter.title}` : ''}</h2>
@@ -219,7 +204,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                         <div className="max-h-[200px] overflow-hidden relative">
                             {chapter.content_text.includes('<p') || chapter.content_text.includes('<h') ? (
                                 <div 
-                                    className="prose dark:prose-invert max-w-none chapter-content blur-sm select-none"
+                                    className={`prose max-w-none chapter-content blur-sm select-none prose-p:text-current prose-headings:text-current prose-li:text-current prose-strong:text-current ${theme === 'dark' ? 'prose-invert' : ''}`}
                                     style={{ fontSize: `${fontSize}px` }}
                                     dangerouslySetInnerHTML={{ __html: chapter.content_text.substring(0, 500) }}
                                 />
@@ -234,7 +219,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
                         </div>
 
-                        {/* Lock overlay */}
+                        {}
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border-2 border-yellow-500/30 flex items-center justify-center mb-6">
                                 <Lock className="h-10 w-10 text-yellow-500" />
@@ -259,7 +244,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                     <>
                         {chapter.content_text.includes('<p') || chapter.content_text.includes('<h') ? (
                             <div 
-                                className="prose dark:prose-invert max-w-none chapter-content prose-p:mb-[1.5em] prose-headings:font-display prose-img:block prose-img:mx-auto prose-img:max-w-full prose-img:rounded-md break-words"
+                                className={`prose max-w-none chapter-content prose-p:mb-[1.5em] prose-headings:font-display prose-img:block prose-img:mx-auto prose-img:max-w-full prose-img:rounded-md break-words prose-p:text-current prose-headings:text-current prose-li:text-current prose-strong:text-current ${theme === 'dark' ? 'prose-invert' : ''}`}
                                 style={{ fontSize: `${fontSize}px` }}
                                 dangerouslySetInnerHTML={{ __html: chapter.content_text }}
                             />
@@ -274,7 +259,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                     </>
                 )}
 
-                {/* Bottom Navigation */}
+                {}
                 <div className="mt-20 pt-8 border-t flex flex-col sm:flex-row gap-4 items-center justify-between">
                     <Button 
                         variant="outline" 

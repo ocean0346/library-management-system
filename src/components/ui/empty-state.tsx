@@ -3,14 +3,12 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { LucideIcon } from "lucide-react"
-
 interface EmptyStateAction {
     label: string
     href?: string
     onClick?: () => void
     variant?: "default" | "gradient" | "outline"
 }
-
 interface EmptyStateProps {
     icon: LucideIcon
     title: string
@@ -19,7 +17,6 @@ interface EmptyStateProps {
     secondaryAction?: EmptyStateAction
     className?: string
 }
-
 export function EmptyState({
     icon: Icon,
     title,
@@ -35,22 +32,19 @@ export function EmptyState({
                 className
             )}
         >
-            {/* Icon with gradient background */}
+            {}
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#02FF73]/20 to-[#09ADAA]/20 flex items-center justify-center mb-6">
                 <Icon className="h-10 w-10 text-muted-foreground" />
             </div>
-
-            {/* Title */}
+            {}
             <h3 className="text-xl font-display font-semibold mb-2">
                 {title}
             </h3>
-
-            {/* Description */}
+            {}
             <p className="text-muted-foreground max-w-md mb-6">
                 {description}
             </p>
-
-            {/* Actions */}
+            {}
             {(action || secondaryAction) && (
                 <div className="flex flex-col sm:flex-row gap-3">
                     {action && (

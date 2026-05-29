@@ -3,7 +3,6 @@ export type DashboardStats = {
     borrowedbooks: number;
     overduebooks: number;
 }
-
 export type BorrowedBook = {
     id: string;
     title: string;

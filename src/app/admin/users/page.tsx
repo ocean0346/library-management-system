@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -36,13 +35,10 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
-
 const ITEMS_PER_PAGE = 10
-
 function PaginationControls({ currentPage, totalItems, onPageChange }: { currentPage: number, totalItems: number, onPageChange: (p: number) => void }) {
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE)
     if (totalPages <= 1) return null
-
     return (
         <Pagination className="mt-6 pb-2">
             <PaginationContent>
@@ -51,7 +47,6 @@ function PaginationControls({ currentPage, totalItems, onPageChange }: { current
                     onClick={(e) => { e.preventDefault(); if (currentPage > 1) onPageChange(currentPage - 1) }}
                     className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
                 />
-                
                 {[...Array(totalPages)].map((_, i) => (
                     <PaginationLink 
                         key={i}
@@ -62,7 +57,6 @@ function PaginationControls({ currentPage, totalItems, onPageChange }: { current
                         {i + 1}
                     </PaginationLink>
                 ))}
-
                 <PaginationNext 
                     href="#" 
                     onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) onPageChange(currentPage + 1) }}
@@ -72,17 +66,14 @@ function PaginationControls({ currentPage, totalItems, onPageChange }: { current
         </Pagination>
     )
 }
-
 const ROLE_OPTIONS = [
     { value: 'READER', label: 'Độc Giả', icon: UserIcon, color: 'bg-muted text-muted-foreground' },
     { value: 'ADMIN', label: 'Admin', icon: Shield, color: 'bg-blue-500/10 text-blue-500' },
     { value: 'SUPER_ADMIN', label: 'Super Admin', icon: Crown, color: 'bg-primary/10 text-primary' },
 ]
-
 function getRoleInfo(role: string) {
     return ROLE_OPTIONS.find(r => r.value === role) || ROLE_OPTIONS[0]
 }
-
 // Sort: SUPER_ADMIN > ADMIN > READER, then by created_at desc
 function sortUsers(users: any[]) {
     const roleOrder: Record<string, number> = { 'SUPER_ADMIN': 0, 'ADMIN': 1, 'READER': 2 }
@@ -93,12 +84,10 @@ function sortUsers(users: any[]) {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     })
 }
-
 export default function UserManagement() {
     const { user, loading: authLoading } = useAuth()
     const router = useRouter()
     const { toast } = useToast()
-    
     const [isAdmin, setIsAdmin] = useState(false)
     const [callerRole, setCallerRole] = useState<string>('READER')
     const [usersList, setUsersList] = useState<any[]>([])
@@ -108,7 +97,6 @@ export default function UserManagement() {
     const [isProcessing, setIsProcessing] = useState<string | null>(null)
     const [userToDelete, setUserToDelete] = useState<string | null>(null)
     const [currentPage, setCurrentPage] = useState(1)
-
     const fetchUsers = useCallback(async () => {
         setIsLoading(true)
         try {
@@ -116,7 +104,6 @@ export default function UserManagement() {
                 .from('users')
                 .select('*')
                 .order('created_at', { ascending: false })
-
             if (error) throw error
             const sorted = sortUsers(data || [])
             setUsersList(sorted)
@@ -132,41 +119,33 @@ export default function UserManagement() {
             setIsLoading(false)
         }
     }, [toast])
-
     useEffect(() => {
         const checkAccess = async () => {
             if (authLoading) return
-            
             if (!user) {
                 router.push('/login')
                 return
             }
-
             const { data: userData } = await supabase
                 .from('users')
                 .select('role')
                 .eq('user_id', user.id)
                 .single()
-            
             if (!userData?.role || (userData.role !== 'ADMIN' && userData.role !== 'SUPER_ADMIN')) {
                 router.push('/dashboard')
                 return
             }
-
             setIsAdmin(true)
             setCallerRole(userData.role)
             fetchUsers()
         }
-        
         checkAccess()
     }, [user, authLoading, router, fetchUsers])
-
     useEffect(() => {
         if (!searchQuery.trim()) {
             setFilteredUsers(sortUsers(usersList))
             return
         }
-
         const query = searchQuery.toLowerCase()
         const filtered = usersList.filter(u => 
             (u.full_name && u.full_name.toLowerCase().includes(query)) ||
@@ -176,7 +155,6 @@ export default function UserManagement() {
         setFilteredUsers(sortUsers(filtered))
         setCurrentPage(1)
     }, [searchQuery, usersList])
-
     const changeUserRole = async (targetUserId: string, newRole: string) => {
         if (targetUserId === user?.id) {
             toast({
@@ -186,22 +164,18 @@ export default function UserManagement() {
             })
             return
         }
-
         setIsProcessing(targetUserId)
         try {
             const { error } = await supabase
                 .from('users')
                 .update({ role: newRole })
                 .eq('user_id', targetUserId)
-
             if (error) throw error
-
             const roleInfo = getRoleInfo(newRole)
             toast({
                 title: "Thành công",
                 description: `Đã chuyển vai trò thành "${roleInfo.label}".`,
             })
-            
             setUsersList(prev => sortUsers(prev.map(u => 
                 u.user_id === targetUserId ? { ...u, role: newRole } : u
             )))
@@ -216,7 +190,6 @@ export default function UserManagement() {
             setIsProcessing(null)
         }
     }
-
     const toggleBanStatus = async (targetUserId: string, currentBanStatus: boolean) => {
         if (targetUserId === user?.id) {
             toast({
@@ -226,21 +199,17 @@ export default function UserManagement() {
             })
             return
         }
-
         setIsProcessing(targetUserId)
         try {
             const { error } = await supabase
                 .from('users')
                 .update({ is_banned: !currentBanStatus })
                 .eq('user_id', targetUserId)
-
             if (error) throw error
-
             toast({
                 title: "Thành công",
                 description: `Đã ${!currentBanStatus ? 'Khóa' : 'Mở khóa'} tài khoản người dùng này.`,
             })
-            
             setUsersList(prev => prev.map(u => 
                 u.user_id === targetUserId ? { ...u, is_banned: !currentBanStatus } : u
             ))
@@ -255,7 +224,6 @@ export default function UserManagement() {
             setIsProcessing(null)
         }
     }
-
     const deleteUser = async (targetUserId: string) => {
         if (targetUserId === user?.id) {
             toast({
@@ -265,7 +233,6 @@ export default function UserManagement() {
             })
             return
         }
-
         setIsProcessing(targetUserId)
         try {
             const { data: { session } } = await supabase.auth.getSession()
@@ -275,17 +242,14 @@ export default function UserManagement() {
                     'Authorization': `Bearer ${session?.access_token}`,
                 },
             })
-            
             if (!res.ok) {
                 const errorData = await res.json()
                 throw new Error(errorData.error || 'Failed to delete user')
             }
-
             toast({
                 title: "Thành công",
                 description: "Đã xóa vĩnh viễn người dùng khỏi hệ thống.",
             })
-            
             setUsersList(prev => prev.filter(u => u.user_id !== targetUserId))
         } catch (error: any) {
             console.error('Error deleting user:', error)
@@ -299,7 +263,6 @@ export default function UserManagement() {
             setUserToDelete(null)
         }
     }
-
     if (authLoading || isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -307,9 +270,7 @@ export default function UserManagement() {
             </div>
         )
     }
-
     if (!isAdmin) return null
-
     return (
         <div className="container max-w-6xl mx-auto py-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -329,7 +290,6 @@ export default function UserManagement() {
                     />
                 </div>
             </div>
-
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -356,7 +316,6 @@ export default function UserManagement() {
                                     const isSelf = u.user_id === user?.id
                                     const isSuperAdmin = callerRole === 'SUPER_ADMIN'
                                     const canManage = isSuperAdmin && !isSelf
-
                                     return (
                                         <tr key={u.user_id} className={`hover:bg-muted/20 transition-colors ${u.is_banned ? 'opacity-60' : ''}`}>
                                             <td className="px-4 py-4 font-medium">
@@ -420,7 +379,6 @@ export default function UserManagement() {
                                                     >
                                                         {isProcessing === u.user_id ? <Loader2 className="h-4 w-4 animate-spin" /> : (u.is_banned ? <Unlock className="h-4 w-4" /> : <Ban className="h-4 w-4" />)}
                                                     </Button>
-
                                                     <AlertDialog open={userToDelete === u.user_id} onOpenChange={(open) => !open && setUserToDelete(null)}>
                                                         <AlertDialogTrigger asChild>
                                                             <Button 
