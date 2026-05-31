@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loading } from '@/components/ui/loading'
-import { Plus, Trash2, Pencil, Tags, Check, X as XIcon, Loader2 } from 'lucide-react'
+import { Plus, Trash as Trash2, Pencil, Tag as Tags, Check, X as XIcon, Spinner as Loader2 } from '@phosphor-icons/react'
 import { useToast } from "@/hooks/use-toast"
 export default function CategoryManagement() {
     const { user, loading: authLoading } = useAuth()
@@ -173,7 +173,7 @@ export default function CategoryManagement() {
                 <Card className="md:col-span-1 h-fit">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <Plus className="h-5 w-5 text-primary" />
+                            <Plus weight="bold" className="h-5 w-5 text-primary" />
                             Thêm Thể Loại Mới
                         </CardTitle>
                     </CardHeader>
@@ -220,10 +220,10 @@ export default function CategoryManagement() {
                                                     autoFocus
                                                 />
                                                 <Button size="icon" variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/30" onClick={() => saveEdit(cat.category_id)} disabled={isSavingEdit || !editName.trim()}>
-                                                    {isSavingEdit ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                                                    {isSavingEdit ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check weight="bold" className="h-4 w-4" />}
                                                 </Button>
                                                 <Button size="icon" variant="ghost" className="text-muted-foreground" onClick={cancelEdit}>
-                                                    <XIcon className="h-4 w-4" />
+                                                    <XIcon weight="bold" className="h-4 w-4" />
                                                 </Button>
                                             </div>
                                         ) : (

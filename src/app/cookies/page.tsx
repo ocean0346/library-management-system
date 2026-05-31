@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
 import { Button } from '@/components/ui/button'
 export const metadata: Metadata = {
     title: 'Chính Sách Cookie - ThưViệnOnline',
@@ -12,7 +12,7 @@ export default function CookiePolicyPage() {
             <div className="mb-8">
                 <Button variant="ghost" size="sm" asChild>
                     <Link href="/" className="gap-2">
-                        <ArrowLeft className="h-4 w-4" />
+                        <ArrowLeft weight="duotone" className="h-4 w-4" />
                         Về Trang Chủ
                     </Link>
                 </Button>

@@ -4,26 +4,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Image from '@tiptap/extension-image'
 import TextAlign from '@tiptap/extension-text-align'
-import {
-    Bold,
-    Italic,
-    Underline as UnderlineIcon,
-    Strikethrough,
-    Heading1,
-    Heading2,
-    List,
-    ListOrdered,
-    Quote,
-    ImageIcon,
-    AlignLeft,
-    AlignCenter,
-    AlignRight,
-    AlignJustify,
-    Undo,
-    Redo,
-    RemoveFormatting,
-    Loader2
-} from 'lucide-react'
+import { TextB as Bold, TextItalic as Italic, TextUnderline as UnderlineIcon, TextStrikethrough as Strikethrough, TextHOne as Heading1, TextHTwo as Heading2, List as List, ListNumbers as ListOrdered, Quotes as Quote, Image as ImageIcon, TextAlignLeft as AlignLeft, TextAlignCenter as AlignCenter, TextAlignRight as AlignRight, TextAlignJustify as AlignJustify, ArrowUUpLeft as Undo, ArrowUUpRight as Redo, Eraser as RemoveFormatting, Spinner as Loader2 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Toggle } from '@/components/ui/toggle'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -153,7 +134,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
                 title="Danh sách không chấm"
             >
-                <List className="h-4 w-4" />
+                <List weight="bold" className="h-4 w-4" />
             </Toggle>
             <Toggle
                 size="sm"
@@ -161,7 +142,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
                 title="Danh sách theo thứ tự"
             >
-                <ListOrdered className="h-4 w-4" />
+                <ListOrdered weight="bold" className="h-4 w-4" />
             </Toggle>
             <Toggle
                 size="sm"

@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BookOpen, Users, Building2, Mail, Sparkles } from 'lucide-react'
+import { BookOpenText as BookOpen, Users, Buildings as Building2, Envelope as Mail, Sparkle as Sparkles } from '@phosphor-icons/react'
 import { usePathname } from 'next/navigation'
 const footerLinks = {
     product: {
@@ -39,10 +39,13 @@ export default function Footer() {
                     {}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center gap-3 mb-4 group">
-                            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] shadow-lg shadow-[#02FF73]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(2,255,115,0.4)]">
-                                <BookOpen className="w-5 h-5 text-black absolute" />
-                                <Sparkles className="w-3 h-3 text-black absolute -top-1 -right-1 animate-pulse" />
-                            </div>
+                            <Image 
+                                src="/thu-vien-online-logo.svg" 
+                                alt="Thư Viện Online Logo" 
+                                width={40} 
+                                height={40} 
+                                className="w-10 h-10 transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
+                            />
                             <span className="font-display font-black text-xl tracking-tight bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent group-hover:brightness-110 transition-all">
                                 ThưViện<span className="text-foreground">Online</span>
                             </span>

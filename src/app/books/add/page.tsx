@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { uploadFileToSupabase } from '@/lib/storage'
-import { BookPlus, ArrowLeft, Loader2, Save, ImageIcon, HardDrive, Coins } from 'lucide-react'
+import { BookBookmark as BookPlus, ArrowLeft, Spinner as Loader2, FloppyDisk as Save, Image as ImageIcon, HardDrive, Coins } from '@phosphor-icons/react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'

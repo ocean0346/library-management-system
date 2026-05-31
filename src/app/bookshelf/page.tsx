@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase-client'
 import { Book } from '@/types/book'
 import BookCard from '@/components/books/BookCard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Bookmark, Heart, LibrarySquare, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Bookmark, Heart, Books as LibrarySquare, Spinner as Loader2, CaretLeft as ChevronLeft, CaretRight as ChevronRight } from '@phosphor-icons/react'
 import {
     Pagination,
     PaginationContent,

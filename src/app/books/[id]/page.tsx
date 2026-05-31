@@ -16,29 +16,14 @@ import {
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import {
-    Calendar,
-    User,
-    Building2,
-    Loader2,
-    ArrowLeft,
-    Pencil,
-    Trash2,
-    Download,
-    FileText,
-    HardDrive,
-    BookOpen,
-    Star,
-    Heart,
-    Bookmark
-} from 'lucide-react'
+import { Calendar, User, Buildings as Building2, Spinner as Loader2, ArrowLeft, Pencil, Trash as Trash2, Download, FileText, HardDrive, BookOpenText as BookOpen, Star, Heart, Bookmark } from '@phosphor-icons/react'
 import { useToast } from "@/hooks/use-toast"
 import { format } from 'date-fns'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Loading } from '@/components/ui/loading'
 import { useCoins, FREE_CHAPTERS } from '@/hooks/useCoins'
 import UnlockChapterButton from '@/components/coins/UnlockChapterButton'
-import { Coins, Lock } from 'lucide-react'
+import { Coins, LockKey as Lock } from '@phosphor-icons/react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -516,7 +501,7 @@ export default function BookDetails() {
                 <div className="mt-12 bg-card rounded-xl border border-border shadow-sm p-6 overflow-hidden">
                     <div className="flex items-center gap-3 border-b border-border/50 pb-3 mb-6">
                         <div className="bg-[#09ADAA] h-8 w-8 rounded flex items-center justify-center shrink-0">
-                            <Star className="text-white h-5 w-5 fill-current" />
+                            <Star weight="fill" className="text-white h-5 w-5" />
                         </div>
                         <h3 className="text-lg font-bold text-foreground">CÓ THỂ BẠN MUỐN ĐỌC THÊM</h3>
                     </div>

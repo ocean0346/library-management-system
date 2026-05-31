@@ -16,7 +16,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Pencil, ArrowLeft, Loader2, Save, ImageIcon, Coins } from 'lucide-react'
+import { Pencil, ArrowLeft, Spinner as Loader2, FloppyDisk as Save, Image as ImageIcon, Coins } from '@phosphor-icons/react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'

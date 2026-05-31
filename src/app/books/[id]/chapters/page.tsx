@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ArrowLeft, Plus, Save, Loader2, Trash2, Edit } from 'lucide-react'
+import { ArrowLeft, Plus, FloppyDisk as Save, Spinner as Loader2, Trash as Trash2, Pencil as Edit } from '@phosphor-icons/react'
 import { Loading } from '@/components/ui/loading'
 import dynamic from 'next/dynamic'
 import { useToast } from '@/hooks/use-toast'

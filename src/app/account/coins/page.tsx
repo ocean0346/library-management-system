@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Loading } from '@/components/ui/loading'
-import { Coins, ArrowLeft, ArrowUpRight, ArrowDownLeft, Plus, BookOpen, Sparkles, Gift, Undo2 } from 'lucide-react'
+import { Coins, ArrowLeft, ArrowUpRight as ArrowUpRight, ArrowDownLeft as ArrowDownLeft, Plus, BookOpenText as BookOpen, Sparkle as Sparkles, Gift, ArrowCounterClockwise as Undo2 } from '@phosphor-icons/react'
 import { format } from 'date-fns'
 import { CoinPurchaseModal } from '@/components/coins/CoinBalance'
 import {
@@ -152,7 +152,7 @@ export default function CoinHistoryPage() {
                             onClick={() => setShowPurchaseModal(true)}
                             className="bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-bold shadow-lg shadow-yellow-500/25"
                         >
-                            <Plus className="h-4 w-4 mr-2" />
+                            <Plus weight="bold" className="h-4 w-4 mr-2" />
                             Nạp Xu
                         </Button>
                     </div>

@@ -126,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
             return data;
         } catch (error) {
-            console.error('SignUp error:', error);
+            console.warn('SignUp error:', error instanceof Error ? error.message : error);
             throw error;
         }
     }

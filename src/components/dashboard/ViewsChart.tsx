@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase-client'
 import { format, subDays, subMonths, startOfMonth, endOfMonth, getDaysInMonth, parse } from 'date-fns'
-import { Loader2, ArrowLeft } from 'lucide-react'
+import { Spinner as Loader2, ArrowLeft } from '@phosphor-icons/react'
 const chartConfig = {
     views: {
         label: "Lượt truy cập",

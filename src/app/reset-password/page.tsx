@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PasswordInput } from '@/components/ui/password-input'
-import { AlertCircle, Loader2, BookOpen, CheckCircle2, ArrowLeft } from 'lucide-react'
+import { WarningCircle as AlertCircle, Spinner as Loader2, BookOpenText as BookOpen, CheckCircle as CheckCircle, ArrowLeft } from '@phosphor-icons/react'
+import Image from 'next/image'
 export default function ResetPassword() {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -134,7 +135,7 @@ export default function ResetPassword() {
                 <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                     <CardHeader className="space-y-4 text-center pb-2">
                         <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
-                            <CheckCircle2 className="h-8 w-8 text-black" />
+                            <CheckCircle className="h-8 w-8 text-black" />
                         </div>
                         <div>
                             <CardTitle className="text-2xl font-display font-bold">
@@ -157,8 +158,14 @@ export default function ResetPassword() {
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
             <Card className="w-full max-w-md border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                 <CardHeader className="space-y-4 text-center pb-2">
-                    <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
-                        <BookOpen className="h-8 w-8 text-black" />
+                    <div className="mx-auto flex justify-center">
+                        <Image 
+                            src="/thu-vien-online-logo.svg" 
+                            alt="Thư Viện Online Logo" 
+                            width={64} 
+                            height={64} 
+                            className="w-16 h-16 drop-shadow-xl"
+                        />
                     </div>
                     <div>
                         <CardTitle className="text-2xl font-display font-bold">

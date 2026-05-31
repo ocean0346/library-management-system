@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCoins } from '@/hooks/useCoins'
-import { CheckCircle2, XCircle, Loader2, Coins, ArrowLeft, Home } from 'lucide-react'
+import { CheckCircle as CheckCircle, XCircle as XCircle, Spinner as Loader2, Coins, ArrowLeft, House as Home } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
@@ -133,7 +133,7 @@ function VNPayReturnContent() {
                             {}
                             <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 p-8 border-b">
                                 <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25 mb-4">
-                                    <CheckCircle2 className="h-10 w-10 text-white" />
+                                    <CheckCircle className="h-10 w-10 text-white" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-green-600 dark:text-green-400">Thanh Toán Thành Công!</h2>
                             </div>

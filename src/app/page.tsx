@@ -7,7 +7,7 @@ import BookCard from '@/components/books/BookCard'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, BookOpen, Sparkles, TrendingUp, ChevronRight, User, Star, ArrowRight, Award } from 'lucide-react'
+import { MagnifyingGlass as Search, BookOpenText as BookOpen, Sparkle as Sparkles, TrendUp as TrendingUp, CaretRight as ChevronRight, User, Star, ArrowRight, Clock } from '@phosphor-icons/react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { format } from 'date-fns'
@@ -110,7 +110,7 @@ export default function Home() {
                         <div className="relative w-full group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                             <div className="relative flex items-center bg-background rounded-full border shadow-xl">
-                                <Search className="absolute left-6 text-muted-foreground h-6 w-6" />
+                                <Search weight="bold" className="absolute left-6 text-muted-foreground h-6 w-6" />
                                 <Input
                                     type="text"
                                     placeholder="Tìm kiếm cuốn sách tiếp theo của bạn..."
@@ -149,7 +149,7 @@ export default function Home() {
                             <div>
                                 <h2 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-xl bg-[#02FF73]/20 flex items-center justify-center">
-                                        <Sparkles className="h-5 w-5 text-[#02FF73]" />
+                                        <Clock className="h-5 w-5 text-[#02FF73]" />
                                     </div>
                                     Sách Mới Cập Nhật
                                 </h2>
@@ -227,7 +227,7 @@ export default function Home() {
                             <div>
                                 <h2 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
-                                        <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                                        <Star weight="fill" className="h-5 w-5 text-yellow-500" />
                                     </div>
                                     Sách Được Đánh Giá Cao
                                 </h2>
@@ -255,7 +255,7 @@ export default function Home() {
                             </div>
                         ) : (
                             <div className="text-center py-16 text-muted-foreground bg-muted/20 border border-dashed rounded-2xl flex flex-col items-center justify-center">
-                                <Star className="h-12 w-12 mb-4 opacity-20" />
+                                <Star weight="regular" className="h-12 w-12 mb-4 opacity-20" />
                                 <p className="text-lg">Chưa có đánh giá nào</p>
                             </div>
                         )}

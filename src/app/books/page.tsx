@@ -11,7 +11,7 @@ import { PaginationContent, PaginationItem } from '@/components/ui/pagination'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ChevronLeft, ChevronRight, Building2, Plus } from 'lucide-react'
+import { CaretLeft as ChevronLeft, CaretRight as ChevronRight, Buildings as Building2, Plus } from '@phosphor-icons/react'
 import { Loading } from '@/components/ui/loading'
 import Link from 'next/link'
 export default function BookCatalogPage() {
@@ -293,7 +293,7 @@ function BookCatalog() {
                     {isAdmin && (
                         <Button asChild size="lg" className="shadow-lg shadow-[#02FF73]/20 rounded-full shrink-0 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] border-none text-black hover:scale-105 transition-transform">
                             <Link href="/books/add">
-                                <Plus className="mr-2 h-5 w-5" />
+                                <Plus weight="bold" className="mr-2 h-5 w-5" />
                                 Đăng Sách Mới
                             </Link>
                         </Button>
@@ -345,7 +345,7 @@ function BookCatalog() {
                             {isAdmin && !searchTerm && selectedCategory === 'all' && (
                                 <Button asChild>
                                     <Link href="/books/add">
-                                        <Plus className="mr-2 h-4 w-4" />
+                                        <Plus weight="bold" className="mr-2 h-4 w-4" />
                                         Đăng Cuốn Sách Đầu Tiên
                                     </Link>
                                 </Button>

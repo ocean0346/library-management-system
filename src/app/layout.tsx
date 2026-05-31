@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
 import CoinProviderWrapper from '@/components/providers/CoinProviderWrapper'
+import IconProviderWrapper from '@/components/providers/IconProviderWrapper'
 import { Toaster } from '@/components/ui/toaster'
 const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({
         <body className={inter.className} suppressHydrationWarning>
         <AuthProvider>
             <CoinProviderWrapper>
+                <IconProviderWrapper>
                 <div className="flex min-h-screen flex-col">
                     <Header />
                     <main className="flex-1">
@@ -33,6 +35,7 @@ export default function RootLayout({
                     <Footer />
                 </div>
                 <Toaster />
+                </IconProviderWrapper>
             </CoinProviderWrapper>
         </AuthProvider>
         </body>

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Settings, List, Lock, Coins } from 'lucide-react'
+import { ArrowLeft, CaretLeft as ChevronLeft, CaretRight as ChevronRight, BookOpenText as BookOpen, Gear as Settings, List as List, LockKey as Lock, Coins } from '@phosphor-icons/react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import { useCoins, FREE_CHAPTERS } from '@/hooks/useCoins'
@@ -167,34 +167,34 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                     <Button variant="ghost" size="icon" onClick={() => router.push(`/books/${id}`)}>
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
-                    <div>
-                        <h1 className="font-semibold line-clamp-1">{book?.title}</h1>
+                    <div className="flex flex-col">
+                        <h1 className="hidden sm:block font-semibold line-clamp-1">{book?.title}</h1>
                         <p className="text-xs opacity-70">Chương {chapter.chapter_number}</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    {}
-                    <div className="hidden sm:flex bg-black/5 rounded-full p-1 border">
-                        <button onClick={() => setTheme('light')} className={`h-6 w-6 rounded-full bg-[#f4f4f4] border border-gray-300 ${theme === 'light' ? 'ring-2 ring-primary ring-offset-2' : ''}`} />
-                        <button onClick={() => setTheme('sepia')} className={`h-6 w-6 rounded-full bg-[#f4ecd8] border border-transparent mx-2 ${theme === 'sepia' ? 'ring-2 ring-primary ring-offset-2' : ''}`} />
-                        <button onClick={() => setTheme('dark')} className={`h-6 w-6 rounded-full bg-[#1a1a1a] border border-transparent ${theme === 'dark' ? 'ring-2 ring-primary ring-offset-2' : ''}`} />
+                <div className="flex items-center gap-1 sm:gap-2">
+                    {/* Theme Toggle */}
+                    <div className="flex bg-black/5 rounded-full p-0.5 sm:p-1 border">
+                        <button onClick={() => setTheme('light')} className={`h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-[#f4f4f4] border border-gray-300 ${theme === 'light' ? 'ring-2 ring-primary ring-offset-1 sm:ring-offset-2' : ''}`} />
+                        <button onClick={() => setTheme('sepia')} className={`h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-[#f4ecd8] border border-transparent mx-1 sm:mx-2 ${theme === 'sepia' ? 'ring-2 ring-primary ring-offset-1 sm:ring-offset-2' : ''}`} />
+                        <button onClick={() => setTheme('dark')} className={`h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-[#1a1a1a] border border-transparent ${theme === 'dark' ? 'ring-2 ring-primary ring-offset-1 sm:ring-offset-2' : ''}`} />
                     </div>
 
-                    {}
-                    <div className="hidden sm:flex items-center gap-1 bg-black/5 rounded-full px-2 border ml-2">
-                        <button onClick={() => setFontSize(f => Math.max(12, f - 2))} className="px-2 py-1 hover:bg-black/10 rounded font-bold">A-</button>
-                        <span className="text-xs px-1">{fontSize}</span>
-                        <button onClick={() => setFontSize(f => Math.min(32, f + 2))} className="px-2 py-1 hover:bg-black/10 rounded font-bold">A+</button>
+                    {/* Font Size Toggle */}
+                    <div className="flex items-center gap-0 sm:gap-1 bg-black/5 rounded-full px-1 sm:px-2 border ml-1 sm:ml-2">
+                        <button onClick={() => setFontSize(f => Math.max(12, f - 2))} className="px-1.5 sm:px-2 py-1 hover:bg-black/10 rounded font-bold text-sm sm:text-base">A-</button>
+                        <span className="text-[10px] sm:text-xs px-1">{fontSize}</span>
+                        <button onClick={() => setFontSize(f => Math.min(32, f + 2))} className="px-1.5 sm:px-2 py-1 hover:bg-black/10 rounded font-bold text-sm sm:text-base">A+</button>
                     </div>
                 </div>
             </div>
 
-            {}
-            <div className="max-w-3xl mx-auto px-6 py-12">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold mb-4 font-display">Chương {chapter.chapter_number}{chapter.title ? `: ${chapter.title}` : ''}</h2>
-                    <div className="h-1 w-20 mx-auto bg-primary/40 rounded-full"></div>
+            {/* Main Content */}
+            <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 sm:py-12">
+                <div className="text-center mb-8 sm:mb-12">
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 font-display">Chương {chapter.chapter_number}{chapter.title ? `: ${chapter.title}` : ''}</h2>
+                    <div className="h-1 w-16 sm:w-20 mx-auto bg-primary/40 rounded-full"></div>
                 </div>
 
                 {/* Locked Content Overlay */}
@@ -277,7 +277,7 @@ export default function ReadingWebNovelPage({ params }: { params: Promise<{ id: 
                                 variant="ghost" 
                                 className="w-full sm:w-auto"
                             >
-                                <List className="mr-2 h-4 w-4" /> Mục Lục
+                                <List weight="bold" className="mr-2 h-4 w-4" /> Mục Lục
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="w-[320px] sm:w-[380px] p-0">

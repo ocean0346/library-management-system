@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import HeaderSearch from '@/components/layout/HeaderSearch'
 import { CoinBalance } from '@/components/coins/CoinBalance'
-import { UserCircle, Settings, BookOpen, LayoutDashboard, Menu, X, LogOut, Search, Sparkles, Users, Tags, History, LibrarySquare, Coins } from 'lucide-react'
+import { UserCircle, Gear as Settings, BookOpenText as BookOpen, SquaresFour as LayoutDashboard, List as List, X, SignOut as LogOut, MagnifyingGlass as Search, Sparkle as Sparkles, Users, Tag as Tags, ClockCounterClockwise as History, Books as LibrarySquare, Coins, IconContext, House } from '@phosphor-icons/react'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -45,196 +45,200 @@ export default function Header() {
         router.push('/')
     }
     const navItems = [
-        { href: '/', label: 'Trang Chủ', icon: BookOpen },
+        { href: '/', label: 'Trang Chủ', icon: House },
         { href: '/books', label: 'Thư Viện', icon: BookOpen },
     ]
     const isActivePath = (path: string) => pathname === path
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
     if (pathname.includes('/read')) return null
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/50 shadow-[inset_0_-1px_0_0_hsla(0,0%,100%,0.05),0_1px_3px_0_rgba(0,0,0,0.03)]">
-            <div className="container h-16 flex items-center justify-between gap-2">
-                {}
-                <div className="flex items-center gap-8">
-                    <Link href="/" onClick={scrollToTop} className="flex items-center gap-3 group">
-                        <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] shadow-lg shadow-[#02FF73]/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(2,255,115,0.4)]">
-                            <BookOpen className="w-5 h-5 text-black absolute" />
-                            <Sparkles className="w-3 h-3 text-black absolute -top-1 -right-1 animate-pulse" />
-                        </div>
-                        <span className="font-display font-black text-xl tracking-tight hidden sm:inline bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent group-hover:brightness-110 transition-all">
-                            ThưViện<span className="text-foreground">Online</span>
-                        </span>
-                    </Link>
-                    {}
-                    <nav className="hidden md:flex items-center gap-1 whitespace-nowrap">
-                        {navItems.map((item) => {
-                            const Icon = item.icon
-                            const isActive = isActivePath(item.href)
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={scrollToTop}
-                                    className={cn(
-                                        "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg group",
-                                        isActive
-                                            ? "text-foreground"
-                                            : "text-muted-foreground hover:text-foreground"
-                                    )}
-                                >
-                                    <span className="flex items-center gap-2">
-                                        <Icon className="h-4 w-4" />
-                                        {item.label}
-                                    </span>
-                                    {}
-                                    <span
-                                        className={cn(
-                                            "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] transition-all duration-300 rounded-full",
-                                            isActive ? "w-3/4" : "w-0 group-hover:w-1/2"
-                                        )}
-                                    />
-                                </Link>
-                            )
-                        })}
-                        {user && (
-                            <>
-                                <Link
-                                    href="/bookshelf"
-                                    onClick={scrollToTop}
-                                    className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group whitespace-nowrap"
-                                >
-                                    <span className="flex items-center gap-2">
-                                        <LibrarySquare className="h-4 w-4" />
-                                        Tủ Sách
-                                    </span>
-                                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
-                                </Link>
-                                {isAdmin && (
+        <IconContext.Provider value={{ weight: "duotone" }}>
+            <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/50 shadow-[inset_0_-1px_0_0_hsla(0,0%,100%,0.05),0_1px_3px_0_rgba(0,0,0,0.03)]">
+                <div className="container h-16 flex items-center justify-between gap-2">
+                    { }
+                    <div className="flex items-center gap-8">
+                        <Link href="/" onClick={scrollToTop} className="flex items-center gap-3 group">
+                            <Image
+                                src="/thu-vien-online-logo.svg"
+                                alt="Thư Viện Online Logo"
+                                width={40}
+                                height={40}
+                                className="w-10 h-10 transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
+                            />
+                            <span className="font-display font-black text-xl tracking-tight hidden sm:inline bg-gradient-to-r from-[#02FF73] to-[#09ADAA] bg-clip-text text-transparent group-hover:brightness-110 transition-all">
+                                ThưViện<span className="text-foreground">Online</span>
+                            </span>
+                        </Link>
+                        { }
+                        <nav className="hidden md:flex items-center gap-1 whitespace-nowrap">
+                            {navItems.map((item) => {
+                                const Icon = item.icon
+                                const isActive = isActivePath(item.href)
+                                return (
                                     <Link
-                                        href="/dashboard"
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={scrollToTop}
+                                        className={cn(
+                                            "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg group",
+                                            isActive
+                                                ? "text-foreground"
+                                                : "text-muted-foreground hover:text-foreground"
+                                        )}
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <Icon className="h-4 w-4" />
+                                            {item.label}
+                                        </span>
+                                        { }
+                                        <span
+                                            className={cn(
+                                                "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] transition-all duration-300 rounded-full",
+                                                isActive ? "w-3/4" : "w-0 group-hover:w-1/2"
+                                            )}
+                                        />
+                                    </Link>
+                                )
+                            })}
+                            {user && (
+                                <>
+                                    <Link
+                                        href="/bookshelf"
                                         onClick={scrollToTop}
                                         className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group whitespace-nowrap"
                                     >
                                         <span className="flex items-center gap-2">
-                                            <LayoutDashboard className="h-4 w-4" />
-                                            Dashboard Admin
+                                            <LibrarySquare className="h-4 w-4" />
+                                            Tủ Sách
                                         </span>
                                         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
                                     </Link>
-                                )}
-                            </>
-                        )}
-                    </nav>
-                </div>
-                {}
-                <div className="flex items-center gap-3 flex-shrink-0">
-                    <HeaderSearch />
-                    {user ? (
-                        <>
-                            <CoinBalance />
-                            {}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="gap-2 hover:bg-accent/50 flex-shrink-0"
-                                    >
-                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center flex-shrink-0">
-                                            <UserCircle className="h-5 w-5 text-black" />
-                                        </div>
-                                        <span className="hidden md:inline max-w-[100px] truncate font-medium text-sm whitespace-nowrap">
-                                            {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                                        </span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-56">
-                                    <DropdownMenuLabel>
-                                        <div className="flex flex-col">
-                                            <span className="font-semibold">
-                                                {user.user_metadata?.full_name || 'Người Dùng'}
-                                            </span>
-                                            <span className="text-xs text-muted-foreground font-normal truncate">
-                                                {user.email}
-                                            </span>
-                                        </div>
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        onClick={() => router.push('/bookshelf')}
-                                        className="cursor-pointer"
-                                    >
-                                        <LibrarySquare className="mr-2 h-4 w-4" />
-                                        Tủ Sách Của Tôi
-                                    </DropdownMenuItem>
                                     {isAdmin && (
+                                        <Link
+                                            href="/dashboard"
+                                            onClick={scrollToTop}
+                                            className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg group whitespace-nowrap"
+                                        >
+                                            <span className="flex items-center gap-2">
+                                                <LayoutDashboard className="h-4 w-4" />
+                                                Dashboard Admin
+                                            </span>
+                                            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#02FF73] to-[#09ADAA] group-hover:w-1/2 transition-all duration-300 rounded-full" />
+                                        </Link>
+                                    )}
+                                </>
+                            )}
+                        </nav>
+                    </div>
+                    { }
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                        <HeaderSearch />
+                        {user ? (
+                            <>
+                                <CoinBalance />
+                                { }
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="gap-2 hover:bg-accent/50 flex-shrink-0"
+                                        >
+                                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center flex-shrink-0">
+                                                <UserCircle className="h-5 w-5 text-black" />
+                                            </div>
+                                            <span className="hidden md:inline max-w-[100px] truncate font-medium text-sm whitespace-nowrap">
+                                                {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                                            </span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-56">
+                                        <DropdownMenuLabel>
+                                            <div className="flex flex-col">
+                                                <span className="font-semibold">
+                                                    {user.user_metadata?.full_name || 'Người Dùng'}
+                                                </span>
+                                                <span className="text-xs text-muted-foreground font-normal truncate">
+                                                    {user.email}
+                                                </span>
+                                            </div>
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
                                         <DropdownMenuItem
-                                            onClick={() => router.push('/dashboard')}
+                                            onClick={() => router.push('/bookshelf')}
                                             className="cursor-pointer"
                                         >
-                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                            Bảng Quản Trị
+                                            <LibrarySquare className="mr-2 h-4 w-4" />
+                                            Tủ Sách Của Tôi
                                         </DropdownMenuItem>
-                                    )}
-                                    <DropdownMenuItem
-                                        onClick={() => router.push('/account/settings')}
-                                        className="cursor-pointer"
-                                    >
-                                        <UserCircle className="mr-2 h-4 w-4" />
-                                        Cài Đặt Tài Khoản
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() => router.push('/account/coins')}
-                                        className="cursor-pointer"
-                                    >
-                                        <Coins className="mr-2 h-4 w-4" />
-                                        Lịch Sử Xu
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        onClick={handleSignOut}
-                                        className="cursor-pointer text-destructive focus:text-destructive"
-                                    >
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        Đăng Xuất
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </>
-                    ) : (
-                        <div className="hidden md:flex items-center gap-3">
-                            <Link href="/login">
-                                <Button variant="ghost" size="sm">
-                                    Đăng Nhập
-                                </Button>
-                            </Link>
-                            <Link href="/register">
-                                <Button variant="gradient" size="sm">
-                                    Đăng Ký
-                                </Button>
-                            </Link>
-                        </div>
-                    )}
-                    {}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="md:hidden"
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    >
-                        {mobileMenuOpen ? (
-                            <X className="h-5 w-5" />
+                                        {isAdmin && (
+                                            <DropdownMenuItem
+                                                onClick={() => router.push('/dashboard')}
+                                                className="cursor-pointer"
+                                            >
+                                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                Bảng Quản Trị
+                                            </DropdownMenuItem>
+                                        )}
+                                        <DropdownMenuItem
+                                            onClick={() => router.push('/account/settings')}
+                                            className="cursor-pointer"
+                                        >
+                                            <UserCircle className="mr-2 h-4 w-4" />
+                                            Cài Đặt Tài Khoản
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() => router.push('/account/coins')}
+                                            className="cursor-pointer"
+                                        >
+                                            <Coins className="mr-2 h-4 w-4" />
+                                            Lịch Sử Xu
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            onClick={handleSignOut}
+                                            className="cursor-pointer text-destructive focus:text-destructive"
+                                        >
+                                            <LogOut className="mr-2 h-4 w-4" />
+                                            Đăng Xuất
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </>
                         ) : (
-                            <Menu className="h-5 w-5" />
+                            <div className="hidden md:flex items-center gap-3">
+                                <Link href="/login">
+                                    <Button variant="ghost" size="sm">
+                                        Đăng Nhập
+                                    </Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button variant="gradient" size="sm">
+                                        Đăng Ký
+                                    </Button>
+                                </Link>
+                            </div>
                         )}
-                    </Button>
+                        { }
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="md:hidden"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        >
+                            {mobileMenuOpen ? (
+                                <X weight="bold" className="h-5 w-5" />
+                            ) : (
+                                <List weight="bold" className="h-5 w-5" />
+                            )}
+                        </Button>
+                    </div>
                 </div>
-            </div>
-            {}
-            <div className={cn(
-                "md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out",
-                mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 border-t-0"
-            )}>
+                { }
+                <div className={cn(
+                    "md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out",
+                    mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 border-t-0"
+                )}>
                     <nav className="container py-4 flex flex-col gap-2">
                         {navItems.map((item) => {
                             const Icon = item.icon
@@ -292,6 +296,7 @@ export default function Header() {
                         )}
                     </nav>
                 </div>
-        </header>
+            </header>
+        </IconContext.Provider>
     )
 }

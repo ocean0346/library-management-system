@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic'
 import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Download, Expand, Shrink } from 'lucide-react'
+import { ArrowLeft, Download, CornersOut as Expand, CornersIn as Shrink } from '@phosphor-icons/react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from '@/hooks/use-toast'
 import { useCoins, FREE_PDF_PAGES } from '@/hooks/useCoins'
@@ -189,11 +189,11 @@ export default function DocumentReaderPage({ params }: { params: Promise<{ id: s
                             Tải Xuống
                         </Button>
                     )}
-                    <Button variant="outline" size="sm" onClick={toggleFullscreen}>
+                    <Button variant="outline" size="sm" onClick={toggleFullscreen} className="px-2 sm:px-3">
                         {isFullscreen ? (
-                            <><Shrink className="h-4 w-4 mr-2" /> Thu Nhỏ</>
+                            <><Shrink className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Thu Nhỏ</span></>
                         ) : (
-                            <><Expand className="h-4 w-4 mr-2" /> Toàn Màn Hình</>
+                            <><Expand className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Toàn Màn Hình</span></>
                         )}
                     </Button>
                 </div>

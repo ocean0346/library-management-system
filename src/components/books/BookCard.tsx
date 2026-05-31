@@ -6,7 +6,7 @@ import { Book } from '@/types/book'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { BookOpen, Eye, User, Star } from 'lucide-react'
+import { BookOpenText as BookOpen, Eye, User, Star } from '@phosphor-icons/react'
 import { format } from 'date-fns'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase-client'
@@ -52,7 +52,7 @@ export default function BookCard({ book, showQuickActions = true }: BookCardProp
                 {}
                 {(book as any).average_rating > 0 && (
                     <div className="absolute top-1.5 right-1.5 z-10 bg-black/50 backdrop-blur-md rounded shadow-sm px-1.5 py-0.5 flex items-center gap-1 border border-white/10 pointer-events-none">
-                        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                        <Star weight="fill" className="w-3 h-3 text-yellow-400" />
                         <span className="text-[10px] font-bold text-white">{(book as any).average_rating}</span>
                     </div>
                 )}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Users, Loader2, Shield, User as UserIcon, Search, Ban, Unlock, Trash2, Crown } from 'lucide-react'
+import { Users, Spinner as Loader2, Shield, User as UserIcon, MagnifyingGlass as Search, Prohibit as Ban, LockKeyOpen as Unlock, Trash as Trash2, Crown } from '@phosphor-icons/react'
 import { Loading } from '@/components/ui/loading'
 import { useToast } from "@/hooks/use-toast"
 import { Input } from '@/components/ui/input'
@@ -281,7 +281,7 @@ export default function UserManagement() {
                     </p>
                 </div>
                 <div className="relative w-full md:w-72">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Search weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
                         placeholder="Tìm theo tên hoặc email..." 
                         value={searchQuery}

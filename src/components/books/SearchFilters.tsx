@@ -7,7 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { Search, Filter } from 'lucide-react'
+import { MagnifyingGlass as Search, Funnel as Filter } from '@phosphor-icons/react'
 type SearchFiltersProps = {
     searchTerm: string
     onSearchChange: (value: string) => void
@@ -35,7 +35,7 @@ export default function SearchFilters({
                     <div className="relative group">
                         <div className="absolute -inset-1 bg-gradient-to-r from-[#02FF73]/50 to-[#09ADAA]/50 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
                         <div className="relative flex items-center bg-background rounded-xl border">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Search weight="bold" className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input
                                 id="search"
                                 type="text"

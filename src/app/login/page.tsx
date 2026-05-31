@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PasswordInput } from '@/components/ui/password-input'
-import { AlertCircle, Loader2, BookOpen, Mail, Sparkles } from 'lucide-react'
+import { WarningCircle as AlertCircle, Spinner as Loader2, BookOpenText as BookOpen, Envelope as Mail, Sparkle as Sparkles } from '@phosphor-icons/react'
 function LoginContent() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -44,7 +44,7 @@ function LoginContent() {
                 }
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.warn('Login error:', error instanceof Error ? error.message : error);
             setError('Thông tin đăng nhập không đúng. Vui lòng kiểm tra lại email và mật khẩu.')
         } finally {
             setIsLoading(false)
@@ -58,8 +58,14 @@ function LoginContent() {
                     <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                         <CardHeader className="space-y-4 text-center pb-2">
                             {}
-                            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
-                                <BookOpen className="h-8 w-8 text-black" />
+                            <div className="mx-auto flex justify-center">
+                                <Image 
+                                    src="/thu-vien-online-logo.svg" 
+                                    alt="Thư Viện Online Logo" 
+                                    width={64} 
+                                    height={64} 
+                                    className="w-16 h-16 drop-shadow-xl"
+                                />
                             </div>
                             <div>
                                 <CardTitle className="text-2xl font-display font-bold">
@@ -222,8 +228,13 @@ function LoginContent() {
                 <div className="relative z-10 max-w-md text-black">
                     <div className="mb-8">
                         <div className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md shadow-xl border border-white/20">
-                            <BookOpen className="w-10 h-10 text-black absolute" />
-                            <Sparkles className="w-5 h-5 text-black absolute top-2 right-2 animate-pulse" />
+                            <Image 
+                                src="/thu-vien-online-logo.svg" 
+                                alt="Thư Viện Online Logo" 
+                                width={56} 
+                                height={56} 
+                                className="w-14 h-14"
+                            />
                         </div>
                     </div>
                     <h2 className="text-4xl font-display font-bold mb-4">

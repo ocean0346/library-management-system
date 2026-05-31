@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Star, MessageSquare, Trash2, Send, Loader2 } from 'lucide-react'
+import { Star, ChatCircle as MessageSquare, Trash as Trash2, PaperPlaneRight as Send, Spinner as Loader2 } from '@phosphor-icons/react'
 import { useToast } from '@/hooks/use-toast'
 type Review = {
     review_id: string
@@ -129,7 +129,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                                     onClick={() => setRating(star)}
                                     className={`focus:outline-none transition-transform hover:scale-110 ${rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
                                 >
-                                    <Star className="h-6 w-6 fill-current" />
+                                    <Star weight={rating >= star ? "fill" : "regular"} className="h-6 w-6" />
                                 </button>
                             ))}
                         </div>
@@ -153,7 +153,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                         <div className="py-10 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" /></div>
                     ) : reviews.length === 0 ? (
                         <div className="text-center py-12 border-2 border-dashed rounded-xl border-muted-foreground/20">
-                            <Star className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                            <Star weight="regular" className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
                             <p className="text-muted-foreground">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
                         </div>
                     ) : (
@@ -170,7 +170,7 @@ export default function BookReviews({ bookId, isAdmin }: { bookId: string; isAdm
                                         </div>
                                         <div className="flex gap-0.5">
                                             {[...Array(5)].map((_, i) => (
-                                                <Star key={i} className={`h-3 w-3 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
+                                                <Star key={i} weight={i < review.rating ? "fill" : "regular"} className={`h-3 w-3 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`} />
                                             ))}
                                         </div>
                                         <p className="text-sm text-foreground/90 mt-2 leading-relaxed">

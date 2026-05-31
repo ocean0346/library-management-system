@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCoins } from '@/hooks/useCoins'
 import { supabase } from '@/lib/supabase-client'
-import { Coins, Sparkles, X, Crown, Zap, Gem, Loader2 } from 'lucide-react'
+import { Coins, Sparkle as Sparkles, X, Crown, Lightning as Zap, Diamond as Gem, Spinner as Loader2, IconContext } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 
@@ -26,6 +26,7 @@ export function CoinBalance() {
     if (!user) return null
 
     return (
+        <IconContext.Provider value={{ weight: "duotone" }}>
         <>
             <button
                 onClick={(e) => {
@@ -47,6 +48,7 @@ export function CoinBalance() {
 
             {showModal && <CoinPurchaseModal onClose={() => setShowModal(false)} />}
         </>
+        </IconContext.Provider>
     )
 }
 
@@ -132,6 +134,7 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
     ]
 
     return createPortal(
+        <IconContext.Provider value={{ weight: "duotone" }}>
         <div 
             className="fixed inset-0 flex items-center justify-center p-4"
             style={{ zIndex: 9999 }}
@@ -151,7 +154,7 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
                         className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-muted transition-colors"
                         type="button"
                     >
-                        <X className="h-5 w-5 text-muted-foreground" />
+                        <X weight="bold" className="h-5 w-5 text-muted-foreground" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center shadow-lg shadow-yellow-500/25">
@@ -236,7 +239,8 @@ export function CoinPurchaseModal({ onClose }: { onClose: () => void }) {
                     </p>
                 </div>
             </div>
-        </div>,
+        </div>
+        </IconContext.Provider>,
         document.body
     )
 }

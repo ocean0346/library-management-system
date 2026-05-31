@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loading } from '@/components/ui/loading'
-import { Clock, History, Search as SearchIcon, ArrowLeft, ArrowRight } from 'lucide-react'
+import { Clock, ClockCounterClockwise as History, MagnifyingGlass as SearchIcon, ArrowLeft, ArrowRight } from '@phosphor-icons/react'
 const LOGS_PER_PAGE = 20
 export default function AccessLogs() {
     const { user, loading: authLoading } = useAuth()

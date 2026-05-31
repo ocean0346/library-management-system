@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PasswordInput } from '@/components/ui/password-input'
-import { AlertCircle, Loader2, User, Mail, UserPlus, Check, BookOpen, Sparkles } from 'lucide-react'
+import { WarningCircle as AlertCircle, Spinner as Loader2, User, Envelope as Mail, UserPlus, Check, BookOpenText as BookOpen, Sparkle as Sparkles } from '@phosphor-icons/react'
 const features = [
     "Tiếp cận kho tàng tiểu thuyết khổng lồ",
     "Tham gia cộng đồng đọc truyện sôi động",
@@ -82,8 +82,13 @@ export default function Register() {
                 <div className="relative z-10 max-w-md text-black">
                     <div className="mb-8">
                         <div className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md shadow-xl border border-white/20">
-                            <BookOpen className="w-10 h-10 text-black absolute" />
-                            <Sparkles className="w-5 h-5 text-black absolute top-2 right-2 animate-pulse" />
+                            <Image 
+                                src="/thu-vien-online-logo.svg" 
+                                alt="Thư Viện Online Logo" 
+                                width={56} 
+                                height={56} 
+                                className="w-14 h-14"
+                            />
                         </div>
                     </div>
                     <h2 className="text-4xl font-display font-bold mb-4">
@@ -97,7 +102,7 @@ export default function Register() {
                         {features.map((feature, index) => (
                             <li key={index} className="flex items-center gap-3">
                                 <div className="w-6 h-6 rounded-full bg-black/20 flex items-center justify-center">
-                                    <Check className="h-4 w-4" />
+                                    <Check weight="bold" className="h-4 w-4" />
                                 </div>
                                 <span className="font-medium">{feature}</span>
                             </li>
@@ -111,8 +116,14 @@ export default function Register() {
                     <Card className="border-0 shadow-2xl bg-card/80 backdrop-blur-xl">
                         <CardHeader className="space-y-4 text-center pb-2">
                             {}
-                            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#02FF73] to-[#09ADAA] flex items-center justify-center shadow-lg shadow-[#02FF73]/20">
-                                <UserPlus className="h-8 w-8 text-black" />
+                            <div className="mx-auto flex justify-center">
+                                <Image 
+                                    src="/thu-vien-online-logo.svg" 
+                                    alt="Thư Viện Online Logo" 
+                                    width={64} 
+                                    height={64} 
+                                    className="w-16 h-16 drop-shadow-xl"
+                                />
                             </div>
                             <div>
                                 <CardTitle className="text-2xl font-display font-bold">

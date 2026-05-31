@@ -11,17 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PasswordInput } from '@/components/ui/password-input'
-import {
-    AlertCircle,
-    Loader2,
-    User,
-    Mail,
-    Lock,
-    CheckCircle2,
-    Phone,
-    MapPin,
-    Save
-} from 'lucide-react'
+import { WarningCircle as AlertCircle, Spinner as Loader2, User, Envelope as Mail, LockKey as Lock, CheckCircle as CheckCircle, Phone as Phone, MapPin as MapPin, FloppyDisk as Save } from '@phosphor-icons/react'
 type UserProfile = {
     user_id: string
     username: string
@@ -231,7 +221,7 @@ export default function AccountSettings() {
                                 )}
                                 {profileSuccess && (
                                     <Alert className="border-[#02FF73]/50 bg-[#02FF73]/10">
-                                        <CheckCircle2 className="h-4 w-4 text-[#02FF73]" />
+                                        <CheckCircle className="h-4 w-4 text-[#02FF73]" />
                                         <AlertDescription className="text-[#02FF73]">
                                             Cập nhật hồ sơ thành công
                                         </AlertDescription>
@@ -347,7 +337,7 @@ export default function AccountSettings() {
                                 )}
                                 {emailSuccess && (
                                     <Alert className="border-[#02FF73]/50 bg-[#02FF73]/10">
-                                        <CheckCircle2 className="h-4 w-4 text-[#02FF73]" />
+                                        <CheckCircle className="h-4 w-4 text-[#02FF73]" />
                                         <AlertDescription className="text-[#02FF73]">
                                             Đã gửi email xác nhận! Kiểm tra hộp thư để xác minh địa chỉ email mới.
                                         </AlertDescription>
@@ -420,7 +410,7 @@ export default function AccountSettings() {
                                 )}
                                 {passwordSuccess && (
                                     <Alert className="border-[#02FF73]/50 bg-[#02FF73]/10">
-                                        <CheckCircle2 className="h-4 w-4 text-[#02FF73]" />
+                                        <CheckCircle className="h-4 w-4 text-[#02FF73]" />
                                         <AlertDescription className="text-[#02FF73]">
                                             Cập nhật mật khẩu thành công
                                         </AlertDescription>

@@ -2,7 +2,7 @@
 import * as React from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff, Lock } from 'lucide-react'
+import { Eye, EyeClosed as EyeOff, LockKey as Lock } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 export interface PasswordInputProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
