@@ -1,22 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#02FF73" />
-      <stop offset="100%" stop-color="#09ADAA" />
+    <!-- Dark Emerald for the main L covers -->
+    <linearGradient id="gradCover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#047857"/>
     </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.2"/>
-    </filter>
-  </defs>
-  
-  <rect width="256" height="256" rx="56" fill="url(#grad)"/>
-  
-  <g filter="url(#shadow)">
-    <!-- Book Open Text Duotone -->
-    <!-- Opacity 0.2 background for duotone effect -->
-    <path d="M224,184V72a8,8,0,0,0-12.18-6.84L128,114V224l83.82-46.84A8,8,0,0,0,224,184ZM32,184V72a8,8,0,0,1,12.18-6.84L128,114V224L44.18,177.16A8,8,0,0,1,32,184Z" fill="#ffffff" opacity="0.2"/>
     
-    <!-- Bold stroke lines -->
-    <path d="M231.81,168.32l-96,53.34A16,16,0,0,1,128,224h0a16,16,0,0,1-7.81-2.34l-96-53.34A16,16,0,0,1,16,154.39V64a16,16,0,0,1,23.82-13.91L128,99.25l88.18-49.16A16,16,0,0,1,240,64v90.39A16,16,0,0,1,231.81,168.32ZM32,64v90.39L120,203.28V108.17ZM224,154.39V64L136,108.17V203.28ZM192,104a8,8,0,0,0-8-8H168a8,8,0,0,0,0,16h16A8,8,0,0,0,192,104Zm0,32a8,8,0,0,0-8-8H168a8,8,0,0,0,0,16h16A8,8,0,0,0,192,136Z" fill="#ffffff"/>
+    <!-- Teal for page 1 -->
+    <linearGradient id="gradPage1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09ADAA"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    
+    <!-- Neon Green for page 2 -->
+    <linearGradient id="gradPage2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#02FF73"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(16, 16)">
+    <!-- Back Vertical Cover (0deg) -->
+    <rect x="80" y="80" width="70" height="320" rx="35" fill="url(#gradCover)"/>
+
+    <!-- Page 1 (30deg) -->
+    <g transform="rotate(30, 115, 365)">
+      <rect x="80" y="80" width="70" height="320" rx="35" fill="url(#gradPage1)" opacity="0.9"/>
+    </g>
+
+    <!-- Page 2 (60deg) -->
+    <g transform="rotate(60, 115, 365)">
+      <rect x="80" y="80" width="70" height="320" rx="35" fill="url(#gradPage2)" opacity="0.9"/>
+    </g>
+
+    <!-- Front Horizontal Cover (90deg) -->
+    <g transform="rotate(90, 115, 365)">
+      <rect x="80" y="80" width="70" height="320" rx="35" fill="url(#gradCover)"/>
+    </g>
   </g>
 </svg>
